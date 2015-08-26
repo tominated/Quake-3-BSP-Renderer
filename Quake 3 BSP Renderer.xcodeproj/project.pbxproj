@@ -13,6 +13,7 @@
 		E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E27901F11B8D989C00E09E46 /* Images.xcassets */; };
 		E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E27901F31B8D989C00E09E46 /* LaunchScreen.xib */; };
 		E27902011B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */; };
+		E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020A1B8D98CB00E09E46 /* BinaryReader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Quake 3 BSP RendererTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E27901FF1B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quake_3_BSP_RendererTests.swift; sourceTree = "<group>"; };
+		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +85,7 @@
 				E27901F11B8D989C00E09E46 /* Images.xcassets */,
 				E27901F31B8D989C00E09E46 /* LaunchScreen.xib */,
 				E27901E81B8D989C00E09E46 /* Supporting Files */,
+				E279020A1B8D98CB00E09E46 /* BinaryReader.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 			files = (
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
+				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
