@@ -14,6 +14,7 @@
 		E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E27901F31B8D989C00E09E46 /* LaunchScreen.xib */; };
 		E27902011B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */; };
 		E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020A1B8D98CB00E09E46 /* BinaryReader.swift */; };
+		E279020D1B8D99F800E09E46 /* BSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020C1B8D99F800E09E46 /* BSP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		E27901FF1B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quake_3_BSP_RendererTests.swift; sourceTree = "<group>"; };
 		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
+		E279020C1B8D99F800E09E46 /* BSP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSP.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				E27901F31B8D989C00E09E46 /* LaunchScreen.xib */,
 				E27901E81B8D989C00E09E46 /* Supporting Files */,
 				E279020A1B8D98CB00E09E46 /* BinaryReader.swift */,
+				E279020C1B8D99F800E09E46 /* BSP.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -216,6 +219,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
+				E279020D1B8D99F800E09E46 /* BSP.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
 				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
 			);
