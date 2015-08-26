@@ -1,0 +1,424 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EA1B8D989C00E09E46 /* AppDelegate.swift */; };
+		E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EC1B8D989C00E09E46 /* ViewController.swift */; };
+		E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E27901EE1B8D989C00E09E46 /* Main.storyboard */; };
+		E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E27901F11B8D989C00E09E46 /* Images.xcassets */; };
+		E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E27901F31B8D989C00E09E46 /* LaunchScreen.xib */; };
+		E27902011B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E27901FB1B8D989C00E09E46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E27901DD1B8D989C00E09E46 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E27901E41B8D989C00E09E46;
+			remoteInfo = "Quake 3 BSP Renderer";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Quake 3 BSP Renderer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E27901E91B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E27901EA1B8D989C00E09E46 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		E27901EC1B8D989C00E09E46 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		E27901EF1B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		E27901F11B8D989C00E09E46 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		E27901F41B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Quake 3 BSP RendererTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E27901FF1B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quake_3_BSP_RendererTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E27901E21B8D989C00E09E46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E27901F71B8D989C00E09E46 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E27901DC1B8D989C00E09E46 = {
+			isa = PBXGroup;
+			children = (
+				E27901E71B8D989C00E09E46 /* Quake 3 BSP Renderer */,
+				E27901FD1B8D989C00E09E46 /* Quake 3 BSP RendererTests */,
+				E27901E61B8D989C00E09E46 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E27901E61B8D989C00E09E46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */,
+				E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E27901E71B8D989C00E09E46 /* Quake 3 BSP Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				E27901EA1B8D989C00E09E46 /* AppDelegate.swift */,
+				E27901EC1B8D989C00E09E46 /* ViewController.swift */,
+				E27901EE1B8D989C00E09E46 /* Main.storyboard */,
+				E27901F11B8D989C00E09E46 /* Images.xcassets */,
+				E27901F31B8D989C00E09E46 /* LaunchScreen.xib */,
+				E27901E81B8D989C00E09E46 /* Supporting Files */,
+			);
+			path = "Quake 3 BSP Renderer";
+			sourceTree = "<group>";
+		};
+		E27901E81B8D989C00E09E46 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E27901E91B8D989C00E09E46 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E27901FD1B8D989C00E09E46 /* Quake 3 BSP RendererTests */ = {
+			isa = PBXGroup;
+			children = (
+				E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */,
+				E27901FE1B8D989C00E09E46 /* Supporting Files */,
+			);
+			path = "Quake 3 BSP RendererTests";
+			sourceTree = "<group>";
+		};
+		E27901FE1B8D989C00E09E46 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E27901FF1B8D989C00E09E46 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E27901E41B8D989C00E09E46 /* Quake 3 BSP Renderer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E27902041B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP Renderer" */;
+			buildPhases = (
+				E27901E11B8D989C00E09E46 /* Sources */,
+				E27901E21B8D989C00E09E46 /* Frameworks */,
+				E27901E31B8D989C00E09E46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Quake 3 BSP Renderer";
+			productName = "Quake 3 BSP Renderer";
+			productReference = E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E27901F91B8D989C00E09E46 /* Quake 3 BSP RendererTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */;
+			buildPhases = (
+				E27901F61B8D989C00E09E46 /* Sources */,
+				E27901F71B8D989C00E09E46 /* Frameworks */,
+				E27901F81B8D989C00E09E46 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E27901FC1B8D989C00E09E46 /* PBXTargetDependency */,
+			);
+			name = "Quake 3 BSP RendererTests";
+			productName = "Quake 3 BSP RendererTests";
+			productReference = E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E27901DD1B8D989C00E09E46 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0640;
+				ORGANIZATIONNAME = "Thomas Brunoli";
+				TargetAttributes = {
+					E27901E41B8D989C00E09E46 = {
+						CreatedOnToolsVersion = 6.4;
+					};
+					E27901F91B8D989C00E09E46 = {
+						CreatedOnToolsVersion = 6.4;
+						TestTargetID = E27901E41B8D989C00E09E46;
+					};
+				};
+			};
+			buildConfigurationList = E27901E01B8D989C00E09E46 /* Build configuration list for PBXProject "Quake 3 BSP Renderer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E27901DC1B8D989C00E09E46;
+			productRefGroup = E27901E61B8D989C00E09E46 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E27901E41B8D989C00E09E46 /* Quake 3 BSP Renderer */,
+				E27901F91B8D989C00E09E46 /* Quake 3 BSP RendererTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E27901E31B8D989C00E09E46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
+				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
+				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E27901F81B8D989C00E09E46 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E27901E11B8D989C00E09E46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
+				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E27901F61B8D989C00E09E46 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E27902011B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E27901FC1B8D989C00E09E46 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E27901E41B8D989C00E09E46 /* Quake 3 BSP Renderer */;
+			targetProxy = E27901FB1B8D989C00E09E46 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		E27901EE1B8D989C00E09E46 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E27901EF1B8D989C00E09E46 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		E27901F31B8D989C00E09E46 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				E27901F41B8D989C00E09E46 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		E27902021B8D989C00E09E46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E27902031B8D989C00E09E46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E27902051B8D989C00E09E46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "Quake 3 BSP Renderer/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		E27902061B8D989C00E09E46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "Quake 3 BSP Renderer/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		E27902081B8D989C00E09E46 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
+			};
+			name = Debug;
+		};
+		E27902091B8D989C00E09E46 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E27901E01B8D989C00E09E46 /* Build configuration list for PBXProject "Quake 3 BSP Renderer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E27902021B8D989C00E09E46 /* Debug */,
+				E27902031B8D989C00E09E46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E27902041B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP Renderer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E27902051B8D989C00E09E46 /* Debug */,
+				E27902061B8D989C00E09E46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E27902081B8D989C00E09E46 /* Debug */,
+				E27902091B8D989C00E09E46 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E27901DD1B8D989C00E09E46 /* Project object */;
+}
