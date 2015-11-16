@@ -15,6 +15,8 @@
 		E27902011B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */; };
 		E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020A1B8D98CB00E09E46 /* BinaryReader.swift */; };
 		E279020D1B8D99F800E09E46 /* BSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020C1B8D99F800E09E46 /* BSP.swift */; };
+		E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E279020E1B8D9CAC00E09E46 /* Shaders.metal */; };
+		E29621011B96C3B700122EE6 /* test_bigbox.bsp in Resources */ = {isa = PBXBuildFile; fileRef = E29621001B96C3B700122EE6 /* test_bigbox.bsp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,8 @@
 		E27902001B8D989C00E09E46 /* Quake_3_BSP_RendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quake_3_BSP_RendererTests.swift; sourceTree = "<group>"; };
 		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 		E279020C1B8D99F800E09E46 /* BSP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSP.swift; sourceTree = "<group>"; };
+		E279020E1B8D9CAC00E09E46 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		E29621001B96C3B700122EE6 /* test_bigbox.bsp */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_bigbox.bsp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,7 @@
 		E27901E71B8D989C00E09E46 /* Quake 3 BSP Renderer */ = {
 			isa = PBXGroup;
 			children = (
+				E29621001B96C3B700122EE6 /* test_bigbox.bsp */,
 				E27901EA1B8D989C00E09E46 /* AppDelegate.swift */,
 				E27901EC1B8D989C00E09E46 /* ViewController.swift */,
 				E27901EE1B8D989C00E09E46 /* Main.storyboard */,
@@ -89,6 +94,7 @@
 				E27901E81B8D989C00E09E46 /* Supporting Files */,
 				E279020A1B8D98CB00E09E46 /* BinaryReader.swift */,
 				E279020C1B8D99F800E09E46 /* BSP.swift */,
+				E279020E1B8D9CAC00E09E46 /* Shaders.metal */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -162,11 +168,14 @@
 		E27901DD1B8D989C00E09E46 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0640;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Thomas Brunoli";
 				TargetAttributes = {
 					E27901E41B8D989C00E09E46 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = XVVR4L7TTW;
 					};
 					E27901F91B8D989C00E09E46 = {
 						CreatedOnToolsVersion = 6.4;
@@ -198,6 +207,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E29621011B96C3B700122EE6 /* test_bigbox.bsp in Resources */,
 				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
 				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
 				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
@@ -222,6 +232,7 @@
 				E279020D1B8D99F800E09E46 /* BSP.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
 				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
+				E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +295,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -348,9 +360,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "Quake 3 BSP Renderer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -358,9 +374,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = "Quake 3 BSP Renderer/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -378,6 +398,7 @@
 				);
 				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
 			};
@@ -393,6 +414,7 @@
 				);
 				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
 			};
@@ -417,6 +439,7 @@
 				E27902061B8D989C00E09E46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */ = {
 			isa = XCConfigurationList;
@@ -425,6 +448,7 @@
 				E27902091B8D989C00E09E46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

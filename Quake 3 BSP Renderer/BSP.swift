@@ -208,7 +208,7 @@ func readMapData(data: NSData) -> BSPMap {
     var dirEntries = [DirEntry]()
     
     // Read all directory entries
-    for i in 0..<17 {
+    for _ in 0..<17 {
         let entry = DirEntry(offset: buffer.getInt32(), length: buffer.getInt32())
         dirEntries.append(entry)
     }
@@ -317,7 +317,7 @@ func readMapData(data: NSData) -> BSPMap {
         let textureCoord = GLKVector2Make(buffer.getFloat32(),buffer.getFloat32())
         let lightMapCoord = GLKVector2Make(buffer.getFloat32(),buffer.getFloat32())
         let normal = GLKVector4Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0)
-        let color = colorToVec(buffer.getUInt8(), buffer.getUInt8(), buffer.getUInt8(), buffer.getUInt8())
+        let color = colorToVec(buffer.getUInt8(), g: buffer.getUInt8(), b: buffer.getUInt8(), a: buffer.getUInt8())
         
         let vertex = Vertex(
             position: position,
@@ -399,10 +399,10 @@ func readMapData(data: NSData) -> BSPMap {
     for _ in 0..<numLightMaps {
         var map = [[(UInt8, UInt8, UInt8)]]()
         
-        for col in 0..<128 {
+        for _ in 0..<128 {
             var vals = [(UInt8, UInt8, UInt8)]()
             
-            for row in 0..<128 {
+            for _ in 0..<128 {
                 vals.append((buffer.getUInt8(), buffer.getUInt8(), buffer.getUInt8()))
             }
             

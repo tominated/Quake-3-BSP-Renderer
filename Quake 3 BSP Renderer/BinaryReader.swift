@@ -51,7 +51,7 @@ class BinaryReader {
     }
     
     func getASCII(length: Int) -> NSString? {
-        var strData = data.subdataWithRange(NSMakeRange(position, length))
+        let strData = data.subdataWithRange(NSMakeRange(position, length))
         position += length
         return NSString(bytes: strData.bytes, length: length, encoding: NSASCIIStringEncoding)
     }
