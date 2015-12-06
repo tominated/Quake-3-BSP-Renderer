@@ -41,12 +41,10 @@ class ViewController: UIViewController {
     var fov : Float = Float(65.0 * (M_PI / 180))
 
     // In degrees
-    var yaw : Float = 90.0
-    var pitch : Float = 90.0
-
-    var up : GLKVector3 = GLKVector3Make(0, 1, 0)
-    var position : GLKVector3 = GLKVector3Make(0, 0, 400)
-    var direction : GLKVector3 = GLKVector3Make(0, 0, 1)
+    var yaw : Float = 270.0
+    var pitch : Float = 270.0
+    var rotation : GLKMatrix4 = GLKMatrix4Identity
+    var position : GLKVector3 = GLKVector3Make(300, 300, 300)
     
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("test_bigbox", ofType: "bsp")!
@@ -64,15 +62,13 @@ class ViewController: UIViewController {
         let yawR = GLKMathDegreesToRadians(yaw)
         let pitchR = GLKMathDegreesToRadians(pitch)
 
-        let centreX = cos(yawR) * cos(pitchR)
-        let centreY = sin(yawR) * cos(pitchR)
-        let centreZ = sin(pitchR)
+        let quatX = GLKQuaternionMakeWithAngleAndAxis(pitchR, 1, 0, 0)
+        let quatY = GLKQuaternionMakeWithAngleAndAxis(yawR, 0, 1, 0)
 
-        return GLKMatrix4MakeLookAt(
-            position.x, position.y, position.z,
-            centreX + position.x, centreY + position.y, centreZ + position.z,
-            0, 1, 0
-        )
+        rotation = GLKMatrix4MakeWithQuaternion(GLKQuaternionMultiply(quatX, quatY))
+        let translation = GLKMatrix4MakeTranslation(position.x, position.y, position.z)
+
+        return GLKMatrix4Multiply(translation, rotation)
     }
     
     func initializeMetal() {
@@ -183,6 +179,11 @@ class ViewController: UIViewController {
     }
 
     func handlePinch(gesture: UIPinchGestureRecognizer) {
+        let direction = GLKVector3Make(0, 0, Float(gesture.velocity / 2))
+        let x = GLKMatrix4MultiplyVector3(rotation, direction)
+        position = GLKVector3Add(position, x)
+
+        print("new position \(NSStringFromGLKVector3(position))")
     }
     
     override func viewDidLoad() {
