@@ -42,6 +42,13 @@ class BinaryReader {
         position += sizeofValue(i)
         return i
     }
+
+    func getUInt32() -> UInt32 {
+        var i: UInt32 = 0
+        data.getBytes(&i, range: NSMakeRange(position, sizeofValue(i)))
+        position += sizeofValue(i)
+        return i
+    }
     
     func getFloat32() -> Float32 {
         var f: Float32 = 0

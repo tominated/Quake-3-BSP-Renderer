@@ -8,6 +8,7 @@
 
 import Foundation
 import GLKit
+import ModelIO
 
 struct ColorRGBA {
     var r: Float32
@@ -22,6 +23,7 @@ struct ColorRGBA {
         self.a = Float32(a) / 255
     }
 }
+
 func colorToVec(r: UInt8, g: UInt8, b: UInt8, a: UInt8) -> GLKVector4 {
     return GLKVector4Make(Float32(r) / 255, Float32(g) / 255, Float32(b) / 255, Float32(a) / 255)
 }
@@ -125,7 +127,7 @@ struct Vertex {
 
 struct MeshVert {
     // Vertex index offset, relative to first vertex of corresponding face
-    var offset: Int
+    var offset: UInt32
 }
 
 enum FaceType: Int {
@@ -168,6 +170,15 @@ struct Face {
     
     // Patch dimensions
     var size: (Int32, Int32)
+    
+    func meshVertIndexes() -> [Int] {
+        // Only return indexes for polygons or meshes
+        guard faceType == .Polygon || faceType == .Mesh else {
+            return []
+        }
+
+        return Array(meshVert..<(meshVert + meshVertCount))
+    }
 }
 
 struct LightMap {
@@ -181,6 +192,7 @@ struct VisData {
 }
 
 struct BSPMap {
+    var entities: String
     var planes: [Plane]
     var nodes: [Node]
     var leaves: [Leaf]
@@ -194,7 +206,7 @@ struct BSPMap {
 }
 
 func readMapData(data: NSData) -> BSPMap {
-    var buffer = BinaryReader(data: data)
+    let buffer = BinaryReader(data: data)
     
     // Magic should always equal IBSP for Q3 maps
     let magic = buffer.getASCII(4)!
@@ -212,6 +224,11 @@ func readMapData(data: NSData) -> BSPMap {
         let entry = DirEntry(offset: buffer.getInt32(), length: buffer.getInt32())
         dirEntries.append(entry)
     }
+
+    // Read the entity descriptions
+    let entitiesEntry = dirEntries[0]
+    buffer.jump(Int(entitiesEntry.offset))
+    let entities = buffer.getASCII(Int(entitiesEntry.length))
     
     // Find out how many planes there is
     let planeEntry = dirEntries[2]
@@ -340,7 +357,7 @@ func readMapData(data: NSData) -> BSPMap {
     buffer.jump(Int(meshVertEntry.offset))
     
     for _ in 0..<numMeshVerts {
-        meshVerts.append(MeshVert(offset: Int(buffer.getInt32())))
+        meshVerts.append(MeshVert(offset: UInt32(buffer.getInt32())))
     }
     
     // Find out how many faces there are
@@ -435,6 +452,7 @@ func readMapData(data: NSData) -> BSPMap {
     )
     
     return BSPMap(
+        entities: String(entities),
         planes: planes,
         nodes: nodes,
         leaves: leaves,

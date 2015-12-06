@@ -10,11 +10,12 @@ import UIKit
 import Metal
 import QuartzCore
 import GLKit
+import MetalKit
 
 struct Uniforms {
-    let modelMatrix : GLKMatrix4
-    let viewMatrix : GLKMatrix4
-    let projectionMatrix : GLKMatrix4
+    var modelMatrix : GLKMatrix4
+    var viewMatrix : GLKMatrix4
+    var projectionMatrix : GLKMatrix4
 }
 
 class ViewController: UIViewController {
@@ -27,11 +28,9 @@ class ViewController: UIViewController {
     
     // Resources
     var uniformBuffer : MTLBuffer! = nil
-    var vertexBuffer : MTLBuffer! = nil
-    var indexBuffer : MTLBuffer! = nil
-    
-    // Game resources
     var bsp : BSPMap! = nil
+    var mesh : MTKMesh! = nil
+    var uniforms : Uniforms! = nil
     
     // Transients
     var timer : CADisplayLink! = nil
@@ -40,15 +39,40 @@ class ViewController: UIViewController {
     
     var aspect : Float = 0.0
     var fov : Float = Float(65.0 * (M_PI / 180))
-    
-    let up : GLKVector3 = GLKVector3Make(0, 1, 0)
-    var position : GLKVector3 = GLKVector3Make(-500, -1, -800)
-    var direction : GLKVector3 = GLKVector3Normalize(GLKVector3Make(0, 0, 1))
+
+    // In degrees
+    var yaw : Float = 90.0
+    var pitch : Float = 90.0
+
+    var up : GLKVector3 = GLKVector3Make(0, 1, 0)
+    var position : GLKVector3 = GLKVector3Make(0, 0, 400)
+    var direction : GLKVector3 = GLKVector3Make(0, 0, 1)
     
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("test_bigbox", ofType: "bsp")!
         let binaryData = NSData(contentsOfFile: filename)!
         bsp = readMapData(binaryData)
+
+        let allocator = MTKMeshBufferAllocator(device: self.device)
+        mesh = try! MTKMesh(
+            mesh: createMesh(bsp, allocator: allocator),
+            device: self.device
+        )
+    }
+
+    func lookat() -> GLKMatrix4 {
+        let yawR = GLKMathDegreesToRadians(yaw)
+        let pitchR = GLKMathDegreesToRadians(pitch)
+
+        let centreX = cos(yawR) * cos(pitchR)
+        let centreY = sin(yawR) * cos(pitchR)
+        let centreZ = sin(pitchR)
+
+        return GLKMatrix4MakeLookAt(
+            position.x, position.y, position.z,
+            centreX + position.x, centreY + position.y, centreZ + position.z,
+            0, 1, 0
+        )
     }
     
     func initializeMetal() {
@@ -67,51 +91,14 @@ class ViewController: UIViewController {
         let library = device.newDefaultLibrary()!
         let vertexFunction = library.newFunctionWithName("renderVert")
         let fragmentFunction = library.newFunctionWithName("renderFrag")
-        
-        // Vertex Descriptor
-        let vertexDescriptor = MTLVertexDescriptor()
-        var vertexOffset = 0
-        
-        // Vertex Position
-        vertexDescriptor.attributes[0].offset = vertexOffset
-        vertexDescriptor.attributes[0].format = .Float4
-        vertexDescriptor.attributes[0].bufferIndex = 0
-        vertexOffset += sizeof(GLKVector4)
-        
-        // Vertex Normal
-        vertexDescriptor.attributes[1].offset = vertexOffset
-        vertexDescriptor.attributes[1].format = .Float4
-        vertexDescriptor.attributes[1].bufferIndex = 0
-        vertexOffset += sizeof(GLKVector4)
-        
-        // Vertex Color
-        vertexDescriptor.attributes[2].offset = vertexOffset
-        vertexDescriptor.attributes[2].format = .Float4
-        vertexDescriptor.attributes[2].bufferIndex = 0
-        vertexOffset += sizeof(GLKVector4)
-        
-        // Vertex Texture Coordinate
-        vertexDescriptor.attributes[3].offset = vertexOffset
-        vertexDescriptor.attributes[3].format = .Float2
-        vertexDescriptor.attributes[3].bufferIndex = 0
-        vertexOffset += sizeof(GLKVector2)
-        
-        // Vertex Lightmap Coordinate
-        vertexDescriptor.attributes[4].offset = vertexOffset
-        vertexDescriptor.attributes[4].format = .Float2
-        vertexDescriptor.attributes[4].bufferIndex = 0
-        vertexOffset += sizeof(GLKVector2)
-        
-        // Vertex Descriptor stride
-        vertexDescriptor.layouts[0].stride = sizeof(Vertex)
-        
+
         // Pipeline Descriptor
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
-        pipelineDescriptor.vertexDescriptor = vertexDescriptor
+        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mesh.vertexDescriptor)
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         
         // Try creating the pipeline
@@ -119,39 +106,23 @@ class ViewController: UIViewController {
     }
     
     func buildResources() {
-        // Initialize Vertex Buffer
-        vertexBuffer = device.newBufferWithBytes(
-            bsp.vertices,
-            length: bsp.vertices.count * sizeof(Vertex),
-            options: .OptionCPUCacheModeDefault
+        uniforms = Uniforms(
+            modelMatrix: GLKMatrix4Identity,
+            viewMatrix: lookat(),
+            projectionMatrix: GLKMatrix4MakePerspective(fov, aspect, 0.01, 10000.0)
         )
-        
+
         // Initialize Uniforms Buffer
         uniformBuffer = device.newBufferWithLength(
             sizeof(Uniforms),
-            options: .OptionCPUCacheModeDefault
-        )
-        
-        // Initialize Index Buffer
-        indexBuffer = device.newBufferWithLength(
-            bsp.meshVerts.count * sizeof(UInt32),
             options: .OptionCPUCacheModeDefault
         )
     }
     
     func draw() {
         if let drawable = metalLayer.nextDrawable() {
-            // Build uniforms
-            var uniforms = Uniforms(
-                modelMatrix: GLKMatrix4Identity,
-                viewMatrix: GLKMatrix4MakeLookAt(
-                    position.x, position.y, position.z,
-                    direction.x, direction.y, direction.z,
-                    up.x, up.y, up.z
-                ),
-                projectionMatrix: GLKMatrix4MakePerspective(fov, aspect, 0.01, 1000.0)
-            )
-            
+            uniforms.viewMatrix = lookat()
+
             // Copy uniforms to GPU
             memcpy(uniformBuffer.contents(), &uniforms, sizeof(Uniforms))
             
@@ -166,23 +137,22 @@ class ViewController: UIViewController {
             
             // Command Encoder
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
+            let vertexBuffer = mesh.vertexBuffers[0]
             commandEncoder.setRenderPipelineState(pipeline)
-            commandEncoder.setCullMode(.None)
-            commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
+            commandEncoder.setCullMode(.Front)
+            commandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, atIndex: 0)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
-            
-            // Draw Call
-//            commandEncoder.drawIndexedPrimitives(
-//                .Triangle,
-//                indexCount: 0,
-//                indexType: .UInt32,
-//                indexBuffer: indexBuffer,
-//                indexBufferOffset: 0
-//            )
 
-            commandEncoder.drawPrimitives(.Triangle, vertexStart: 0, vertexCount: bsp.vertices.count)
+            for submesh in mesh.submeshes {
+                commandEncoder.drawIndexedPrimitives(
+                    submesh.primitiveType,
+                    indexCount: submesh.indexCount,
+                    indexType: submesh.indexType,
+                    indexBuffer: submesh.indexBuffer.buffer,
+                    indexBufferOffset: submesh.indexBuffer.offset
+                )
+            }
 
-            
             commandEncoder.endEncoding()
             
             // Commit command buffer
@@ -202,8 +172,17 @@ class ViewController: UIViewController {
         timer.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     }
 
-    func handlePan(gestureRecognizer: UIPanGestureRecognizer) {
+    func handlePan(gesture: UIPanGestureRecognizer) {
+        let velocity = gesture.velocityInView(self.view)
+        let newPitch = (Float(velocity.x / -100) + yaw) % 360
+        let newYaw = (Float(velocity.y / -100) + pitch) % 360
 
+        print("yaw: \(newYaw), pitch: \(newPitch)")
+        yaw = newYaw
+        pitch = newPitch
+    }
+
+    func handlePinch(gesture: UIPinchGestureRecognizer) {
     }
     
     override func viewDidLoad() {
@@ -211,15 +190,16 @@ class ViewController: UIViewController {
         
         view.backgroundColor = UIColor.whiteColor()
         aspect = Float(self.view.bounds.size.width / self.view.bounds.size.height)
-        
-        loadMap()
+
         initializeMetal()
+        loadMap()
         buildPipeline()
         buildResources()
         startDisplayTimer()
 
         // Set up gesture recognizers
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "handlePan:"))
+        view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: "handlePinch:"))
     }
 
     override func didReceiveMemoryWarning() {

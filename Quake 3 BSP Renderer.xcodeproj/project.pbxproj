@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E24920C81C0733D100352118 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24920C71C0733D100352118 /* Mesh.swift */; };
 		E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EA1B8D989C00E09E46 /* AppDelegate.swift */; };
 		E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EC1B8D989C00E09E46 /* ViewController.swift */; };
 		E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E27901EE1B8D989C00E09E46 /* Main.storyboard */; };
@@ -30,6 +31,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E24920C71C0733D100352118 /* Mesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Quake 3 BSP Renderer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E27901E91B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E27901EA1B8D989C00E09E46 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				E279020A1B8D98CB00E09E46 /* BinaryReader.swift */,
 				E279020C1B8D99F800E09E46 /* BSP.swift */,
 				E279020E1B8D9CAC00E09E46 /* Shaders.metal */,
+				E24920C71C0733D100352118 /* Mesh.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
+				E24920C81C0733D100352118 /* Mesh.swift in Sources */,
 				E279020D1B8D99F800E09E46 /* BSP.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
 				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
@@ -311,7 +315,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -349,7 +353,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
