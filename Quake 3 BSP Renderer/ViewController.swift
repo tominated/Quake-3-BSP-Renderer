@@ -39,12 +39,7 @@ class ViewController: UIViewController {
     
     var aspect : Float = 0.0
     var fov : Float = Float(65.0 * (M_PI / 180))
-
-    // In degrees
-    var yaw : Float = 270.0
-    var pitch : Float = 270.0
-    var rotation : GLKMatrix4 = GLKMatrix4Identity
-    var position : GLKVector3 = GLKVector3Make(300, 300, 300)
+    var camera : Camera = Camera()
     
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("test_bigbox", ofType: "bsp")!
@@ -56,19 +51,6 @@ class ViewController: UIViewController {
             mesh: createMesh(bsp, allocator: allocator),
             device: self.device
         )
-    }
-
-    func lookat() -> GLKMatrix4 {
-        let yawR = GLKMathDegreesToRadians(yaw)
-        let pitchR = GLKMathDegreesToRadians(pitch)
-
-        let quatX = GLKQuaternionMakeWithAngleAndAxis(pitchR, 1, 0, 0)
-        let quatY = GLKQuaternionMakeWithAngleAndAxis(yawR, 0, 1, 0)
-
-        rotation = GLKMatrix4MakeWithQuaternion(GLKQuaternionMultiply(quatX, quatY))
-        let translation = GLKMatrix4MakeTranslation(position.x, position.y, position.z)
-
-        return GLKMatrix4Multiply(translation, rotation)
     }
     
     func initializeMetal() {
@@ -104,7 +86,7 @@ class ViewController: UIViewController {
     func buildResources() {
         uniforms = Uniforms(
             modelMatrix: GLKMatrix4Identity,
-            viewMatrix: lookat(),
+            viewMatrix: camera.getViewMatrix(),
             projectionMatrix: GLKMatrix4MakePerspective(fov, aspect, 0.01, 10000.0)
         )
 
@@ -117,7 +99,7 @@ class ViewController: UIViewController {
     
     func draw() {
         if let drawable = metalLayer.nextDrawable() {
-            uniforms.viewMatrix = lookat()
+            uniforms.viewMatrix = camera.getViewMatrix()
 
             // Copy uniforms to GPU
             memcpy(uniformBuffer.contents(), &uniforms, sizeof(Uniforms))
@@ -170,20 +152,19 @@ class ViewController: UIViewController {
 
     func handlePan(gesture: UIPanGestureRecognizer) {
         let velocity = gesture.velocityInView(self.view)
-        let newPitch = (Float(velocity.x / -100) + yaw) % 360
-        let newYaw = (Float(velocity.y / -100) + pitch) % 360
-
+        let newPitch = GLKMathDegreesToRadians(Float(velocity.y / -100))
+        let newYaw = GLKMathDegreesToRadians(Float(velocity.x / -100))
+        
         print("yaw: \(newYaw), pitch: \(newPitch)")
-        yaw = newYaw
-        pitch = newPitch
+        
+        camera.pitch(newPitch)
+        camera.yaw(newYaw)
     }
 
     func handlePinch(gesture: UIPinchGestureRecognizer) {
-        let direction = GLKVector3Make(0, 0, Float(gesture.velocity / 2))
-        let x = GLKMatrix4MultiplyVector3(rotation, direction)
-        position = GLKVector3Add(position, x)
-
-        print("new position \(NSStringFromGLKVector3(position))")
+        camera.moveForward(Float(gesture.velocity / 2))
+        
+        print("new position \(NSStringFromGLKVector3(camera.position))")
     }
     
     override func viewDidLoad() {
