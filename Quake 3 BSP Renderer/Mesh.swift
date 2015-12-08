@@ -8,6 +8,7 @@
 
 import GLKit
 import ModelIO
+import MetalKit
 
 private func vertexDescriptor() -> MDLVertexDescriptor {
     let vertexDescriptor = MDLVertexDescriptor()

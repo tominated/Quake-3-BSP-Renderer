@@ -39,6 +39,12 @@ class Camera {
         rotate(radians, x: 0, y: 0, z: 1)
     }
     
+    func turn(radians: Float) {
+        let axis = GLKQuaternionRotateVector3(orientation, GLKVector3Make(0, 1, 0))
+        let q = GLKQuaternionMakeWithAngleAndAxis(radians, axis.x, axis.y, axis.z)
+        return rotate(q)
+    }
+    
     func getForward() -> GLKVector3 {
         return GLKQuaternionRotateVector3(
             GLKQuaternionConjugate(orientation),

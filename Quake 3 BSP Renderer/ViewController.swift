@@ -38,15 +38,16 @@ class ViewController: UIViewController {
     var elapsedTime : CFTimeInterval = 0.0
     
     var aspect : Float = 0.0
-    var fov : Float = Float(65.0 * (M_PI / 180))
+    var fov : Float = GLKMathDegreesToRadians(65.0)
     var camera : Camera = Camera()
     
     func loadMap() {
-        let filename = NSBundle.mainBundle().pathForResource("test_bigbox", ofType: "bsp")!
+        let filename = NSBundle.mainBundle().pathForResource("q3dm3", ofType: "bsp")!
         let binaryData = NSData(contentsOfFile: filename)!
         bsp = readMapData(binaryData)
 
         let allocator = MTKMeshBufferAllocator(device: self.device)
+        
         mesh = try! MTKMesh(
             mesh: createMesh(bsp, allocator: allocator),
             device: self.device
@@ -117,7 +118,7 @@ class ViewController: UIViewController {
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
             let vertexBuffer = mesh.vertexBuffers[0]
             commandEncoder.setRenderPipelineState(pipeline)
-            commandEncoder.setCullMode(.Front)
+            commandEncoder.setCullMode(.Back)
             commandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, atIndex: 0)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
@@ -155,16 +156,12 @@ class ViewController: UIViewController {
         let newPitch = GLKMathDegreesToRadians(Float(velocity.y / -100))
         let newYaw = GLKMathDegreesToRadians(Float(velocity.x / -100))
         
-        print("yaw: \(newYaw), pitch: \(newPitch)")
-        
         camera.pitch(newPitch)
-        camera.yaw(newYaw)
+        camera.turn(newYaw)
     }
 
     func handlePinch(gesture: UIPinchGestureRecognizer) {
         camera.moveForward(Float(gesture.velocity / 2))
-        
-        print("new position \(NSStringFromGLKVector3(camera.position))")
     }
     
     override func viewDidLoad() {

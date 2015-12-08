@@ -28,6 +28,14 @@ func colorToVec(r: UInt8, g: UInt8, b: UInt8, a: UInt8) -> GLKVector4 {
     return GLKVector4Make(Float32(r) / 255, Float32(g) / 255, Float32(b) / 255, Float32(a) / 255)
 }
 
+func swizzle(v: GLKVector3) -> GLKVector3 {
+    return GLKVector3Make(v.x, v.z, -v.y)
+}
+
+func swizzle(v: GLKVector4) -> GLKVector4 {
+    return GLKVector4Make(v.x, v.z, -v.y, 1)
+}
+
 struct TexCoords {
     var u: Float32
     var v: Float32
@@ -49,7 +57,7 @@ struct Header {
 
 struct Plane {
     // Plane Normal
-    var normal: Vec3F
+    var normal: GLKVector3
     
     // Distance from origin to plane normal
     var dist: Float
@@ -203,6 +211,60 @@ struct BSPMap {
     var faces: [Face]
     var lightMaps: [LightMap]
     var visdata: VisData
+    
+    private func isClusterVisible(currentCluster: Int, testCluster: Int) -> Bool {
+        if visdata.vectorCount == 0 || currentCluster < 0 {
+            return true
+        }
+        
+        // This is some pretty weird code - I just converted it from C
+        let i = (currentCluster * visdata.vectorSize) + (testCluster >> 3)
+        let visSet = visdata.vectors[i]
+        
+        return (Int(visSet) & (1 << (testCluster & 7))) != 0
+    }
+    
+    private func findLeafIndex(position: GLKVector3) -> Int {
+        var index = 0
+        
+        while index >= 0 {
+            let node = nodes[index]
+            let plane = planes[node.plane]
+            let distance = GLKVector3DotProduct(plane.normal, position) - plane.dist
+            let (front, back) = node.children
+            
+            if distance >= 0 {
+                index = front
+            } else {
+                index = back
+            }
+        }
+        
+        return -index - 1
+    }
+    
+    func visibleFaceIndices(position: GLKVector3) -> [Int] {
+        let currentLeaf = leaves[findLeafIndex(position)]
+        var alreadyVisible : Set<Int> = Set()
+        var faceIndices : [Int] = []
+        
+        for leaf in leaves {
+            if isClusterVisible(currentLeaf.cluster, testCluster: leaf.cluster) {
+                for leafFace in leaf.leafFace..<(leaf.leafFace + leaf.leafFaceCount) {
+                    let index = leafFaces[leafFace].face
+                    let face = faces[index]
+                    guard face.faceType == .Polygon || face.faceType == .Mesh else { continue }
+                    
+                    if !alreadyVisible.contains(index) {
+                        faceIndices.append(index)
+                        alreadyVisible.insert(index)
+                    }
+                }
+            }
+        }
+        
+        return faceIndices
+    }
 }
 
 func readMapData(data: NSData) -> BSPMap {
@@ -241,7 +303,7 @@ func readMapData(data: NSData) -> BSPMap {
     
     for _ in 0..<numPlanes {
         let plane = Plane(
-            normal: (buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32()),
+            normal: swizzle(GLKVector3Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32())),
             dist: buffer.getFloat32()
         )
         planes.append(plane)
@@ -330,10 +392,10 @@ func readMapData(data: NSData) -> BSPMap {
     buffer.jump(Int(verticesEntry.offset))
     
     for _ in 0..<numVertices {
-        let position = GLKVector4Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0)
+        let position = swizzle(GLKVector4Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0))
         let textureCoord = GLKVector2Make(buffer.getFloat32(),buffer.getFloat32())
         let lightMapCoord = GLKVector2Make(buffer.getFloat32(),buffer.getFloat32())
-        let normal = GLKVector4Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0)
+        let normal = swizzle(GLKVector4Make(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0))
         let color = colorToVec(buffer.getUInt8(), g: buffer.getUInt8(), b: buffer.getUInt8(), a: buffer.getUInt8())
         
         let vertex = Vertex(
