@@ -28,8 +28,7 @@ class ViewController: UIViewController {
     
     // Resources
     var uniformBuffer : MTLBuffer! = nil
-    var bsp : BSPMap! = nil
-    var mesh : MTKMesh! = nil
+    var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
     
     // Transients
@@ -44,14 +43,9 @@ class ViewController: UIViewController {
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("q3dm3", ofType: "bsp")!
         let binaryData = NSData(contentsOfFile: filename)!
-        bsp = readMapData(binaryData)
-
-        let allocator = MTKMeshBufferAllocator(device: self.device)
+        let bsp = readMapData(binaryData)
         
-        mesh = try! MTKMesh(
-            mesh: createMesh(bsp, allocator: allocator),
-            device: self.device
-        )
+        mapMesh = MapMesh(bsp: bsp, device: self.device)
     }
     
     func initializeMetal() {
@@ -77,7 +71,7 @@ class ViewController: UIViewController {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(mesh.vertexDescriptor)
+        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor())
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         
         // Try creating the pipeline
@@ -116,21 +110,12 @@ class ViewController: UIViewController {
             
             // Command Encoder
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
-            let vertexBuffer = mesh.vertexBuffers[0]
             commandEncoder.setRenderPipelineState(pipeline)
             commandEncoder.setCullMode(.Back)
-            commandEncoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, atIndex: 0)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
-            for submesh in mesh.submeshes {
-                commandEncoder.drawIndexedPrimitives(
-                    submesh.primitiveType,
-                    indexCount: submesh.indexCount,
-                    indexType: submesh.indexType,
-                    indexBuffer: submesh.indexBuffer.buffer,
-                    indexBufferOffset: submesh.indexBuffer.offset
-                )
-            }
+            mapMesh.renderWithEncoder(commandEncoder)
+//            mapMesh.renderVisibleFaces(camera.position, encoder: commandEncoder)
 
             commandEncoder.endEncoding()
             
