@@ -43,7 +43,7 @@ class ViewController: UIViewController {
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("q3dm3", ofType: "bsp")!
         let binaryData = NSData(contentsOfFile: filename)!
-        let bsp = readMapData(binaryData)
+        let bsp = BSPMap.init(data: binaryData)
         
         mapMesh = MapMesh(bsp: bsp, device: self.device)
     }
@@ -114,8 +114,7 @@ class ViewController: UIViewController {
             commandEncoder.setCullMode(.Back)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
-            mapMesh.renderWithEncoder(commandEncoder)
-//            mapMesh.renderVisibleFaces(camera.position, encoder: commandEncoder)
+            mapMesh.renderVisibleFaces(camera.position, encoder: commandEncoder)
 
             commandEncoder.endEncoding()
             
@@ -146,7 +145,9 @@ class ViewController: UIViewController {
     }
 
     func handlePinch(gesture: UIPinchGestureRecognizer) {
-        camera.moveForward(Float(gesture.velocity / 2))
+        let velocity = Float(gesture.velocity / 2)
+        if velocity.isNaN || velocity < 0.1  { return }
+        camera.moveForward(velocity)
     }
     
     override func viewDidLoad() {
