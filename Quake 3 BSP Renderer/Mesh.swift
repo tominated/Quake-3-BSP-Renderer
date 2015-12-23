@@ -10,170 +10,131 @@ import GLKit
 import ModelIO
 import MetalKit
 
-func vertexDescriptor() -> MDLVertexDescriptor {
-    let vertexDescriptor = MDLVertexDescriptor()
-    var offset = 0
+protocol RenderableWithEncoder {
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder)
+}
 
-    vertexDescriptor.addOrReplaceAttribute(
-        MDLVertexAttribute(
-            name: "position",
-            format: .Float4,
-            offset: offset,
-            bufferIndex: 0
+class FaceMesh: RenderableWithEncoder {
+    let indexCount: Int
+    let indexBuffer: MTLBuffer
+    
+    init(device: MTLDevice, indices: [UInt32]) {
+        indexCount = indices.count
+        indexBuffer = device.newBufferWithBytes(
+            indices,
+            length: indices.count * sizeof(UInt32),
+            options: .CPUCacheModeDefaultCache
         )
-    )
-
-    offset += sizeof(GLKVector4)
-
-    vertexDescriptor.addOrReplaceAttribute(
-        MDLVertexAttribute(
-            name: "normal",
-            format: .Float4,
-            offset: offset,
-            bufferIndex: 0
+    }
+    
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
+        encoder.drawIndexedPrimitives(
+            .Triangle,
+            indexCount: indexCount,
+            indexType: .UInt32,
+            indexBuffer: indexBuffer,
+            indexBufferOffset: 0
         )
-    )
+    }
+}
 
-    offset += sizeof(GLKVector4)
-
-    vertexDescriptor.addOrReplaceAttribute(
-        MDLVertexAttribute(
-            name: "color",
-            format: .Float4,
-            offset: offset,
-            bufferIndex: 0
-        )
-    )
-
-    offset += sizeof(GLKVector4)
-
-    vertexDescriptor.addOrReplaceAttribute(
-        MDLVertexAttribute(
-            name: "textureCoordinate",
-            format: .Float2,
-            offset: offset,
-            bufferIndex: 0
-        )
-    )
-
-    offset += sizeof(GLKVector2)
-
-    vertexDescriptor.addOrReplaceAttribute(
-        MDLVertexAttribute(
-            name: "lightmapCoordinate",
-            format: .Float2,
-            offset: offset,
-            bufferIndex: 0
-        )
-    )
-
-    vertexDescriptor.setPackedOffsets()
-    vertexDescriptor.setPackedStrides()
-
-    return vertexDescriptor
+class PatchMesh: RenderableWithEncoder {
+    let face: Face
+    let vertexBuffer: MTLBuffer
+    
+    init(device: MTLDevice, face: Face) {
+        // TODO: Implement bezier curves and tesselation
+        self.face = face
+        self.vertexBuffer = device.newBufferWithLength(1, options: .CPUCacheModeDefaultCache)
+    }
+    
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
+        // TODO: Figure out a nice way to render another buffer without breaking
+        // normal faces
+    }
 }
 
 class MapMesh {
-    let bsp: BSPMap
     let device: MTLDevice
-    let allocator: MDLMeshBufferAllocator
-
-    var faceToSubmesh: Dictionary<Int, Int> = Dictionary()
-    var submeshes: [MDLSubmesh] = []
-    var mesh: MTKMesh! = nil
-
-    init(bsp: BSPMap, device: MTLDevice) {
-        self.bsp = bsp
+    let bsp: BSPMap
+    
+    let vertexBuffer: MTLBuffer
+    var faceMeshes: Dictionary<Int, RenderableWithEncoder> = Dictionary()
+    
+    init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
-        self.allocator = MTKMeshBufferAllocator(device: device)
-
-        createSubmeshes()
-        createMesh()
+        self.bsp = bsp
+        
+        self.vertexBuffer = device.newBufferWithBytes(
+            bsp.vertices,
+            length: sizeof(Vertex) * bsp.vertices.count,
+            options: .CPUCacheModeDefaultCache
+        )
+        
+        createFaceMeshes()
     }
-
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        let vertexBuffer = mesh.vertexBuffers[0]
-
-        encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, atIndex: 0)
-
-        for submesh in mesh.submeshes {
-            encoder.drawIndexedPrimitives(
-                submesh.primitiveType,
-                indexCount: submesh.indexCount,
-                indexType: submesh.indexType,
-                indexBuffer: submesh.indexBuffer.buffer,
-                indexBufferOffset: submesh.indexBuffer.offset
-            )
-        }
-    }
-
-    func renderVisibleFaces(position: GLKVector3, encoder: MTLRenderCommandEncoder) {
-        let faceIndexes = bsp.visibleFaceIndices(position)
-        let vertexBuffer = mesh.vertexBuffers[0]
-
-        // Don't believe XCode's lies - this prevents an implicit coersion from
-        // an NSArray to Swift Array for every face
-        let submeshes = mesh.submeshes as! [MTKSubmesh]
-
-        encoder.setVertexBuffer(vertexBuffer.buffer, offset: vertexBuffer.offset, atIndex: 0)
-
-        for faceIndex in faceIndexes {
-            guard let submeshIndex = faceToSubmesh[faceIndex] else { continue }
-
-            let submesh = submeshes[submeshIndex]
-
-            encoder.drawIndexedPrimitives(
-                submesh.primitiveType,
-                indexCount: submesh.indexCount,
-                indexType: submesh.indexType,
-                indexBuffer: submesh.indexBuffer.buffer,
-                indexBufferOffset: submesh.indexBuffer.offset
-            )
-        }
-    }
-
-    private func createSubmeshes() {
+    
+    private func createFaceMeshes() {
         let model = bsp.models[0]
-
+        
         let faceIndices = model.face..<(model.face + model.faceCount)
-
+        
         for index in faceIndices {
             let face = bsp.faces[index]
-
+            
+            // We only know how to render basic faces for now
             guard face.faceType == .Polygon || face.faceType == .Mesh else { continue }
-
-            faceToSubmesh[index] = submeshes.count
-
+            
+            // Vertex indices go through meshverts for polygons and meshes.
+            // The resulting indices need to be UInt32 for metal index buffers.
             let indices = face.meshVertIndexes().map({ i in
                 bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
             })
-
-            let bytes = NSData(bytes: indices, length: indices.count * sizeof(UInt32))
-            let buffer = allocator.newBufferWithData(bytes, type: .Index)
-
-            submeshes.append(
-                MDLSubmesh(
-                    indexBuffer: buffer,
-                    indexCount: face.meshVertCount,
-                    indexType: .UInt32,
-                    geometryType: .TypeTriangles,
-                    material: nil
-                )
-            )
+            
+            faceMeshes[index] = FaceMesh(device: self.device, indices: indices)
         }
     }
+    
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
+        
+        for (_, faceMesh) in faceMeshes {
+            faceMesh.renderWithEncoder(encoder)
+        }
+    }
+    
+    static func vertexDescriptor() -> MTLVertexDescriptor {
+        let descriptor = MTLVertexDescriptor()
+        var offset = 0
+        
+        descriptor.attributes[0].offset = offset
+        descriptor.attributes[0].format = .Float4
+        descriptor.attributes[0].bufferIndex = 0
+        offset += sizeof(GLKVector4)
+        
+        descriptor.attributes[0].offset = offset
+        descriptor.attributes[0].format = .Float4
+        descriptor.attributes[0].bufferIndex = 0
+        offset += sizeof(GLKVector4)
 
-    private func createMesh() {
-        let bytes = NSData(bytes: bsp.vertices, length: bsp.vertices.count * sizeof(Vertex))
-        let vertexBuffer = allocator.newBufferWithData(bytes, type: .Vertex)
-
-        let mdlMesh = MDLMesh(
-            vertexBuffer: vertexBuffer,
-            vertexCount: bsp.vertices.count,
-            descriptor: vertexDescriptor(),
-            submeshes: self.submeshes
-        )
-
-        mesh = try! MTKMesh(mesh: mdlMesh, device: self.device)
+        descriptor.attributes[0].offset = offset
+        descriptor.attributes[0].format = .Float4
+        descriptor.attributes[0].bufferIndex = 0
+        offset += sizeof(GLKVector4)
+        
+        descriptor.attributes[0].offset = offset
+        descriptor.attributes[0].format = .Float2
+        descriptor.attributes[0].bufferIndex = 0
+        offset += sizeof(GLKVector2)
+        
+        descriptor.attributes[0].offset = offset
+        descriptor.attributes[0].format = .Float2
+        descriptor.attributes[0].bufferIndex = 0
+        offset += sizeof(GLKVector2)
+        
+        descriptor.layouts[0].stepFunction = .PerVertex
+        descriptor.layouts[0].stride = offset
+        
+        return descriptor
     }
 }

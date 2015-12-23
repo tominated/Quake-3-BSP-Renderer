@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         let binaryData = NSData(contentsOfFile: filename)!
         let bsp = BSPMap.init(data: binaryData)
         
-        mapMesh = MapMesh(bsp: bsp, device: self.device)
+        mapMesh = MapMesh(device: self.device, bsp: bsp)
     }
     
     func initializeMetal() {
@@ -71,7 +71,7 @@ class ViewController: UIViewController {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         
-        pipelineDescriptor.vertexDescriptor = MTKMetalVertexDescriptorFromModelIO(vertexDescriptor())
+        pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         
         // Try creating the pipeline
@@ -114,7 +114,7 @@ class ViewController: UIViewController {
             commandEncoder.setCullMode(.Back)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
-            mapMesh.renderVisibleFaces(camera.position, encoder: commandEncoder)
+            mapMesh.renderWithEncoder(commandEncoder)
 
             commandEncoder.endEncoding()
             
