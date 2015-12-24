@@ -73,6 +73,7 @@ class ViewController: UIViewController {
         
         pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
         
         // Try creating the pipeline
         pipeline = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
@@ -102,16 +103,35 @@ class ViewController: UIViewController {
             // Create Command Buffer
             let commandBuffer = commandQueue.commandBuffer()
             
+            // Depth buffer
+            let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
+                .Depth32Float,
+                width: Int(self.view.frame.width),
+                height: Int(self.view.frame.height),
+                mipmapped: false
+            )
+            let depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
+            
+            // Depth stencil
+            let stencilDescriptor = MTLDepthStencilDescriptor()
+            stencilDescriptor.depthCompareFunction = .LessEqual
+            stencilDescriptor.depthWriteEnabled = true
+            let depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
+            
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
             renderPassDescriptor.colorAttachments[0].texture = drawable.texture
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.8, 0.3, 0.2, 1)
             renderPassDescriptor.colorAttachments[0].loadAction = .Clear
             
+            renderPassDescriptor.depthAttachment.texture = depthTexture
+            renderPassDescriptor.depthAttachment.loadAction = .Clear
+            renderPassDescriptor.depthAttachment.clearDepth = 1.0
+            
             // Command Encoder
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
+            commandEncoder.setDepthStencilState(depthState)
             commandEncoder.setRenderPipelineState(pipeline)
-            commandEncoder.setCullMode(.Back)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
             mapMesh.renderWithEncoder(commandEncoder)
