@@ -59,7 +59,7 @@ class MapMesh {
     let bsp: BSPMap
     
     let vertexBuffer: MTLBuffer
-    var faceMeshes: Dictionary<Int, RenderableWithEncoder> = Dictionary()
+    var faceMeshes: [FaceMesh] = []
     
     init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
@@ -91,14 +91,14 @@ class MapMesh {
                 bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
             })
             
-            faceMeshes[index] = FaceMesh(device: self.device, indices: indices)
+            faceMeshes.append(FaceMesh(device: self.device, indices: indices))
         }
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
-        for (_, faceMesh) in faceMeshes {
+        for faceMesh in faceMeshes {
             faceMesh.renderWithEncoder(encoder)
         }
     }
