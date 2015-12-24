@@ -31,6 +31,8 @@ class ViewController: UIViewController {
     var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
     
+    let sampleCount = 4
+    
     // Transients
     var timer : CADisplayLink! = nil
     var lastFrameTimestamp : CFTimeInterval = 0.0
@@ -70,10 +72,10 @@ class ViewController: UIViewController {
         
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        
         pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
         pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        pipelineDescriptor.sampleCount = sampleCount
         
         // Try creating the pipeline
         pipeline = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
@@ -110,6 +112,8 @@ class ViewController: UIViewController {
                 height: Int(self.view.frame.height),
                 mipmapped: false
             )
+            depthTextureDescriptor.textureType = .Type2DMultisample
+            depthTextureDescriptor.sampleCount = sampleCount
             let depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
             
             // Depth stencil
@@ -118,11 +122,26 @@ class ViewController: UIViewController {
             stencilDescriptor.depthWriteEnabled = true
             let depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
             
+            // MSAA
+            let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
+                .BGRA8Unorm,
+                width: Int(self.view.frame.width),
+                height: Int(self.view.frame.height),
+                mipmapped: false
+            )
+            
+            msaaDescriptor.textureType = .Type2DMultisample
+            msaaDescriptor.sampleCount = sampleCount
+            let msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
+            
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
-            renderPassDescriptor.colorAttachments[0].texture = drawable.texture
+            renderPassDescriptor.colorAttachments[0].texture = msaaTexture
+            renderPassDescriptor.colorAttachments[0].resolveTexture = drawable.texture
             renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.8, 0.3, 0.2, 1)
             renderPassDescriptor.colorAttachments[0].loadAction = .Clear
+            renderPassDescriptor.colorAttachments[0].storeAction = .MultisampleResolve
+            
             
             renderPassDescriptor.depthAttachment.texture = depthTexture
             renderPassDescriptor.depthAttachment.loadAction = .Clear
