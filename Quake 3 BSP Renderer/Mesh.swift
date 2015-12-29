@@ -10,58 +10,13 @@ import GLKit
 import ModelIO
 import MetalKit
 
-protocol RenderableWithEncoder {
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder)
-}
-
-class FaceMesh: RenderableWithEncoder {
-    let indexCount: Int
-    let indexBuffer: MTLBuffer
-    
-    init(device: MTLDevice, indices: [UInt32]) {
-        indexCount = indices.count
-        indexBuffer = device.newBufferWithBytes(
-            indices,
-            length: indices.count * sizeof(UInt32),
-            options: .CPUCacheModeDefaultCache
-        )
-    }
-    
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        encoder.drawIndexedPrimitives(
-            .Triangle,
-            indexCount: indexCount,
-            indexType: .UInt32,
-            indexBuffer: indexBuffer,
-            indexBufferOffset: 0
-        )
-    }
-}
-
-class PatchMesh: RenderableWithEncoder {
-    let face: Face
-    let vertexBuffer: MTLBuffer
-    
-    init(device: MTLDevice, face: Face) {
-        // TODO: Implement bezier curves and tesselation
-        self.face = face
-        
-        self.vertexBuffer = device.newBufferWithLength(1, options: .CPUCacheModeDefaultCache)
-    }
-    
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        // TODO: Figure out a nice way to render another buffer without breaking
-        // normal faces
-    }
-}
-
 class MapMesh {
     let device: MTLDevice
     let bsp: BSPMap
     
-    let vertexBuffer: MTLBuffer
-    var faceMeshes: [FaceMesh] = []
-    var patchMeshes: [PatchMesh] = []
+    var vertexBuffer: MTLBuffer! = nil
+    var indexBuffer: MTLBuffer! = nil
+    var indices: [UInt32] = []
     
     init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
@@ -73,12 +28,11 @@ class MapMesh {
             options: .CPUCacheModeDefaultCache
         )
         
-        createFaceMeshes()
+        createIndexBuffer()
     }
     
-    private func createFaceMeshes() {
+    private func createIndexBuffer() {
         let model = bsp.models[0]
-        
         let faceIndices = model.face..<(model.face + model.faceCount)
         
         for index in faceIndices {
@@ -89,24 +43,30 @@ class MapMesh {
             
             // Vertex indices go through meshverts for polygons and meshes.
             // The resulting indices need to be UInt32 for metal index buffers.
-            let indices = face.meshVertIndexes().map({ i in
-                bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
-            })
-            
-            faceMeshes.append(FaceMesh(device: self.device, indices: indices))
+            for i in face.meshVertIndexes() {
+                indices.append(
+                    bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
+                )
+            }
         }
+        
+        indexBuffer = device.newBufferWithBytes(
+            indices,
+            length: indices.count * sizeof(UInt32),
+            options: .CPUCacheModeDefaultCache
+        )
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
-        for faceMesh in faceMeshes {
-            faceMesh.renderWithEncoder(encoder)
-        }
-        
-        for patchMesh in patchMeshes {
-            patchMesh.renderWithEncoder(encoder)
-        }
+        encoder.drawIndexedPrimitives(
+            .Triangle,
+            indexCount: indices.count,
+            indexType: .UInt32,
+            indexBuffer: indexBuffer,
+            indexBufferOffset: 0
+        )
     }
     
     static func vertexDescriptor() -> MTLVertexDescriptor {

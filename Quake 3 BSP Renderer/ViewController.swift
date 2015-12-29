@@ -30,6 +30,9 @@ class ViewController: UIViewController {
     var uniformBuffer : MTLBuffer! = nil
     var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
+    var depthTexture : MTLTexture! = nil
+    var depthState : MTLDepthStencilState! = nil
+    var msaaTexture : MTLTexture! = nil
     
     let sampleCount = 4
     
@@ -93,6 +96,35 @@ class ViewController: UIViewController {
             sizeof(Uniforms),
             options: .OptionCPUCacheModeDefault
         )
+        
+        // Depth buffer
+        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
+            .Depth32Float,
+            width: Int(self.view.frame.width),
+            height: Int(self.view.frame.height),
+            mipmapped: false
+        )
+        depthTextureDescriptor.textureType = .Type2DMultisample
+        depthTextureDescriptor.sampleCount = sampleCount
+        depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
+        
+        // Depth stencil
+        let stencilDescriptor = MTLDepthStencilDescriptor()
+        stencilDescriptor.depthCompareFunction = .LessEqual
+        stencilDescriptor.depthWriteEnabled = true
+        depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
+        
+        // MSAA
+        let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
+            .BGRA8Unorm,
+            width: Int(self.view.frame.width),
+            height: Int(self.view.frame.height),
+            mipmapped: false
+        )
+        
+        msaaDescriptor.textureType = .Type2DMultisample
+        msaaDescriptor.sampleCount = sampleCount
+        msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
     }
     
     func draw() {
@@ -104,35 +136,6 @@ class ViewController: UIViewController {
             
             // Create Command Buffer
             let commandBuffer = commandQueue.commandBuffer()
-            
-            // Depth buffer
-            let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-                .Depth32Float,
-                width: Int(self.view.frame.width),
-                height: Int(self.view.frame.height),
-                mipmapped: false
-            )
-            depthTextureDescriptor.textureType = .Type2DMultisample
-            depthTextureDescriptor.sampleCount = sampleCount
-            let depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
-            
-            // Depth stencil
-            let stencilDescriptor = MTLDepthStencilDescriptor()
-            stencilDescriptor.depthCompareFunction = .LessEqual
-            stencilDescriptor.depthWriteEnabled = true
-            let depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
-            
-            // MSAA
-            let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-                .BGRA8Unorm,
-                width: Int(self.view.frame.width),
-                height: Int(self.view.frame.height),
-                mipmapped: false
-            )
-            
-            msaaDescriptor.textureType = .Type2DMultisample
-            msaaDescriptor.sampleCount = sampleCount
-            let msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
             
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
