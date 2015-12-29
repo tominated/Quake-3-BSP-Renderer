@@ -158,6 +158,34 @@ struct Vertex {
     var lightMapCoord: GLKVector2
 }
 
+func +(left: Vertex, right: Vertex) -> Vertex {
+    let position = GLKVector4Add(left.position, right.position)
+    let normal = GLKVector4Add(left.normal, right.normal)
+
+    // TODO: Calculate correct color, texture & lightmap coords
+    return Vertex(
+        position: position,
+        normal: normal,
+        color: left.color,
+        textureCoord: left.textureCoord,
+        lightMapCoord: left.lightMapCoord
+    )
+}
+
+func *(left: Vertex, right: Float) -> Vertex {
+    let position = GLKVector4MultiplyScalar(left.position, right)
+    let normal = GLKVector4MultiplyScalar(left.normal, right)
+    
+    // TODO: Calculate correct color, texture & lightmap coords
+    return Vertex(
+        position: position,
+        normal: normal,
+        color: left.color,
+        textureCoord: left.textureCoord,
+        lightMapCoord: left.lightMapCoord
+    )
+}
+
 struct MeshVert {
     // Vertex index offset, relative to first vertex of corresponding face
     var offset: UInt32

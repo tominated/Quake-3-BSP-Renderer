@@ -45,6 +45,7 @@ class PatchMesh: RenderableWithEncoder {
     init(device: MTLDevice, face: Face) {
         // TODO: Implement bezier curves and tesselation
         self.face = face
+        
         self.vertexBuffer = device.newBufferWithLength(1, options: .CPUCacheModeDefaultCache)
     }
     
@@ -60,6 +61,7 @@ class MapMesh {
     
     let vertexBuffer: MTLBuffer
     var faceMeshes: [FaceMesh] = []
+    var patchMeshes: [PatchMesh] = []
     
     init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
@@ -100,6 +102,10 @@ class MapMesh {
         
         for faceMesh in faceMeshes {
             faceMesh.renderWithEncoder(encoder)
+        }
+        
+        for patchMesh in patchMeshes {
+            patchMesh.renderWithEncoder(encoder)
         }
     }
     
