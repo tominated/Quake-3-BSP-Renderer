@@ -55,7 +55,8 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
 {
     constexpr sampler s(coord::normalized,
                         address::repeat,
-                        filter::linear);
+                        filter::linear,
+                        mip_filter::linear);
     constexpr float2 x = float2(1, 1);
     
     return tex.sample(s, x - vert.textureCoord);

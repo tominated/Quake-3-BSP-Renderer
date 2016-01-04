@@ -100,7 +100,8 @@ class MapMesh {
             self.textures[texture.name] = try! textureLoader.newTextureWithContentsOfURL(
                 url,
                 options: [
-                    MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue
+                    MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
+                    MTKTextureLoaderOptionAllocateMipmaps: 1
                 ]
             )
         }

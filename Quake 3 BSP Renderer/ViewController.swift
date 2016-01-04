@@ -127,6 +127,18 @@ class ViewController: UIViewController {
         msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
     }
     
+    func generateMipMaps() {
+        let commandBuffer = commandQueue.commandBuffer()
+        let commandEncoder = commandBuffer.blitCommandEncoder()
+        
+        for (_, texture) in mapMesh.textures {
+            commandEncoder.generateMipmapsForTexture(texture)
+        }
+        
+        commandEncoder.endEncoding()
+        commandBuffer.commit()
+    }
+    
     func draw() {
         if let drawable = metalLayer.nextDrawable() {
             uniforms.viewMatrix = camera.getViewMatrix()
@@ -202,6 +214,7 @@ class ViewController: UIViewController {
         loadMap()
         buildPipeline()
         buildResources()
+        generateMipMaps()
         startDisplayTimer()
 
         // Set up gesture recognizers
