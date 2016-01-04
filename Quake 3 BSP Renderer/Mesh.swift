@@ -11,12 +11,20 @@ import ModelIO
 import MetalKit
 
 class MapMesh {
+    struct FaceMesh {
+        let offset: Int
+        let count: Int
+        let textureName: String
+    }
+    
     let device: MTLDevice
     let bsp: BSPMap
     
     var vertexBuffer: MTLBuffer! = nil
     var indexBuffer: MTLBuffer! = nil
+    var faceMeshes: [FaceMesh] = []
     var indices: [UInt32] = []
+    var textures: Dictionary<String, MTLTexture> = Dictionary()
     
     init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
@@ -43,7 +51,17 @@ class MapMesh {
             
             // Vertex indices go through meshverts for polygons and meshes.
             // The resulting indices need to be UInt32 for metal index buffers.
-            for i in face.meshVertIndexes() {
+            let meshVertIndices = face.meshVertIndexes()
+            
+            faceMeshes.append(
+                FaceMesh(
+                    offset: indices.count,
+                    count: meshVertIndices.count,
+                    textureName: ""
+                )
+            )
+            
+            for i in meshVertIndices {
                 indices.append(
                     bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
                 )
@@ -60,13 +78,19 @@ class MapMesh {
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
-        encoder.drawIndexedPrimitives(
-            .Triangle,
-            indexCount: indices.count,
-            indexType: .UInt32,
-            indexBuffer: indexBuffer,
-            indexBufferOffset: 0
-        )
+        for faceMesh in faceMeshes {
+            if let texture = textures[faceMesh.textureName] {
+                encoder.setFragmentTexture(texture, atIndex: 0)
+            }
+            
+            encoder.drawIndexedPrimitives(
+                .Triangle,
+                indexCount: faceMesh.count,
+                indexType: .UInt32,
+                indexBuffer: indexBuffer,
+                indexBufferOffset: faceMesh.offset * sizeof(UInt32)
+            )
+        }
     }
     
     static func vertexDescriptor() -> MTLVertexDescriptor {

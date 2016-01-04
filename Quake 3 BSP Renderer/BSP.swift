@@ -55,6 +55,12 @@ struct Header {
     var dirEntries: [DirEntry]
 }
 
+struct Texture {
+    var name: String
+    var flags: Int32
+    var contents: Int32
+}
+
 class Plane {
     // Plane Normal
     var normal: GLKVector3
@@ -195,70 +201,42 @@ enum FaceType: Int {
     case Polygon = 1, Patch = 2, Mesh = 3, Billboard = 4
 }
 
-class Face {
+struct Face {
     // The type of face
-    var faceType: FaceType
+    let faceType: FaceType
     
     // First vertex
-    var vertex: Int
+    let vertex: Int
     
     // Number of vertices
-    var vertexCount: Int
+    let vertexCount: Int
     
     // First meshvert
-    var meshVert: Int
+    let meshVert: Int
     
     // Number of meshverts
-    var meshVertCount: Int
+    let meshVertCount: Int
     
     // Index of lightmap
-    var lightMap: Int
+    let lightMap: Int
     
     // Corner of this face's lightmap image in lightmap
-    var lightMapStart: (Int32, Int32)
+    let lightMapStart: (Int32, Int32)
     
     // Size of this face's lightmap image in lightmap
-    var lightMapSize: (Int32, Int32)
+    let lightMapSize: (Int32, Int32)
     
     // World space origin of lightmap
-    var lightMapOrigin: GLKVector3
+    let lightMapOrigin: GLKVector3
     
     // World space lightmap s and t unit vectors
-    var lightmapVectors: (GLKVector3, GLKVector3)
+    let lightmapVectors: (GLKVector3, GLKVector3)
     
     // Surface normal
-    var normal: GLKVector3
+    let normal: GLKVector3
     
     // Patch dimensions
-    var size: (Int32, Int32)
-    
-    init(
-        faceType: FaceType,
-        vertex: Int,
-        vertexCount: Int,
-        meshVert: Int,
-        meshVertCount: Int,
-        lightMap: Int,
-        lightMapStart: (Int32, Int32),
-        lightMapSize: (Int32, Int32),
-        lightMapOrigin: GLKVector3,
-        lightmapVectors: (GLKVector3, GLKVector3),
-        normal: GLKVector3,
-        size: (Int32, Int32)
-    ) {
-        self.faceType = faceType
-        self.vertex = vertex
-        self.vertexCount = vertexCount
-        self.meshVert = meshVert
-        self.meshVertCount = meshVertCount
-        self.lightMap = lightMap
-        self.lightMapStart = lightMapStart
-        self.lightMapSize = lightMapSize
-        self.lightMapOrigin = lightMapOrigin
-        self.lightmapVectors = lightmapVectors
-        self.normal = normal
-        self.size = size
-    }
+    let size: (Int32, Int32)
     
     func meshVertIndexes() -> [Int] {
         // Only return indexes for polygons or meshes
@@ -284,6 +262,7 @@ class BSPMap {
     var buffer: BinaryReader! = nil
     var dirEntries: [DirEntry] = []
     var entities: String = ""
+    var textures: [Texture] = []
     var planes: [Plane] = []
     var nodes: [Node] = []
     var leaves: [Leaf] = []
@@ -313,6 +292,7 @@ class BSPMap {
         }
         
         readEntities()
+        readTextures()
         readPlanes()
         readNodes()
         readLeaves()
@@ -388,6 +368,26 @@ class BSPMap {
         let entitiesEntry = dirEntries[0]
         buffer.jump(Int(entitiesEntry.offset))
         entities = buffer.getASCII(Int(entitiesEntry.length)) as! String
+    }
+    
+    private func readTextures() {
+        let entry = dirEntries[1]
+        let numTextures = Int(entry.length) / 72
+        
+        buffer.jump(Int(entry.offset))
+        
+        for i in 0..<numTextures {
+            buffer.jump(Int(entry.offset) + (i * 72))
+            
+            let texture = Texture(
+                name: buffer.getASCIIUntilNull(64),
+                flags: buffer.getInt32(),
+                contents: buffer.getInt32()
+            )
+
+            textures.append(texture)
+            print("'\(texture.name)', flags: \(texture.flags), contents: \(texture.contents)")
+        }
     }
     
     private func readPlanes() {
