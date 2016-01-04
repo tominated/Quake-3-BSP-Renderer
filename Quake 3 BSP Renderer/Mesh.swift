@@ -37,6 +37,7 @@ class MapMesh {
         )
         
         createIndexBuffer()
+        createTextures()
     }
     
     private func createIndexBuffer() {
@@ -53,11 +54,13 @@ class MapMesh {
             // The resulting indices need to be UInt32 for metal index buffers.
             let meshVertIndices = face.meshVertIndexes()
             
+            let textureName = bsp.textures[face.texture].name
+            
             faceMeshes.append(
                 FaceMesh(
                     offset: indices.count,
                     count: meshVertIndices.count,
-                    textureName: ""
+                    textureName: textureName
                 )
             )
             
@@ -73,6 +76,34 @@ class MapMesh {
             length: indices.count * sizeof(UInt32),
             options: .CPUCacheModeDefaultCache
         )
+    }
+    
+    func createTextures() {
+        let textureLoader = MTKTextureLoader(device: device)
+        
+        for texture in bsp.textures {
+            // Check if texture exists (as a jpg, then as a png)
+            guard let url = NSBundle.mainBundle().URLForResource(
+                texture.name,
+                withExtension: "jpg",
+                subdirectory: "xcsv_bq3hi-res"
+            ) ?? NSBundle.mainBundle().URLForResource(
+                texture.name,
+                withExtension: "png",
+                subdirectory: "xcsv_bq3hi-res"
+            ) else {
+                continue
+            }
+            
+            print("adding texture \(texture.name)")
+            
+            self.textures[texture.name] = try! textureLoader.newTextureWithContentsOfURL(
+                url,
+                options: [
+                    MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue
+                ]
+            )
+        }
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {

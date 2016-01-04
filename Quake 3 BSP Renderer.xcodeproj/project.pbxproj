@@ -20,6 +20,7 @@
 		E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E279020E1B8D9CAC00E09E46 /* Shaders.metal */; };
 		E29621011B96C3B700122EE6 /* test_bigbox.bsp in Resources */ = {isa = PBXBuildFile; fileRef = E29621001B96C3B700122EE6 /* test_bigbox.bsp */; };
 		E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0B6181C2B9FB800365076 /* Bezier.swift */; };
+		E2E0BF081C3A728A00365076 /* xcsv_bq3hi-res in Resources */ = {isa = PBXBuildFile; fileRef = E2E0BF071C3A728A00365076 /* xcsv_bq3hi-res */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		E279020E1B8D9CAC00E09E46 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		E29621001B96C3B700122EE6 /* test_bigbox.bsp */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_bigbox.bsp; sourceTree = "<group>"; };
 		E2E0B6181C2B9FB800365076 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
+		E2E0BF071C3A728A00365076 /* xcsv_bq3hi-res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "xcsv_bq3hi-res"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 		E27901E71B8D989C00E09E46 /* Quake 3 BSP Renderer */ = {
 			isa = PBXGroup;
 			children = (
+				E2E0BF071C3A728A00365076 /* xcsv_bq3hi-res */,
 				E26DC7191C157469003E7A54 /* q3dm3.bsp */,
 				E29621001B96C3B700122EE6 /* test_bigbox.bsp */,
 				E27901EA1B8D989C00E09E46 /* AppDelegate.swift */,
@@ -201,6 +204,7 @@
 				E29621011B96C3B700122EE6 /* test_bigbox.bsp in Resources */,
 				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
 				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
+				E2E0BF081C3A728A00365076 /* xcsv_bq3hi-res in Resources */,
 				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
 				E26DC71A1C157469003E7A54 /* q3dm3.bsp in Resources */,
 			);

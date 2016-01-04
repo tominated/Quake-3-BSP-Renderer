@@ -34,7 +34,7 @@ class ViewController: UIViewController {
     var depthState : MTLDepthStencilState! = nil
     var msaaTexture : MTLTexture! = nil
     
-    let sampleCount = 4
+    let sampleCount = 2
     
     // Transients
     var timer : CADisplayLink! = nil

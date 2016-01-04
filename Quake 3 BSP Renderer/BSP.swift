@@ -202,6 +202,9 @@ enum FaceType: Int {
 }
 
 struct Face {
+    // Texture index
+    let texture: Int
+    
     // The type of face
     let faceType: FaceType
     
@@ -386,7 +389,6 @@ class BSPMap {
             )
 
             textures.append(texture)
-            print("'\(texture.name)', flags: \(texture.flags), contents: \(texture.contents)")
         }
     }
     
@@ -523,7 +525,7 @@ class BSPMap {
         buffer.jump(Int(faceEntry.offset))
         
         for _ in 0..<numFaces {
-            let _ = buffer.getInt32() // texture
+            let texture = Int(buffer.getInt32())
             let _ = buffer.getInt32() // effect
             let type = FaceType(rawValue: Int(buffer.getInt32()))!
             let vertex = Int(buffer.getInt32())
@@ -540,6 +542,7 @@ class BSPMap {
             let size = (buffer.getInt32(), buffer.getInt32())
             
             let face = Face(
+                texture: texture,
                 faceType: type,
                 vertex: vertex,
                 vertexCount: vertexCount,

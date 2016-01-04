@@ -50,7 +50,13 @@ vertex VertexOut renderVert(const device VertexIn* vertices [[buffer(0)]],
     return out;
 }
 
-fragment half4 renderFrag(VertexOut vert [[stage_in]])
+fragment half4 renderFrag(VertexOut vert [[stage_in]],
+                          texture2d<half> tex [[texture(0)]])
 {
-    return half4(vert.color);
+    constexpr sampler s(coord::normalized,
+                        address::repeat,
+                        filter::linear);
+    constexpr float2 x = float2(1, 1);
+    
+    return tex.sample(s, x - vert.textureCoord);
 }
