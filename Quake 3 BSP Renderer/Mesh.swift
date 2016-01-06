@@ -24,6 +24,8 @@ class MapMesh {
     var indexBuffer: MTLBuffer! = nil
     var faceMeshes: [FaceMesh] = []
     var indices: [UInt32] = []
+    var groupedFaces = Dictionary<String, Array<UInt32>>()
+    var groupedIndices = Dictionary<String, MTLBuffer>()
     var textures: Dictionary<String, MTLTexture> = Dictionary()
     
     init(device: MTLDevice, bsp: BSPMap) {
@@ -64,18 +66,24 @@ class MapMesh {
                 )
             )
             
+            if groupedFaces[textureName] == nil {
+               groupedFaces[textureName] = []
+            }
+            
             for i in meshVertIndices {
-                indices.append(
+                groupedFaces[textureName]!.append(
                     bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
                 )
             }
         }
         
-        indexBuffer = device.newBufferWithBytes(
-            indices,
-            length: indices.count * sizeof(UInt32),
-            options: .CPUCacheModeDefaultCache
-        )
+        for (textureName, indices) in groupedFaces {
+            groupedIndices[textureName] = device.newBufferWithBytes(
+                indices,
+                length: indices.count * sizeof(UInt32),
+                options: .CPUCacheModeDefaultCache
+            )
+        }
     }
     
     func createTextures() {
@@ -109,7 +117,7 @@ class MapMesh {
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
-        
+        /*
         for faceMesh in faceMeshes {
             if let texture = textures[faceMesh.textureName] {
                 encoder.setFragmentTexture(texture, atIndex: 0)
@@ -121,6 +129,24 @@ class MapMesh {
                 indexType: .UInt32,
                 indexBuffer: indexBuffer,
                 indexBufferOffset: faceMesh.offset * sizeof(UInt32)
+            )
+        }
+        */
+        for (textureName, buffer) in groupedIndices {
+            let arr = groupedFaces[textureName]!
+            
+            guard let texture = textures[textureName] else {
+                continue
+            }
+            
+            encoder.setFragmentTexture(texture, atIndex: 0)
+            
+            encoder.drawIndexedPrimitives(
+                .Triangle,
+                indexCount: arr.count,
+                indexType: .UInt32,
+                indexBuffer: buffer,
+                indexBufferOffset: 0
             )
         }
     }
