@@ -27,6 +27,7 @@ class MapMesh {
     var groupedFaces = Dictionary<String, Array<UInt32>>()
     var groupedIndices = Dictionary<String, MTLBuffer>()
     var textures: Dictionary<String, MTLTexture> = Dictionary()
+    var defaultTexture: MTLTexture! = nil
     
     init(device: MTLDevice, bsp: BSPMap) {
         self.device = device
@@ -88,6 +89,32 @@ class MapMesh {
     
     func createTextures() {
         let textureLoader = MTKTextureLoader(device: device)
+        let textureOptions = [
+            MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
+            MTKTextureLoaderOptionAllocateMipmaps: 1
+        ]
+        
+        // Create default texture
+        let checkerboard = MDLCheckerboardTexture(
+            divisions: 32,
+            name: "defaultTexture",
+            dimensions: vector2(128, 128),
+            channelCount: 4,
+            channelEncoding: .UInt8,
+            color1: UIColor.blackColor().CGColor,
+            color2: UIColor.whiteColor().CGColor
+        )
+        
+        let tmpDir = NSURL.fileURLWithPath(NSTemporaryDirectory(), isDirectory: true)
+        let checkerboardPath = tmpDir.URLByAppendingPathComponent("checkerboard").URLByAppendingPathExtension("png")
+        
+        checkerboard.writeToURL(checkerboardPath)
+        
+        defaultTexture = try! textureLoader.newTextureWithContentsOfURL(
+            checkerboardPath,
+            options: textureOptions
+        )
+        
         
         for texture in bsp.textures {
             // Check if texture exists (as a jpg, then as a png)
@@ -100,45 +127,26 @@ class MapMesh {
                 withExtension: "png",
                 subdirectory: "xcsv_bq3hi-res"
             ) else {
+                print("couldn't load texture \(texture.name)")
                 continue
             }
             
-            print("adding texture \(texture.name)")
+            print("loading texture \(texture.name)")
             
             self.textures[texture.name] = try! textureLoader.newTextureWithContentsOfURL(
                 url,
-                options: [
-                    MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
-                    MTKTextureLoaderOptionAllocateMipmaps: 1
-                ]
+                options: textureOptions
             )
         }
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
-        /*
-        for faceMesh in faceMeshes {
-            if let texture = textures[faceMesh.textureName] {
-                encoder.setFragmentTexture(texture, atIndex: 0)
-            }
-            
-            encoder.drawIndexedPrimitives(
-                .Triangle,
-                indexCount: faceMesh.count,
-                indexType: .UInt32,
-                indexBuffer: indexBuffer,
-                indexBufferOffset: faceMesh.offset * sizeof(UInt32)
-            )
-        }
-        */
+        
         for (textureName, buffer) in groupedIndices {
             let arr = groupedFaces[textureName]!
             
-            guard let texture = textures[textureName] else {
-                continue
-            }
-            
+            let texture = textures[textureName] ?? defaultTexture
             encoder.setFragmentTexture(texture, atIndex: 0)
             
             encoder.drawIndexedPrimitives(

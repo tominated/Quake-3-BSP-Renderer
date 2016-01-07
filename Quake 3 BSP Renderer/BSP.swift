@@ -165,30 +165,24 @@ struct Vertex {
 }
 
 func +(left: Vertex, right: Vertex) -> Vertex {
-    let position = GLKVector4Add(left.position, right.position)
-    let normal = GLKVector4Add(left.normal, right.normal)
-
     // TODO: Calculate correct color, texture & lightmap coords
     return Vertex(
-        position: position,
-        normal: normal,
+        position: GLKVector4Add(left.position, right.position),
+        normal: GLKVector4Add(left.normal, right.normal),
         color: left.color,
-        textureCoord: left.textureCoord,
-        lightMapCoord: left.lightMapCoord
+        textureCoord: GLKVector2Add(left.textureCoord, right.textureCoord),
+        lightMapCoord: GLKVector2Add(left.lightMapCoord, right.lightMapCoord)
     )
 }
 
 func *(left: Vertex, right: Float) -> Vertex {
-    let position = GLKVector4MultiplyScalar(left.position, right)
-    let normal = GLKVector4MultiplyScalar(left.normal, right)
-    
     // TODO: Calculate correct color, texture & lightmap coords
     return Vertex(
-        position: position,
-        normal: normal,
+        position: GLKVector4MultiplyScalar(left.position, right),
+        normal: GLKVector4MultiplyScalar(left.normal, right),
         color: left.color,
-        textureCoord: left.textureCoord,
-        lightMapCoord: left.lightMapCoord
+        textureCoord: GLKVector2MultiplyScalar(left.textureCoord, right),
+        lightMapCoord: GLKVector2MultiplyScalar(left.lightMapCoord, right)
     )
 }
 
