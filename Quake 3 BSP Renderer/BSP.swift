@@ -162,6 +162,16 @@ struct Vertex {
     
     // Vertex lightmap coordinates.
     var lightMapCoord: GLKVector2
+    
+    static func empty() -> Vertex {
+        return Vertex(
+            position: GLKVector4Make(0, 0, 0, 0),
+            normal: GLKVector4Make(0, 0, 0, 0),
+            color: GLKVector4Make(0, 0, 0, 0),
+            textureCoord: GLKVector2Make(0, 0),
+            lightMapCoord: GLKVector2Make(0, 0)
+        )
+    }
 }
 
 func +(left: Vertex, right: Vertex) -> Vertex {

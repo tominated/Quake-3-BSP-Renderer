@@ -11,9 +11,14 @@ import ModelIO
 import MetalKit
 
 class MapMesh {
-    struct FaceMesh {
-        let offset: Int
-        let count: Int
+    struct BezierFace {
+        let vertexBuffer: MTLBuffer
+        let indexBuffer: MTLBuffer
+        let size: Int
+    }
+    
+    struct PatchFace {
+        let bezierFaces: [BezierFace]
         let textureName: String
     }
     
@@ -22,10 +27,10 @@ class MapMesh {
     
     var vertexBuffer: MTLBuffer! = nil
     var indexBuffer: MTLBuffer! = nil
-    var faceMeshes: [FaceMesh] = []
     var indices: [UInt32] = []
     var groupedFaces = Dictionary<String, Array<UInt32>>()
     var groupedIndices = Dictionary<String, MTLBuffer>()
+    var patchFaces: [PatchFace] = []
     var textures: Dictionary<String, MTLTexture> = Dictionary()
     var defaultTexture: MTLTexture! = nil
     
@@ -50,31 +55,23 @@ class MapMesh {
         for index in faceIndices {
             let face = bsp.faces[index]
             
-            // We only know how to render basic faces for now
-            guard face.faceType == .Polygon || face.faceType == .Mesh else { continue }
-            
-            // Vertex indices go through meshverts for polygons and meshes.
-            // The resulting indices need to be UInt32 for metal index buffers.
-            let meshVertIndices = face.meshVertIndexes()
-            
             let textureName = bsp.textures[face.texture].name
-            
-            faceMeshes.append(
-                FaceMesh(
-                    offset: indices.count,
-                    count: meshVertIndices.count,
-                    textureName: textureName
-                )
-            )
             
             if groupedFaces[textureName] == nil {
                groupedFaces[textureName] = []
             }
             
-            for i in meshVertIndices {
-                groupedFaces[textureName]!.append(
-                    bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
-                )
+            if face.faceType == .Polygon || face.faceType == .Mesh {
+                // Vertex indices go through meshverts for polygons and meshes.
+                // The resulting indices need to be UInt32 for metal index buffers.
+                for i in face.meshVertIndexes() {
+                    groupedFaces[textureName]!.append(
+                        bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
+                    )
+                }
+            } else if face.faceType == .Patch {
+                print("creating patch")
+                patchFaces.append(createPatchFace(face))
             }
         }
         
@@ -85,6 +82,72 @@ class MapMesh {
                 options: .CPUCacheModeDefaultCache
             )
         }
+    }
+    
+    func createPatchFace(face: Face) -> PatchFace {
+        let numPatchesX = ((face.size.0) - 1) / 2
+        let numPatchesY = ((face.size.1) - 1) / 2
+        let numPatches = numPatchesX * numPatchesY
+        
+        var beziers: [BezierFace] = []
+        
+        for patchNumber in 0..<numPatches {
+            let xStep = patchNumber % numPatchesX
+            let yStep = patchNumber / numPatchesX
+            
+            var vertexGrid: [[Vertex]] = Array(
+                count: Int(face.size.0),
+                repeatedValue: Array(
+                    count: Int(face.size.1),
+                    repeatedValue: Vertex.empty()
+                )
+            )
+            
+            var gridX = 0
+            var gridY = 0
+            for index in face.vertex..<(face.vertex + face.vertexCount) {
+                vertexGrid[gridX][gridY] = bsp.vertices[index]
+                
+                gridX += 1
+                
+                if gridX == Int(face.size.0) {
+                    gridX = 0
+                    gridY += 1
+                }
+            }
+            
+            let vi = 2 * xStep
+            let vj = 2 * yStep
+            var controlVertices: [Vertex] = []
+            
+            for i in 0..<3 {
+                for j in 0..<3 {
+                    controlVertices.append(vertexGrid[Int(vi + j)][Int(vj + i)])
+                }
+            }
+            
+            let bezier = Bezier(controls: controlVertices)
+            beziers.append(
+                BezierFace(
+                    vertexBuffer: device.newBufferWithBytes(
+                        bezier.vertices,
+                        length: bezier.vertices.count * sizeof(Vertex),
+                        options: .CPUCacheModeDefaultCache
+                    ),
+                    indexBuffer: device.newBufferWithBytes(
+                        bezier.indices,
+                        length: bezier.indices.count * sizeof(UInt32),
+                        options: .CPUCacheModeDefaultCache
+                    ),
+                    size: bezier.indices.count
+                )
+            )
+        }
+        
+        return PatchFace(
+            bezierFaces: beziers,
+            textureName: bsp.textures[face.texture].name
+        )
     }
     
     func createTextures() {
@@ -156,6 +219,30 @@ class MapMesh {
                 indexBuffer: buffer,
                 indexBufferOffset: 0
             )
+        }
+        
+        // Render patches
+        for patchFace in patchFaces {
+            encoder.setFragmentTexture(
+                textures[patchFace.textureName] ?? defaultTexture,
+                atIndex: 0
+            )
+            
+            for bezierFace in patchFace.bezierFaces {
+                encoder.setVertexBuffer(
+                    bezierFace.vertexBuffer,
+                    offset: 0,
+                    atIndex: 0
+                )
+                
+                encoder.drawIndexedPrimitives(
+                    .Triangle,
+                    indexCount: bezierFace.size,
+                    indexType: .UInt32,
+                    indexBuffer: bezierFace.indexBuffer,
+                    indexBufferOffset: 0
+                )
+            }
         }
     }
     

@@ -9,77 +9,84 @@
 import Foundation
 
 class Bezier {
-    private var level: Int = 1
-    private var vertices: [Vertex] = []
-    private var indexes: [UInt32] = []
-    private var trianglesPerRow: [Int] = []
-    private var rowIndexes: [UInt32] = []
-
-    var controls: [Vertex] = []
+    private let level: Int
+    private let controls: [Vertex]
     
-    // Translated to swift from
-    // http://graphics.cs.brown.edu/games/quake/quake3.html
-    // I don't understand this, so I'll have to read up on it a bit
-    func tessellate(level: Int) {
+    var vertices: [Vertex] = []
+    var indices: [UInt32] = []
+    
+    init(controls: [Vertex], level: Int = 10) {
         self.level = level
+        self.controls = controls
         
-        // Number of vertices along a side is 1 + num edges
-        let l1 = level + 1
+        // Get the vertices along the columns after being tesellated
+        let v0v6 = tessellate(controls[0], controls[3], controls[6])
+        let v1v7 = tessellate(controls[1], controls[4], controls[7])
+        let v2v8 = tessellate(controls[2], controls[5], controls[8])
         
-        // Compute the vertices
+        
+        // Calculate the final vertices by tesellating the rows from the
+        // previous calculations
         for i in 0...level {
-            let a = Float(i) / Float(level)
-            let b = 1 - a
-            
-            vertices.append(
-                controls[0] * (b * b) +
-                controls[3] * (2 * b * a) +
-                controls[6] * (a * a)
-            )
+            vertices.appendContentsOf(tessellate(v0v6[i], v1v7[i], v2v8[i]))
         }
+        
+        // Calculate the triangles to form between the tesellated points
+        let numverts = (level + 1) * (level + 1)
+        let width = level + 1
+        var xStep = 1
+        
+        for i in 0..<(numverts - width) {
+            if xStep == 1 {
+                // Left Edge
+                indices.append(UInt32(i))
+                indices.append(UInt32(i + width))
+                indices.append(UInt32(i + 1))
+                
+                xStep += 1
+            } else if xStep == width {
+                // Right Edge
+                indices.append(UInt32(i))
+                indices.append(UInt32(i + width - 1))
+                indices.append(UInt32(i + width))
+                
+                xStep = 1
+            } else {
+                // Not on edge, create two triangles
+                indices.append(UInt32(i))
+                indices.append(UInt32(i + width - 1))
+                indices.append(UInt32(i + width))
+                
+                indices.append(UInt32(i))
+                indices.append(UInt32(i + width))
+                indices.append(UInt32(i + 1))
+                
+                xStep += 1
+            }
+        }
+    }
+    
+    private func bezier(v0: Vertex, _ v1: Vertex, _ v2: Vertex, t: Float) -> Vertex {
+        let a = 1 - t
+        let tt = t * t
+        
+        // The swift compiler complains about complexity if I don't expand this
+        let w = v0 * (a * a)
+        let x = 2 * a
+        let y = v1 * t
+        let z = v2 * tt
+        
+        return w + y * x + z
+    }
+    
+    private func tessellate(v0: Vertex, _ v1: Vertex, _ v2: Vertex) -> [Vertex] {
+        var vertices: [Vertex] = []
+        let step = 1.0 / Float(level)
         
         for i in 0...level {
-            let a = Float(i) / Float(level)
-            let b = 1 - a
-            
-            var temp : [Vertex] = []
-            
-            for j in 0..<3 {
-                let k = 3 * j
-                let t1 = controls[k + 0] * (b * b)
-                let t2 = controls[k + 1] * (2 * b * a)
-                let t3 = controls[k + 2] * (a * a)
-                
-                temp.append(t1 + t2 + t3)
-            }
-            
-            for j in 0...level {
-                let a = Float(j) / Float(level)
-                let b = 1 - a
-                
-                vertices[i * l1 * j] =
-                    temp[0] * (b * b) +
-                    temp[1] * (2 * b * a) +
-                    temp[2] * (a * a)
-            }
+            vertices.append(bezier(v0, v1, v2, t: step * Float(i)))
         }
         
-        // Compute the indices
-        indexes.reserveCapacity(level * (level + 1) * 2)
-        
-        for row in 0...level {
-            for col in 0..<level {
-                indexes[(row * (level + 1) + col) * 2 + 1] = UInt32(row * l1 + col)
-                indexes[(row * (level + 1) + col) * 2] = UInt32((row + 1) * l1 + col)
-            }
-        }
-        
-        trianglesPerRow.reserveCapacity(level)
-        rowIndexes.reserveCapacity(level)
-        
-        for row in 0..<level {
-            trianglesPerRow[row] = 2 * l1
-            rowIndexes[row] = indexes[row * 2 * l1]
-        }
+        return vertices
     }
 }
