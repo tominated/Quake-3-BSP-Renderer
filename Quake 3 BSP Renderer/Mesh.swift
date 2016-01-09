@@ -10,86 +10,33 @@ import GLKit
 import ModelIO
 import MetalKit
 
-class MapMesh {
-    struct BezierFace {
-        let vertexBuffer: MTLBuffer
-        let indexBuffer: MTLBuffer
-        let size: Int
+struct PolygonFaceMesh {
+    let indices: [UInt32]
+    let texture: String
+    
+    init(face: Face, bsp: BSPMap) {
+        texture = bsp.textures[face.texture].name
+        
+        // Vertex indices go through meshverts for polygons and meshes.
+        // The resulting indices need to be UInt32 for metal index buffers.
+        indices = face.meshVertIndexes().map { i in
+            bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
+        }
     }
-    
-    struct PatchFace {
-        let bezierFaces: [BezierFace]
-        let textureName: String
-    }
-    
-    let device: MTLDevice
-    let bsp: BSPMap
-    
-    var vertexBuffer: MTLBuffer! = nil
-    var indexBuffer: MTLBuffer! = nil
+}
+
+struct PatchFaceMesh {
+    var vertices: [Vertex] = []
     var indices: [UInt32] = []
-    var groupedFaces = Dictionary<String, Array<UInt32>>()
-    var groupedIndices = Dictionary<String, MTLBuffer>()
-    var patchFaces: [PatchFace] = []
-    var textures: Dictionary<String, MTLTexture> = Dictionary()
-    var defaultTexture: MTLTexture! = nil
+    let texture: String
     
-    init(device: MTLDevice, bsp: BSPMap) {
-        self.device = device
-        self.bsp = bsp
+    init(face: Face, bsp: BSPMap) {
+        texture = bsp.textures[face.texture].name
         
-        self.vertexBuffer = device.newBufferWithBytes(
-            bsp.vertices,
-            length: sizeof(Vertex) * bsp.vertices.count,
-            options: .CPUCacheModeDefaultCache
-        )
-        
-        createIndexBuffer()
-        createTextures()
-    }
-    
-    private func createIndexBuffer() {
-        let model = bsp.models[0]
-        let faceIndices = model.face..<(model.face + model.faceCount)
-        
-        for index in faceIndices {
-            let face = bsp.faces[index]
-            
-            let textureName = bsp.textures[face.texture].name
-            
-            if groupedFaces[textureName] == nil {
-               groupedFaces[textureName] = []
-            }
-            
-            if face.faceType == .Polygon || face.faceType == .Mesh {
-                // Vertex indices go through meshverts for polygons and meshes.
-                // The resulting indices need to be UInt32 for metal index buffers.
-                for i in face.meshVertIndexes() {
-                    groupedFaces[textureName]!.append(
-                        bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
-                    )
-                }
-            } else if face.faceType == .Patch {
-                print("creating patch")
-                patchFaces.append(createPatchFace(face))
-            }
-        }
-        
-        for (textureName, indices) in groupedFaces {
-            groupedIndices[textureName] = device.newBufferWithBytes(
-                indices,
-                length: indices.count * sizeof(UInt32),
-                options: .CPUCacheModeDefaultCache
-            )
-        }
-    }
-    
-    func createPatchFace(face: Face) -> PatchFace {
+        // Calculate patch stuff
         let numPatchesX = ((face.size.0) - 1) / 2
         let numPatchesY = ((face.size.1) - 1) / 2
         let numPatches = numPatchesX * numPatchesY
-        
-        var beziers: [BezierFace] = []
         
         for patchNumber in 0..<numPatches {
             let xStep = patchNumber % numPatchesX
@@ -127,27 +74,70 @@ class MapMesh {
             }
             
             let bezier = Bezier(controls: controlVertices)
-            beziers.append(
-                BezierFace(
-                    vertexBuffer: device.newBufferWithBytes(
-                        bezier.vertices,
-                        length: bezier.vertices.count * sizeof(Vertex),
-                        options: .CPUCacheModeDefaultCache
-                    ),
-                    indexBuffer: device.newBufferWithBytes(
-                        bezier.indices,
-                        length: bezier.indices.count * sizeof(UInt32),
-                        options: .CPUCacheModeDefaultCache
-                    ),
-                    size: bezier.indices.count
+            self.indices.appendContentsOf(
+                bezier.indices.map { i in i + UInt32(self.vertices.count) }
+            )
+            self.vertices.appendContentsOf(bezier.vertices)
+        }
+    }
+}
+
+class MapMesh {
+    let device: MTLDevice
+    let bsp: BSPMap
+    var vertexBuffer: MTLBuffer! = nil
+    var indexBuffer: MTLBuffer! = nil
+    var groupedIndices: Dictionary<String, [UInt32]> = Dictionary()
+    var groupedIndexBuffers: Dictionary<String, MTLBuffer> = Dictionary()
+    var textures: Dictionary<String, MTLTexture> = Dictionary()
+    var defaultTexture: MTLTexture! = nil
+    
+    init(device: MTLDevice, bsp: BSPMap) {
+        self.device = device
+        self.bsp = bsp
+        
+        var vertices = bsp.vertices
+        
+        // Get the faces for the main map model
+        let model = bsp.models[0]
+        let faceIndices = model.face..<(model.face + model.faceCount)
+        
+        for index in faceIndices {
+            let face = bsp.faces[index]
+            let textureName = bsp.textures[face.texture].name
+            
+            // Ensure we have an array to append to
+            if groupedIndices[textureName] == nil {
+                groupedIndices[textureName] = []
+            }
+            
+            if face.faceType == .Polygon || face.faceType == .Mesh {
+                let mesh = PolygonFaceMesh(face: face, bsp: self.bsp)
+                groupedIndices[textureName]?.appendContentsOf(mesh.indices)
+            } else if face.faceType == .Patch {
+                let mesh = PatchFaceMesh(face: face, bsp: bsp)
+                groupedIndices[textureName]?.appendContentsOf(
+                    mesh.indices.map { i in i + UInt32(vertices.count) }
                 )
+                vertices.appendContentsOf(mesh.vertices)
+            }
+        }
+        
+        vertexBuffer = device.newBufferWithBytes(
+            vertices,
+            length: vertices.count * sizeof(Vertex),
+            options: .CPUCacheModeDefaultCache
+        )
+        
+        for (textureName, indices) in groupedIndices {
+            groupedIndexBuffers[textureName] = device.newBufferWithBytes(
+                indices,
+                length: indices.count * sizeof(UInt32),
+                options: .CPUCacheModeDefaultCache
             )
         }
         
-        return PatchFace(
-            bezierFaces: beziers,
-            textureName: bsp.textures[face.texture].name
-        )
+        createTextures()
     }
     
     func createTextures() {
@@ -185,13 +175,13 @@ class MapMesh {
                 texture.name,
                 withExtension: "jpg",
                 subdirectory: "xcsv_bq3hi-res"
-            ) ?? NSBundle.mainBundle().URLForResource(
-                texture.name,
-                withExtension: "png",
-                subdirectory: "xcsv_bq3hi-res"
-            ) else {
-                print("couldn't load texture \(texture.name)")
-                continue
+                ) ?? NSBundle.mainBundle().URLForResource(
+                    texture.name,
+                    withExtension: "png",
+                    subdirectory: "xcsv_bq3hi-res"
+                ) else {
+                    print("couldn't load texture \(texture.name)")
+                    continue
             }
             
             print("loading texture \(texture.name)")
@@ -206,8 +196,8 @@ class MapMesh {
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
-        for (textureName, buffer) in groupedIndices {
-            let arr = groupedFaces[textureName]!
+        for (textureName, buffer) in groupedIndexBuffers {
+            let arr = groupedIndices[textureName]!
             
             let texture = textures[textureName] ?? defaultTexture
             encoder.setFragmentTexture(texture, atIndex: 0)
@@ -219,30 +209,6 @@ class MapMesh {
                 indexBuffer: buffer,
                 indexBufferOffset: 0
             )
-        }
-        
-        // Render patches
-        for patchFace in patchFaces {
-            encoder.setFragmentTexture(
-                textures[patchFace.textureName] ?? defaultTexture,
-                atIndex: 0
-            )
-            
-            for bezierFace in patchFace.bezierFaces {
-                encoder.setVertexBuffer(
-                    bezierFace.vertexBuffer,
-                    offset: 0,
-                    atIndex: 0
-                )
-                
-                encoder.drawIndexedPrimitives(
-                    .Triangle,
-                    indexCount: bezierFace.size,
-                    indexType: .UInt32,
-                    indexBuffer: bezierFace.indexBuffer,
-                    indexBufferOffset: 0
-                )
-            }
         }
     }
     
@@ -259,7 +225,7 @@ class MapMesh {
         descriptor.attributes[0].format = .Float4
         descriptor.attributes[0].bufferIndex = 0
         offset += sizeof(GLKVector4)
-
+        
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float4
         descriptor.attributes[0].bufferIndex = 0
