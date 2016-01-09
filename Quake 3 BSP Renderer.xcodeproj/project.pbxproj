@@ -19,6 +19,7 @@
 		E279020D1B8D99F800E09E46 /* BSP.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020C1B8D99F800E09E46 /* BSP.swift */; };
 		E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E279020E1B8D9CAC00E09E46 /* Shaders.metal */; };
 		E29621011B96C3B700122EE6 /* test_bigbox.bsp in Resources */ = {isa = PBXBuildFile; fileRef = E29621001B96C3B700122EE6 /* test_bigbox.bsp */; };
+		E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */; };
 		E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0B6181C2B9FB800365076 /* Bezier.swift */; };
 		E2E0BF081C3A728A00365076 /* xcsv_bq3hi-res in Resources */ = {isa = PBXBuildFile; fileRef = E2E0BF071C3A728A00365076 /* xcsv_bq3hi-res */; };
 /* End PBXBuildFile section */
@@ -49,6 +50,7 @@
 		E279020C1B8D99F800E09E46 /* BSP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSP.swift; sourceTree = "<group>"; };
 		E279020E1B8D9CAC00E09E46 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		E29621001B96C3B700122EE6 /* test_bigbox.bsp */ = {isa = PBXFileReference; lastKnownFileType = file; path = test_bigbox.bsp; sourceTree = "<group>"; };
+		E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferProvider.swift; sourceTree = "<group>"; };
 		E2E0B6181C2B9FB800365076 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
 		E2E0BF071C3A728A00365076 /* xcsv_bq3hi-res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "xcsv_bq3hi-res"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,6 +108,7 @@
 				E24920C71C0733D100352118 /* Mesh.swift */,
 				E26DC7171C15625C003E7A54 /* Camera.swift */,
 				E2E0B6181C2B9FB800365076 /* Bezier.swift */,
+				E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -226,6 +229,7 @@
 			files = (
 				E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */,
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
+				E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */,
 				E24920C81C0733D100352118 /* Mesh.swift in Sources */,
 				E279020D1B8D99F800E09E46 /* BSP.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,

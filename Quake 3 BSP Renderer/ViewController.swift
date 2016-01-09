@@ -27,7 +27,7 @@ class ViewController: UIViewController {
     var pipeline : MTLRenderPipelineState! = nil
     
     // Resources
-    var uniformBuffer : MTLBuffer! = nil
+    var uniformBufferProvider: BufferProvider! = nil
     var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
     var depthTexture : MTLTexture! = nil
@@ -91,10 +91,10 @@ class ViewController: UIViewController {
             projectionMatrix: GLKMatrix4MakePerspective(fov, aspect, 0.01, 10000.0)
         )
 
-        // Initialize Uniforms Buffer
-        uniformBuffer = device.newBufferWithLength(
-            sizeof(Uniforms),
-            options: .OptionCPUCacheModeDefault
+        uniformBufferProvider = BufferProvider(
+            device: device,
+            inflightBuffersCount: 3,
+            bufferSize: sizeof(Uniforms)
         )
         
         // Depth buffer
@@ -143,6 +143,8 @@ class ViewController: UIViewController {
         if let drawable = metalLayer.nextDrawable() {
             uniforms.viewMatrix = camera.getViewMatrix()
 
+            let uniformBuffer = uniformBufferProvider.nextBuffer()
+            
             // Copy uniforms to GPU
             memcpy(uniformBuffer.contents(), &uniforms, sizeof(Uniforms))
             
@@ -171,6 +173,10 @@ class ViewController: UIViewController {
             mapMesh.renderWithEncoder(commandEncoder)
 
             commandEncoder.endEncoding()
+            
+            commandBuffer.addCompletedHandler { (commandBuffer) -> Void in
+                self.uniformBufferProvider.finishedWithBuffer()
+            }
             
             // Commit command buffer
             commandBuffer.presentDrawable(drawable)
