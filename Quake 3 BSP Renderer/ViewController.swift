@@ -135,6 +135,10 @@ class ViewController: UIViewController {
             commandEncoder.generateMipmapsForTexture(texture)
         }
         
+        for lightmap in mapMesh.lightmaps {
+            commandEncoder.generateMipmapsForTexture(lightmap)
+        }
+        
         commandEncoder.endEncoding()
         commandBuffer.commit()
     }

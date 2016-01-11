@@ -256,7 +256,7 @@ struct Face {
 }
 
 struct LightMap {
-    var map: [[(UInt8, UInt8, UInt8)]]
+    var map: [(UInt8, UInt8, UInt8, UInt8)]
 }
 
 struct VisData {
@@ -573,16 +573,12 @@ class BSPMap {
         buffer.jump(Int(lightMapEntry.offset))
         
         for _ in 0..<numLightMaps {
-            var map = [[(UInt8, UInt8, UInt8)]]()
+            var map = [(UInt8, UInt8, UInt8, UInt8)]()
             
-            for _ in 0..<128 {
-                var vals = [(UInt8, UInt8, UInt8)]()
-                
-                for _ in 0..<128 {
-                    vals.append((buffer.getUInt8(), buffer.getUInt8(), buffer.getUInt8()))
-                }
-                
-                map.append(vals)
+            for _ in 0..<(128 * 128) {
+                map.append(
+                    (buffer.getUInt8(), buffer.getUInt8(), buffer.getUInt8(), 255)
+                )
             }
             
             lightMaps.append(LightMap(map: map))
