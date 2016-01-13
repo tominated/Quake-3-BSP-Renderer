@@ -48,9 +48,9 @@ class ViewController: UIViewController {
     func loadMap() {
         let filename = NSBundle.mainBundle().pathForResource("q3dm3", ofType: "bsp")!
         let binaryData = NSData(contentsOfFile: filename)!
-        let bsp = BSPMap.init(data: binaryData)
+        let map = Q3Map.init(data: binaryData)
         
-        mapMesh = MapMesh(device: self.device, bsp: bsp)
+        mapMesh = MapMesh(device: self.device, map: map)
     }
     
     func initializeMetal() {

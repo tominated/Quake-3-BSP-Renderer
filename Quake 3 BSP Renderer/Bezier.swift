@@ -10,12 +10,12 @@ import Foundation
 
 class Bezier {
     private let level: Int
-    private let controls: [Vertex]
+    private let controls: [Q3Vertex]
     
-    var vertices: [Vertex] = []
+    var vertices: [Q3Vertex] = []
     var indices: [UInt32] = []
     
-    init(controls: [Vertex], level: Int = 10) {
+    init(controls: [Q3Vertex], level: Int = 10) {
         self.level = level
         self.controls = controls
         
@@ -66,7 +66,7 @@ class Bezier {
         }
     }
     
-    private func bezier(v0: Vertex, _ v1: Vertex, _ v2: Vertex, t: Float) -> Vertex {
+    private func bezier(v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex, t: Float) -> Q3Vertex {
         let a = 1 - t
         let tt = t * t
         
@@ -79,8 +79,8 @@ class Bezier {
         return w + y * x + z
     }
     
-    private func tessellate(v0: Vertex, _ v1: Vertex, _ v2: Vertex) -> [Vertex] {
-        var vertices: [Vertex] = []
+    private func tessellate(v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex) -> [Q3Vertex] {
+        var vertices: [Q3Vertex] = []
         let step = 1.0 / Float(level)
         
         for i in 0...level {

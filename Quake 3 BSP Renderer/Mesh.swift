@@ -6,85 +6,9 @@
 //  Copyright © 2015 Thomas Brunoli. All rights reserved.
 //
 
-import GLKit
+import simd
 import ModelIO
 import MetalKit
-
-struct PolygonFaceMesh {
-    let indices: [UInt32]
-    let texture: String
-    let lightmapIndex: Int
-    
-    init(face: Face, bsp: BSPMap) {
-        texture = bsp.textures[face.texture].name
-        lightmapIndex = face.lightMap
-        
-        // Vertex indices go through meshverts for polygons and meshes.
-        // The resulting indices need to be UInt32 for metal index buffers.
-        indices = face.meshVertIndexes().map { i in
-            bsp.meshVerts[Int(i)].offset + UInt32(face.vertex)
-        }
-    }
-}
-
-struct PatchFaceMesh {
-    var vertices: [Vertex] = []
-    var indices: [UInt32] = []
-    let texture: String
-    let lightmapIndex: Int
-    
-    init(face: Face, bsp: BSPMap) {
-        texture = bsp.textures[face.texture].name
-        lightmapIndex = face.lightMap
-        
-        // Calculate patch stuff
-        let numPatchesX = ((face.size.0) - 1) / 2
-        let numPatchesY = ((face.size.1) - 1) / 2
-        let numPatches = numPatchesX * numPatchesY
-        
-        for patchNumber in 0..<numPatches {
-            let xStep = patchNumber % numPatchesX
-            let yStep = patchNumber / numPatchesX
-            
-            var vertexGrid: [[Vertex]] = Array(
-                count: Int(face.size.0),
-                repeatedValue: Array(
-                    count: Int(face.size.1),
-                    repeatedValue: Vertex.empty()
-                )
-            )
-            
-            var gridX = 0
-            var gridY = 0
-            for index in face.vertex..<(face.vertex + face.vertexCount) {
-                vertexGrid[gridX][gridY] = bsp.vertices[index]
-                
-                gridX += 1
-                
-                if gridX == Int(face.size.0) {
-                    gridX = 0
-                    gridY += 1
-                }
-            }
-            
-            let vi = 2 * xStep
-            let vj = 2 * yStep
-            var controlVertices: [Vertex] = []
-            
-            for i in 0..<3 {
-                for j in 0..<3 {
-                    controlVertices.append(vertexGrid[Int(vi + j)][Int(vj + i)])
-                }
-            }
-            
-            let bezier = Bezier(controls: controlVertices)
-            self.indices.appendContentsOf(
-                bezier.indices.map { i in i + UInt32(self.vertices.count) }
-            )
-            self.vertices.appendContentsOf(bezier.vertices)
-        }
-    }
-}
 
 struct IndexGroupKey: Hashable {
     let texture: String
@@ -102,7 +26,7 @@ func ==(lhs: IndexGroupKey, rhs: IndexGroupKey) -> Bool {
 class MapMesh {
     
     let device: MTLDevice
-    let bsp: BSPMap
+    let map: Q3Map
     var vertexBuffer: MTLBuffer! = nil
     var indexBuffer: MTLBuffer! = nil
     var groupedIndices: Dictionary<IndexGroupKey, [UInt32]> = Dictionary()
@@ -111,42 +35,27 @@ class MapMesh {
     var lightmaps: [MTLTexture] = []
     var defaultTexture: MTLTexture! = nil
     
-    init(device: MTLDevice, bsp: BSPMap) {
+    init(device: MTLDevice, map: Q3Map) {
         self.device = device
-        self.bsp = bsp
+        self.map = map
         
-        var vertices = bsp.vertices
-        
-        // Get the faces for the main map model
-        let model = bsp.models[0]
-        let faceIndices = model.face..<(model.face + model.faceCount)
-        
-        for index in faceIndices {
-            let face = bsp.faces[index]
-            let textureName = bsp.textures[face.texture].name
-            
-            let key = IndexGroupKey(texture: textureName, lightmap: face.lightMap)
+        for face in map.faces {
+            let key = IndexGroupKey(
+                texture: face.textureName,
+                lightmap: face.lightmapIndex
+            )
             
             // Ensure we have an array to append to
             if groupedIndices[key] == nil {
                 groupedIndices[key] = []
             }
             
-            if face.faceType == .Polygon || face.faceType == .Mesh {
-                let mesh = PolygonFaceMesh(face: face, bsp: self.bsp)
-                groupedIndices[key]?.appendContentsOf(mesh.indices)
-            } else if face.faceType == .Patch {
-                let mesh = PatchFaceMesh(face: face, bsp: bsp)
-                groupedIndices[key]?.appendContentsOf(
-                    mesh.indices.map { i in i + UInt32(vertices.count) }
-                )
-                vertices.appendContentsOf(mesh.vertices)
-            }
+            groupedIndices[key]?.appendContentsOf(face.vertexIndices)
         }
         
         vertexBuffer = device.newBufferWithBytes(
-            vertices,
-            length: vertices.count * sizeof(Vertex),
+            map.vertices,
+            length: map.vertices.count * sizeof(Q3Vertex),
             options: .CPUCacheModeDefaultCache
         )
         
@@ -187,24 +96,24 @@ class MapMesh {
             bytesPerRow: 128 * 4
         )
         
-        for texture in bsp.textures {
+        for texture in map.textureNames {
             // Check if texture exists (as a jpg, then as a png)
             guard let url = NSBundle.mainBundle().URLForResource(
-                texture.name,
+                texture,
                 withExtension: "jpg",
                 subdirectory: "xcsv_bq3hi-res"
             ) ?? NSBundle.mainBundle().URLForResource(
-                    texture.name,
+                    texture,
                     withExtension: "png",
                     subdirectory: "xcsv_bq3hi-res"
             ) else {
-                    print("couldn't load texture \(texture.name)")
+                    print("couldn't load texture \(texture)")
                     continue
             }
             
-            print("loading texture \(texture.name)")
+            print("loading texture \(texture)")
             
-            self.textures[texture.name] = try! textureLoader.newTextureWithContentsOfURL(
+            self.textures[texture] = try! textureLoader.newTextureWithContentsOfURL(
                 url,
                 options: textureOptions
             )
@@ -219,13 +128,13 @@ class MapMesh {
             mipmapped: true
         )
         
-        for lm in bsp.lightMaps {
+        for lm in map.lightmaps {
             let texture = device.newTextureWithDescriptor(textureDescriptor)
 
             texture.replaceRegion(
                 MTLRegionMake2D(0, 0, 128, 128),
                 mipmapLevel: 0,
-                withBytes: lm.map,
+                withBytes: lm,
                 bytesPerRow: 128 * 4
             )
             
@@ -262,27 +171,27 @@ class MapMesh {
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float4
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(GLKVector4)
+        offset += sizeof(float4)
         
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float4
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(GLKVector4)
+        offset += sizeof(float4)
         
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float4
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(GLKVector4)
+        offset += sizeof(float4)
         
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float2
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(GLKVector2)
+        offset += sizeof(float2)
         
         descriptor.attributes[0].offset = offset
         descriptor.attributes[0].format = .Float2
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(GLKVector2)
+        offset += sizeof(float2)
         
         descriptor.layouts[0].stepFunction = .PerVertex
         descriptor.layouts[0].stride = offset
