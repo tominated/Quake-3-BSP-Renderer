@@ -11,32 +11,34 @@ import QuartzCore
 
 // TODO: Add actual resource loading
 class Q3ResourceLoader {
-    let dataFiles: Array<NSURL> = []
+    let data: NSData
     
-    init() {}
-    
-    // Add a Quake 3 data file (e.g. data.pak0) to the list of data files to
-    // potentially load resources from
-    func addDataFile(path: NSURL) {
-        // TODO: Implement this
+    init(dataFilePath: NSURL) {
+        assert(dataFilePath.pathExtension == "pk3")
+        self.data = NSData(contentsOfFile: dataFilePath.absoluteString)!
     }
     
-    // Loads the specified map from the appropriate data file if it exists
-    func loadMap(name: NSURL) -> Q3Map? {
+    // Returns a list of the Quake 3 maps found in the data file
+    func maps() -> [String] {
         // TODO: Implement this
-        return nil
+        return []
     }
     
-    // Loads the specified texture as a CGImage from the appropriate data file
-    // if it exists
-    func loadTexture(path: NSURL) -> CGImage? {
+    // Loads the specified map from the data file if it exists
+    func loadMap(name: String) -> Q3Map? {
         // TODO: Implement this
         return nil
     }
     
-    // Finds a resource at path from the highest priority data file it is found
-    // in, and returns the contents of is as NSData (if it can be found)
-    private func loadResource(path: NSURL) -> NSData? {
+    // Loads the specified texture as a CGImage from the data file if it exists
+    func loadTexture(path: String) -> CGImage? {
+        // TODO: Implement this
+        return nil
+    }
+    
+    // Finds a resource at path within the data file, and returns the contents
+    // as NSData if it can be found
+    private func loadResource(path: String) -> NSData? {
         // TODO: Implement this
         return nil
     }
