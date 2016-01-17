@@ -1,0 +1,10 @@
+PODS:
+  - zipzap (8.1.1)
+
+DEPENDENCIES:
+  - zipzap
+
+SPEC CHECKSUMS:
+  zipzap: 940162d9c9c60472c2eab341385e4214da0fdf1c
+
+COCOAPODS: 0.39.0

@@ -2,3 +2,5 @@ Quake 3 BSP Renderer.xcodeproj/xcuserdata/
 *.bsp
 xcuserdata
 xcsv_bq3hi-res
+Pods
+*.pk3

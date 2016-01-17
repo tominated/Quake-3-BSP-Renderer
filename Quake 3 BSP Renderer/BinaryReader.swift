@@ -30,38 +30,31 @@ class BinaryReader {
     }
     
     func getInt8() -> Int8 {
-        var i: Int8 = 0
-        data.getBytes(&i, range: NSMakeRange(position, sizeofValue(i)))
-        position += sizeofValue(i)
-        return i
+        return getNumber(0)
     }
     
     func getUInt8() -> UInt8 {
-        var i: UInt8 = 0
-        data.getBytes(&i, range: NSMakeRange(position, sizeofValue(i)))
-        position += sizeofValue(i)
-        return i
+        return getNumber(0)
+    }
+    
+    func getInt16() -> Int16 {
+        return getNumber(0)
+    }
+    
+    func getUInt16() -> UInt16 {
+        return getNumber(0)
     }
     
     func getInt32() -> Int32 {
-        var i: Int32 = 0
-        data.getBytes(&i, range: NSMakeRange(position, sizeofValue(i)))
-        position += sizeofValue(i)
-        return i
+        return getNumber(0)
     }
 
     func getUInt32() -> UInt32 {
-        var i: UInt32 = 0
-        data.getBytes(&i, range: NSMakeRange(position, sizeofValue(i)))
-        position += sizeofValue(i)
-        return i
+        return getNumber(0)
     }
     
     func getFloat32() -> Float32 {
-        var f: Float32 = 0
-        data.getBytes(&f, range: NSMakeRange(position, sizeofValue(f)))
-        position += sizeofValue(f)
-        return f
+        return getNumber(0)
     }
     
     func getASCII(length: Int) -> NSString? {
@@ -93,5 +86,12 @@ class BinaryReader {
         return chars.withUnsafeBufferPointer({ buffer in
             return String.fromCString(buffer.baseAddress)!
         })
+    }
+    
+    private func getNumber<T>(zero: T) -> T {
+        var x = zero
+        data.getBytes(&x, range: NSMakeRange(position, sizeof(T)))
+        position += sizeof(T)
+        return x
     }
 }

@@ -19,13 +19,13 @@ private struct Q3PolygonFace {
     
     init(meshverts: [UInt32], firstVertex: Int, firstMeshvert: Int, meshvertCount: Int) {
         let meshvertIndices = firstMeshvert..<(firstMeshvert + meshvertCount)
-        indices = meshvertIndices.map { i in meshverts[i] + UInt32(firstVertex) }
+        indices = meshvertIndices.map { meshverts[$0] + UInt32(firstVertex) }
     }
 }
 
 private struct Q3PatchFace {
     var vertices: Array<Q3Vertex> = []
-    var indices: Array<UInt32> = []
+    private var indices: Array<UInt32> = []
     
     init(vertices: Array<Q3Vertex>, firstVertex: Int, vertexCount: Int, size: (Int, Int)) {
         let numPatchesX = ((size.0) - 1) / 2
@@ -33,9 +33,11 @@ private struct Q3PatchFace {
         let numPatches = numPatchesX * numPatchesY
         
         for patchNumber in 0..<numPatches {
+            // Find the x & y of this patch in the grid
             let xStep = patchNumber % numPatchesX
             let yStep = patchNumber / numPatchesX
             
+            // Initialise the vertex grid
             var vertexGrid: [[Q3Vertex]] = Array(
                 count: Int(size.0),
                 repeatedValue: Array(
@@ -47,6 +49,7 @@ private struct Q3PatchFace {
             var gridX = 0
             var gridY = 0
             for index in firstVertex..<(firstVertex + vertexCount) {
+                // Place the vertices from the face in the vertex grid
                 vertexGrid[gridX][gridY] = vertices[index]
                 
                 gridX += 1
@@ -75,13 +78,17 @@ private struct Q3PatchFace {
         }
     }
     
-    mutating func offsetIndices(offset: UInt32) {
-        for (index, value) in self.indices.enumerate() {
-            self.indices[index] = value + offset
-        }
+    func offsetIndices(offset: UInt32) -> Array<UInt32> {
+        return self.indices.map { $0 + offset }
     }
 }
 
+
+// Encapsulates the reading of graphics data from a Quake 3 BSP.
+// Reads vertices, faces, texture and lightmap data from the map and turns them
+// in to a format to easily consume in a modern graphics API.
+// Performs tessellation on bezier patch faces and integrates them with all of
+// the other face vertices and index arrays
 class Q3Map {
     var vertices: Array<Q3Vertex> = []
     var faces: Array<Q3Face> = []
@@ -201,7 +208,7 @@ class Q3Map {
                     vertexIndices: polygonFace.indices
                 )
             } else if type == .Patch {
-                var patchFace = Q3PatchFace(
+                let patchFace = Q3PatchFace(
                     vertices: self.vertices,
                     firstVertex: firstVertex,
                     vertexCount: vertexCount,
@@ -211,13 +218,13 @@ class Q3Map {
                 // The indices for a patch will be for it's own vertices.
                 // Offset them by the amount of vertices in the map, then add
                 // the patch's own vertices to the list
-                patchFace.offsetIndices(UInt32(self.vertices.count))
+                let indices = patchFace.offsetIndices(UInt32(self.vertices.count))
                 self.vertices.appendContentsOf(patchFace.vertices)
                 
                 return Q3Face(
                     textureName: textureName,
                     lightmapIndex: lightmapIndex,
-                    vertexIndices: patchFace.indices
+                    vertexIndices: indices
                 )
             }
             

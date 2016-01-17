@@ -46,11 +46,20 @@ class ViewController: UIViewController {
     var camera : Camera = Camera()
     
     func loadMap() {
-        let filename = NSBundle.mainBundle().pathForResource("q3dm3", ofType: "bsp")!
-        let binaryData = NSData(contentsOfFile: filename)!
-        let map = Q3Map.init(data: binaryData)
+        let pk3 = NSBundle.mainBundle().URLForResource("pak0", withExtension: "pk3")!
+        let loader = Q3ResourceLoader(dataFilePath: pk3)
         
-        mapMesh = MapMesh(device: self.device, map: map)
+        let map = loader.loadMap("q3dm6")!
+        
+        var textures: Dictionary<String, UIImage> = Dictionary()
+        
+        for textureName in map.textureNames {
+            if let texture = loader.loadTexture(textureName) {
+                textures[textureName] = texture
+            }
+        }
+        
+        mapMesh = MapMesh(device: self.device, map: map, textures: textures)
     }
     
     func initializeMetal() {

@@ -24,7 +24,6 @@ func ==(lhs: IndexGroupKey, rhs: IndexGroupKey) -> Bool {
 }
 
 class MapMesh {
-    
     let device: MTLDevice
     let map: Q3Map
     var vertexBuffer: MTLBuffer! = nil
@@ -35,7 +34,7 @@ class MapMesh {
     var lightmaps: [MTLTexture] = []
     var defaultTexture: MTLTexture! = nil
     
-    init(device: MTLDevice, map: Q3Map) {
+    init(device: MTLDevice, map: Q3Map, textures: Dictionary<String, UIImage>) {
         self.device = device
         self.map = map
         
@@ -67,11 +66,11 @@ class MapMesh {
             )
         }
         
-        createTextures()
+        createTextures(textures)
         createLightmaps()
     }
     
-    private func createTextures() {
+    private func createTextures(textures: Dictionary<String, UIImage>) {
         let textureLoader = MTKTextureLoader(device: device)
         let textureOptions = [
             MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
@@ -96,27 +95,14 @@ class MapMesh {
             bytesPerRow: 128 * 4
         )
         
-        for texture in map.textureNames {
-            // Check if texture exists (as a jpg, then as a png)
-            guard let url = NSBundle.mainBundle().URLForResource(
-                texture,
-                withExtension: "jpg",
-                subdirectory: "xcsv_bq3hi-res"
-            ) ?? NSBundle.mainBundle().URLForResource(
-                    texture,
-                    withExtension: "png",
-                    subdirectory: "xcsv_bq3hi-res"
-            ) else {
-                    print("couldn't load texture \(texture)")
-                    continue
+        for (textureName, texture) in textures {
+            print("loading texture '\(textureName)'")
+            
+            do {
+                self.textures[textureName] = try textureLoader.newTextureWithCGImage(texture.CGImage!, options: textureOptions)
+            } catch {
+                print("  Error loading \(textureName)")
             }
-            
-            print("loading texture \(texture)")
-            
-            self.textures[texture] = try! textureLoader.newTextureWithContentsOfURL(
-                url,
-                options: textureOptions
-            )
         }
     }
     
