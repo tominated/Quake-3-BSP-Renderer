@@ -33,6 +33,8 @@ func imageFromTGAData(data: NSData) -> UIImage? {
     var imageData: Array<UInt8> = []
     imageData.reserveCapacity(imageDataLength)
     
+    buffer.skip(1)
+    
     // Swap image data from BGR(A) to RGBA
     for _ in 0..<(width * height) {
         let b = buffer.getUInt8()
