@@ -39,6 +39,8 @@ class MapMesh {
         self.map = map
         
         for face in map.faces {
+            if (face.textureName == "noshader") { continue }
+            
             let key = IndexGroupKey(
                 texture: face.textureName,
                 lightmap: face.lightmapIndex

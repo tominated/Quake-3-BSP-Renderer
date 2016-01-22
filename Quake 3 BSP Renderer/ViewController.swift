@@ -85,7 +85,16 @@ class ViewController: UIViewController {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
+        
         pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
+        pipelineDescriptor.colorAttachments[0].blendingEnabled = true
+        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .Add
+        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .Add
+        pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .SourceAlpha
+        pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .SourceAlpha
+        pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .OneMinusSourceAlpha
+        pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .OneMinusSourceAlpha
+        
         pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
         pipelineDescriptor.sampleCount = sampleCount
         

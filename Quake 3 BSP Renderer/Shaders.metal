@@ -63,5 +63,5 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
     half4 diffuseColor = tex.sample(s, x - vert.textureCoord);
     half4 lightColor = lm.sample(s, vert.lightMapCoord);
     
-    return half4(half3(diffuseColor) * half3(lightColor * 2), diffuseColor[3]) ;
+    return diffuseColor * lightColor;
 }
