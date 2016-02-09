@@ -161,24 +161,24 @@ class MapMesh {
         descriptor.attributes[0].bufferIndex = 0
         offset += sizeof(float4)
         
-        descriptor.attributes[0].offset = offset
-        descriptor.attributes[0].format = .Float4
-        descriptor.attributes[0].bufferIndex = 0
+        descriptor.attributes[1].offset = offset
+        descriptor.attributes[1].format = .Float4
+        descriptor.attributes[1].bufferIndex = 0
         offset += sizeof(float4)
         
-        descriptor.attributes[0].offset = offset
-        descriptor.attributes[0].format = .Float4
-        descriptor.attributes[0].bufferIndex = 0
+        descriptor.attributes[2].offset = offset
+        descriptor.attributes[2].format = .Float4
+        descriptor.attributes[2].bufferIndex = 0
         offset += sizeof(float4)
         
-        descriptor.attributes[0].offset = offset
-        descriptor.attributes[0].format = .Float2
-        descriptor.attributes[0].bufferIndex = 0
+        descriptor.attributes[3].offset = offset
+        descriptor.attributes[3].format = .Float2
+        descriptor.attributes[3].bufferIndex = 0
         offset += sizeof(float2)
         
-        descriptor.attributes[0].offset = offset
-        descriptor.attributes[0].format = .Float2
-        descriptor.attributes[0].bufferIndex = 0
+        descriptor.attributes[4].offset = offset
+        descriptor.attributes[4].format = .Float2
+        descriptor.attributes[4].bufferIndex = 0
         offset += sizeof(float2)
         
         descriptor.layouts[0].stepFunction = .PerVertex

@@ -11,11 +11,11 @@ using namespace metal;
 
 struct VertexIn
 {
-    packed_float4 position [[attribute(0)]];
-    packed_float4 normal [[attribute(1)]];
-    packed_float4 color [[attribute(2)]];
-    packed_float2 textureCoord [[attribute(3)]];
-    packed_float2 lightMapCoord [[attribute(4)]];
+    float4 position [[attribute(0)]];
+    float4 normal [[attribute(1)]];
+    float4 color [[attribute(2)]];
+    float2 textureCoord [[attribute(3)]];
+    float2 lightMapCoord [[attribute(4)]];
 };
 
 struct VertexOut
@@ -34,11 +34,10 @@ struct Uniforms
     float4x4 projectionMatrix;
 };
 
-vertex VertexOut renderVert(const device VertexIn* vertices [[buffer(0)]],
-                            constant Uniforms &uniforms     [[buffer(1)]],
+vertex VertexOut renderVert(VertexIn in [[stage_in]],
+                            constant Uniforms &uniforms [[buffer(1)]],
                             uint vid [[vertex_id]])
 {
-    VertexIn in = vertices[vid];
     VertexOut out;
     
     out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(in.position);
