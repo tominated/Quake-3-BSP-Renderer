@@ -32,7 +32,7 @@ struct TurbulanceDescription {
     let frequency: Float
 }
 
-enum SourceBlendFunction {
+enum SourceBlendMode {
     case One
     case Zero
     case DestColor
@@ -41,7 +41,7 @@ enum SourceBlendFunction {
     case OneMinusSourceAlpha
 }
 
-enum DestBlendFunction {
+enum DestBlendMode {
     case One
     case Zero
     case SourceColor
@@ -54,7 +54,7 @@ enum BlendFunction {
     case Add
     case Blend
     case Filter
-    case Explicit(SourceBlendFunction, DestBlendFunction)
+    case Explicit(source: SourceBlendMode, destination: DestBlendMode)
 }
 
 enum Cull {
@@ -64,10 +64,10 @@ enum Cull {
 }
 
 enum VertexDeform {
-    case Wave(Float, Waveform) // Div, Wave
-    case Normal(Float, Waveform) // Div, Wave
-    case Bulge(Float, Float, Float) // Width, Height, Speed
-    case Move(Float, Float, Float, Waveform) // X, Y, Z, Wave
+    case Wave(divisions: Float, waveform: Waveform)
+    case Normal(divisions: Float, waveform: Waveform)
+    case Bulge(width: Float, height: Float, speed: Float)
+    case Move(x: Float, y: Float, z: Float, waveform: Waveform)
     case AutoSprite
     case AutoSprite2
 }
@@ -86,13 +86,19 @@ enum AlphaGenerator {
     case Portal
 }
 
-enum TextureCoordinateGenerator {
-    case Vector(Float, Float, Float, Float, Float, Float) // SX, SY, SZ, TX, TY, TZ
-    case Rotate(Float)
-    case Scale(Float, Float)
-    case Scroll(Float, Float)
+enum TextureCoordinateMod {
+    case Rotate(degrees: Float)
+    case Scale(x: Float, y: Float)
+    case Scroll(x: Float, y: Float)
     case Stretch(Waveform)
     case Turbulance(TurbulanceDescription)
+}
+
+enum TextureCoordinateGenerator {
+    case Base
+    case Lightmap
+    case Environment
+    case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
 }
 
 enum DepthFunction {
@@ -100,14 +106,53 @@ enum DepthFunction {
     case Equal
 }
 
+enum Sort {
+    case Portal
+    case Sky
+    case Opaque
+    case Decal
+    case SeeThrough
+    case Banner
+    case Additive
+    case Nearest
+    case Underwater
+    case Explicit(Int32)
+    
+    func order() -> Int32 {
+        switch self {
+        case .Portal: return 1
+        case .Sky: return 2
+        case .Opaque: return 3
+        case .Decal: return 4
+        case .SeeThrough: return 5
+        case .Banner: return 6
+        case .Additive: return 9
+        case .Nearest: return 16
+        case .Underwater: return 8
+        case .Explicit(let x): return x
+        }
+    }
+}
+
+extension Sort: Equatable {}
+func ==(lhs: Sort, rhs: Sort) -> Bool {
+    return lhs.order() == rhs.order()
+}
+
+extension Sort: Comparable {}
+func <(lhs: Sort, rhs: Sort) -> Bool {
+    return lhs.order() < rhs.order()
+}
+
+
 struct Q3ShaderStage {
     let map: String? = nil
     let clamp: Bool = false
-    let textureCoordinateGenerator: TextureCoordinateGenerator? = nil
+    let textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     let rgbGenerator: RGBGenerator = .Identity
     let alphaGenerator: AlphaGenerator = .Default
-    let blending: BlendFunction? = .Explicit(.One, .Zero)
-    let textureCoordinateGenerators: Array<TextureCoordinateGenerator> = []
+    let blending: BlendFunction? = .Explicit(source: .One, destination: .Zero)
+    let textureCoordinateMods: Array<TextureCoordinateMod> = []
     let animationMaps: Array<String> = []
     let animationFrequency: Float = 0
     let depthFunction: DepthFunction = .LessThanOrEqual
