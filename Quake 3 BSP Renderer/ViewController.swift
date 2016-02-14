@@ -62,6 +62,13 @@ class ViewController: UIViewController {
         mapMesh = MapMesh(device: self.device, map: map, textures: textures)
     }
     
+    func shaderparsetest() {
+        let stage = "animMap .25 textures/base_wall/q3tourney1.tga textures/base_wall/q3tourney2.tga textures/base_wall/q3tourney3.tga textures/base_wall/q3tourney4.tga textures/base_wall/q3tourney5.tga\nrgbGen wave sawtooth 0 1 0 .25\n}"
+        let parser = Q3ShaderParser(shaders: stage)
+        let parsedStage = try! parser.readStage()
+        print("stage: \n\(parsedStage)")
+    }
+    
     func initializeMetal() {
         metalLayer.device = device
         metalLayer.pixelFormat = .BGRA8Unorm
@@ -238,6 +245,7 @@ class ViewController: UIViewController {
         view.backgroundColor = UIColor.whiteColor()
         aspect = Float(self.view.bounds.size.width / self.view.bounds.size.height)
 
+        shaderparsetest()
         initializeMetal()
         loadMap()
         buildPipeline()
