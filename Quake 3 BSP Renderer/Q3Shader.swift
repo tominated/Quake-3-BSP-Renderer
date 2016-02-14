@@ -50,13 +50,6 @@ enum DestBlendMode {
     case OneMinusSourceAlpha
 }
 
-enum BlendFunction {
-    case Add
-    case Blend
-    case Filter
-    case Explicit(source: SourceBlendMode, destination: DestBlendMode)
-}
-
 enum Cull {
     case Front
     case Back
@@ -92,6 +85,7 @@ enum TextureCoordinateMod {
     case Scroll(x: Float, y: Float)
     case Stretch(Waveform)
     case Turbulance(TurbulanceDescription)
+    case Transform(m00: Float, m01: Float, m10: Float, m11: Float, t0: Float, t1: Float)
 }
 
 enum TextureCoordinateGenerator {
@@ -99,6 +93,12 @@ enum TextureCoordinateGenerator {
     case Lightmap
     case Environment
     case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
+}
+
+enum AlphaFunction {
+    case GT0
+    case LT128
+    case GE128
 }
 
 enum DepthFunction {
@@ -146,17 +146,19 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    let map: String? = nil
-    let clamp: Bool = false
-    let textureCoordinateGenerator: TextureCoordinateGenerator = .Base
-    let rgbGenerator: RGBGenerator = .Identity
-    let alphaGenerator: AlphaGenerator = .Default
-    let blending: BlendFunction? = .Explicit(source: .One, destination: .Zero)
-    let textureCoordinateMods: Array<TextureCoordinateMod> = []
-    let animationMaps: Array<String> = []
-    let animationFrequency: Float = 0
-    let depthFunction: DepthFunction = .LessThanOrEqual
-    let depthWrite: Bool = true
+    var map: String? = nil
+    var clamp: Bool = false
+    var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
+    var rgbGenerator: RGBGenerator = .Identity
+    var alphaGenerator: AlphaGenerator = .Default
+    var alphaFunction: AlphaFunction? = nil
+    var blendSource: SourceBlendMode = .One
+    var blendDest: DestBlendMode = .Zero
+    var textureCoordinateMods: Array<TextureCoordinateMod> = []
+    var animationMaps: Array<String> = []
+    var animationFrequency: Float = 0
+    var depthFunction: DepthFunction = .LessThanOrEqual
+    var depthWrite: Bool = true
 }
 
 struct Q3Shader {
