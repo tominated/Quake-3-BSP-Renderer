@@ -162,11 +162,11 @@ struct Q3ShaderStage {
 }
 
 struct Q3Shader {
-    let name: String
-    let cull: Cull
+    var name: String = ""
+    var cull: Cull = .Front
     // sky
-    let blend: Bool
-    let sort: Int
-    let vertexDeforms: Array<VertexDeform>
-    let stages: Array<Q3ShaderStage>
+    var blend: Bool = false
+    var sort: Sort = .Opaque
+    var vertexDeforms: Array<VertexDeform> = []
+    var stages: Array<Q3ShaderStage> = []
 }

@@ -49,6 +49,11 @@ class Q3ResourceLoader {
         return nil
     }
     
+    func loadShader(path: String) -> String? {
+        guard let shader = loadResource(path) else { return nil }
+        return String(data: shader, encoding: NSASCIIStringEncoding)
+    }
+    
     // Finds a resource at path within the data file, and returns the contents
     // as NSData if it can be found
     private func loadResource(path: String) -> NSData? {
