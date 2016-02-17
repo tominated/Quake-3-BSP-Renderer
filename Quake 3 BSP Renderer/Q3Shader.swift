@@ -39,15 +39,20 @@ enum SourceBlendMode {
     case OneMinusDestColor
     case SourceAlpha
     case OneMinusSourceAlpha
+    case DestAlpha
+    case OneMinusDestAlpha
+    case SourceAlphaSaturate
 }
 
 enum DestBlendMode {
     case One
     case Zero
-    case SourceColor
-    case OneMinusSourceColor
     case SourceAlpha
     case OneMinusSourceAlpha
+    case DestAlpha
+    case OneMinusDestAlpha
+    case SourceColor
+    case OneMinusSourceColor
 }
 
 enum Cull {
@@ -74,8 +79,14 @@ enum RGBGenerator {
 }
 
 enum AlphaGenerator {
-    case Default
     case Wave(Waveform)
+    case Constant(Float)
+    case Identity
+    case Entity
+    case OneMinusEntity
+    case Vertex
+    case LightingSpecular
+    case OneMinusVertex
     case Portal
 }
 
@@ -150,7 +161,7 @@ struct Q3ShaderStage {
     var clamp: Bool = false
     var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Identity
-    var alphaGenerator: AlphaGenerator = .Default
+    var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil
     var blendSource: SourceBlendMode = .One
     var blendDest: DestBlendMode = .Zero
