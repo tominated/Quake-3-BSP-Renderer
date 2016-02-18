@@ -52,9 +52,13 @@ class ViewController: UIViewController {
         let map = loader.loadMap("q3dm6")!
         
         // TESTING SHADER PARSER
-        let shader = loader.loadShader("scripts/gothic_light.shader")!
-        let parser = Q3ShaderParser(shaderFile: shader)
-        let parsedShaders = try! parser.readShaders()
+        var parsedShaders: Array<Q3Shader> = []
+        
+        for shaderFile in loader.loadAllShaders() {
+            let parser = Q3ShaderParser(shaderFile: shaderFile)
+            parsedShaders.appendContentsOf(try! parser.readShaders())
+        }
+        
         for s in parsedShaders {
             print("\n\n\(s)\n\n")
         }

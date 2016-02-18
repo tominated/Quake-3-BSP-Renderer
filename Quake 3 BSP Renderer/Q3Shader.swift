@@ -15,6 +15,7 @@ enum WaveformFunction {
     case Square
     case Sawtooth
     case InverseSawtooth
+    case Noise
 }
 
 struct Waveform {
@@ -76,6 +77,9 @@ enum RGBGenerator {
     case Wave(Waveform)
     case Vertex
     case LightingDiffuse
+    case Entity
+    case OneMinusEntity
+    case ExactVertex
 }
 
 enum AlphaGenerator {
@@ -87,7 +91,7 @@ enum AlphaGenerator {
     case Vertex
     case LightingSpecular
     case OneMinusVertex
-    case Portal
+    case Portal(Float)
 }
 
 enum TextureCoordinateMod {
@@ -115,6 +119,13 @@ enum AlphaFunction {
 enum DepthFunction {
     case LessThanOrEqual
     case Equal
+}
+
+enum Map {
+    case Texture(String)
+    case Lightmap
+    case White
+    case Animated
 }
 
 enum Sort {
@@ -157,7 +168,7 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    var map: String? = nil
+    var map: Map? = nil
     var clamp: Bool = false
     var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Identity
