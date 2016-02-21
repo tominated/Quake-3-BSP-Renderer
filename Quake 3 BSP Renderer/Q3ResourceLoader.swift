@@ -10,7 +10,18 @@ import Foundation
 import QuartzCore
 import zipzap
 
-// TODO: Add actual resource loading
+private var SHADER_WHITELIST: Set<String> = [
+    "scripts/base_button.shader", "scripts/base_floor.shader",
+    "scripts/base_light.shader", "scripts/base_object.shader", "scripts/base_support.shader",
+    "scripts/base_trim.shader", "scripts/base_wall.shader", "scripts/common.shader",
+    "scripts/ctf.shader", "scripts/gfx.shader",
+    "scripts/gothic_block.shader", "scripts/gothic_floor.shader", "scripts/gothic_light.shader",
+    "scripts/gothic_trim.shader", "scripts/gothic_wall.shader",
+    "scripts/liquid.shader", "scripts/models.shader",
+    "scripts/organics.shader", "scripts/sfx.shader",
+    "scripts/skin.shader", "scripts/sky.shader"
+]
+
 class Q3ResourceLoader {
     let data: ZZArchive
     
@@ -47,6 +58,18 @@ class Q3ResourceLoader {
         }
         
         return nil
+    }
+    
+    func loadShader(path: String) -> String? {
+        guard let shader = loadResource(path) else { return nil }
+        return String(data: shader, encoding: NSASCIIStringEncoding)
+    }
+    
+    func loadAllShaders() -> Array<String> {
+        return data.entries
+            .map({ $0.fileName })
+            .filter({ SHADER_WHITELIST.contains($0) })
+            .flatMap({ loadShader($0) })
     }
     
     // Finds a resource at path within the data file, and returns the contents

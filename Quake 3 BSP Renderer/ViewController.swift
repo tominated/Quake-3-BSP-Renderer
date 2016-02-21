@@ -51,6 +51,17 @@ class ViewController: UIViewController {
         
         let map = loader.loadMap("q3dm6")!
         
+        // TESTING SHADER PARSER
+        var parsedShaders: Array<Q3Shader> = []
+        
+        for shaderFile in loader.loadAllShaders() {
+            let parser = Q3ShaderParser(shaderFile: shaderFile)
+            parsedShaders.appendContentsOf(try! parser.readShaders())
+        }
+        
+        print("Parsed shaders!")
+        // END TESTING
+        
         var textures: Dictionary<String, UIImage> = Dictionary()
         
         for textureName in map.textureNames {
