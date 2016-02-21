@@ -59,9 +59,7 @@ class ViewController: UIViewController {
             parsedShaders.appendContentsOf(try! parser.readShaders())
         }
         
-        for s in parsedShaders {
-            print("\n\n\(s)\n\n")
-        }
+        print("Parsed shaders!")
         // END TESTING
         
         var textures: Dictionary<String, UIImage> = Dictionary()

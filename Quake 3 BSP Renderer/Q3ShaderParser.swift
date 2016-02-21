@@ -10,7 +10,6 @@ import Foundation
 
 class Q3ShaderParser {
     enum Q3ShaderParserError: ErrorType {
-        case InvalidSort(got: String?)
         case InvalidShader(reason: String)
         case UnknownToken(String)
         case InvalidFloat
@@ -53,7 +52,6 @@ class Q3ShaderParser {
         return n
     }
     
-    // TODO: Account for comments with no tokens after them
     private func skipLine() {
         scanner.scanUpToCharactersFromSet(NSCharacterSet.newlineCharacterSet())!
     }
@@ -88,7 +86,7 @@ class Q3ShaderParser {
     }
 
     private func readWaveformFunction() throws -> WaveformFunction {
-        let waveformFunction = try! readString()
+        let waveformFunction = try readString()
 
         switch waveformFunction.lowercaseString {
         case "sin": return .Sin
@@ -119,7 +117,7 @@ class Q3ShaderParser {
 
     private func readSort() throws -> Sort {
         let offset = scanner.scanLocation
-        let sort = try! readString()
+        let sort = try readString()
 
         switch sort.lowercaseString {
         case "portal": return .Portal
@@ -156,7 +154,7 @@ class Q3ShaderParser {
     }
     
     private func readTextureCoordinateMod() throws -> TextureCoordinateMod {
-        let type = try! readString()
+        let type = try readString()
         
         switch type.lowercaseString {
         case "turb":
@@ -203,7 +201,7 @@ class Q3ShaderParser {
         }
     }
     
-    func readMap() throws -> Map {
+    func readMap() throws -> TextureMap {
         let token = try readString()
         
         switch token.lowercaseString {
@@ -216,18 +214,13 @@ class Q3ShaderParser {
     func readStage() throws -> Q3ShaderStage {
         var stage = Q3ShaderStage()
         
-        print("Stage:")
-        
         var token = try readString()
         
         while true {
-            print("stage token: \(token)")
-            
             switch token.lowercaseString {
             case "map": stage.map = try readMap()
             
-            // TODO
-            case "clampmap": skipLine()
+            case "clampmap": stage.map = .TextureClamp(try readString())
                 
             case "animmap":
                 stage.map = .Animated
@@ -235,7 +228,7 @@ class Q3ShaderParser {
                 
                 // Read each animation map
                 while true {
-                    let map = try! readString()
+                    let map = try readString()
                     
                     if !map.hasSuffix(".tga") {
                         token = map
@@ -250,7 +243,7 @@ class Q3ShaderParser {
                 continue
             
             case "alphafunc":
-                let alphaFunc = try! readString()
+                let alphaFunc = try readString()
                 
                 switch alphaFunc {
                 case "GT0": stage.alphaFunction = .GT0
@@ -260,7 +253,7 @@ class Q3ShaderParser {
                 }
                 
             case "depthfunc":
-                let depthFunc = try! readString()
+                let depthFunc = try readString()
                 
                 switch depthFunc {
                 case "lequal": stage.depthFunction = .LessThanOrEqual
@@ -269,7 +262,7 @@ class Q3ShaderParser {
                 }
             
             case "blendfunc":
-                let blendfunc = try! readString()
+                let blendfunc = try readString()
                 
                 switch blendfunc.lowercaseString {
                 case "add", "gl_add":
@@ -284,13 +277,13 @@ class Q3ShaderParser {
                 default:
                     stage.blendSource = try readSourceBlendMode(blendfunc)
                     
-                    let destBlend = try! readString()
+                    let destBlend = try readString()
                     
                     stage.blendDest = try readDestBlendMode(destBlend)
                 }
             
             case "rgbgen":
-                let gen = try! readString()
+                let gen = try readString()
                 
                 switch gen.lowercaseString {
                 case "identity": stage.rgbGenerator = .Identity
@@ -305,7 +298,7 @@ class Q3ShaderParser {
                 }
                 
             case "alphagen":
-                let gen = try! readString()
+                let gen = try readString()
                 
                 switch gen.lowercaseString {
                 case "wave": stage.alphaGenerator = .Wave(try readWaveform())
@@ -321,7 +314,7 @@ class Q3ShaderParser {
                 }
                 
             case "tcgen", "texgen":
-                let gen = try! readString()
+                let gen = try readString()
                 
                 switch gen.lowercaseString {
                 case "texture", "base": stage.textureCoordinateGenerator = .Base
@@ -355,7 +348,78 @@ class Q3ShaderParser {
                 throw Q3ShaderParserError.UnknownToken(token)
             }
             
-            token = try! readString()
+            token = try readString()
+        }
+    }
+    
+    private func readSkyParams() throws -> SkyParams {
+        var sky = SkyParams()
+        
+        let farBox = try readString()
+        if farBox != "-" {
+            sky.farBox = farBox
+        }
+        
+        let cloudHeight = try readString()
+        if cloudHeight != "-" {
+            sky.cloudHeight = NSString(string: cloudHeight).floatValue
+        }
+        
+        let nearBox = try readString()
+        if nearBox != "-" {
+            sky.nearBox = nearBox
+        }
+        
+        return sky
+    }
+    
+    private func readCull() throws -> Cull {
+        let token = try readString()
+        
+        switch token.lowercaseString {
+        case "front": return .FrontSided
+        case "none", "twosided", "disable": return .TwoSided
+        case "back", "backside", "backsided": return .BackSided
+        default: throw Q3ShaderParserError.UnknownToken(token)
+        }
+    }
+    
+    private func readVertexDeform() throws -> VertexDeform {
+        let token = try readString()
+        
+        if token.lowercaseString.hasPrefix("text") {
+            return .Text
+        }
+        
+        switch token.lowercaseString {
+        case "autosprite": return .AutoSprite
+        case "autosprite2": return .AutoSprite2
+        case "projectionshadow": return .ProjectionShadow
+        
+        case "bulge":
+            let width = try readFloat()
+            let height = try readFloat()
+            let speed = try readFloat()
+            return .Bulge(width: width, height: height, speed: speed)
+        
+        case "wave":
+            let spread = try readFloat()
+            let wave = try readWaveform()
+            return .Wave(spread: spread, waveform: wave)
+        
+        case "normal":
+            let freq = try readFloat()
+            let amp = try readFloat()
+            return .Normal(frequency: freq, amplitude: amp)
+        
+        case "move":
+            let x = try readFloat()
+            let y = try readFloat()
+            let z = try readFloat()
+            let wave = try readWaveform()
+            return .Move(x: x, y: y, z: z, waveform: wave)
+        
+        default: throw Q3ShaderParserError.UnknownToken(token)
         }
     }
     
@@ -364,41 +428,34 @@ class Q3ShaderParser {
         shader.name = name
         
         while true {
-            let token = try! readString()
-            
-            print("shader token: \(token)")
+            let token = try readString()
             
             switch token.lowercaseString {
-            case "{": shader.stages.append(try! readStage())
+            case "{": shader.stages.append(try readStage())
             
-            case "tesssize", "surfaceparm", "light": skipLine()
+            case "skyparms": shader.sky = try readSkyParams()
             
-            // TODO
-            case "skyparms": skipLine()
+            case "cull": shader.cull = try readCull()
             
-            // TODO
-            case "cull": skipLine()
-            
-            // TODO
-            case "deformvertexes": skipLine()
-            
-            // TODO
-            case "fogparms": skipLine()
+            case "deformvertexes": shader.vertexDeforms.append(try readVertexDeform())
             
             case "portal": shader.sort = .Portal
                 
-            case "sort": shader.sort = try! readSort()
+            case "sort": shader.sort = try readSort()
                 
             case "}": return shader
                 
             // Can ignore these safely
             case "nopicmip", "nomipmap", "nomipmaps", "polygonoffset", "light1",
-            "entitymergable", "qer_nocarve", "q3map_globaltexture", "lightning":
+                "entitymergable", "qer_nocarve", "q3map_globaltexture",
+                "lightning":
                 break
             
-            case "q3map_backshader", "q3map_sun", "q3map_surfacelight",
-            "q3map_lightimage", "q3map_lightsubdivide", "qer_editorimage",
-            "q3map_backsplash", "qer_trans", "q3map_flare", "sky", "cloudparms":
+            case
+                "q3map_backshader", "q3map_sun", "q3map_surfacelight",
+                "q3map_lightimage", "q3map_lightsubdivide", "qer_editorimage",
+                "q3map_backsplash", "qer_trans", "q3map_flare", "sky",
+                "cloudparms", "tesssize", "surfaceparm", "light", "fogparms":
                 skipLine()
                 
             default: throw Q3ShaderParserError.UnknownToken(token)
@@ -410,10 +467,8 @@ class Q3ShaderParser {
         var shaders: Array<Q3Shader> = []
         
         while true {
-            let name = try! readString()
-            let brace = try! readString()
-            
-            print("Shader: '\(name)'")
+            let name = try readString()
+            let brace = try readString()
             
             if brace != "{" {
                 throw Q3ShaderParserError.InvalidShader(reason: "No opening brace")

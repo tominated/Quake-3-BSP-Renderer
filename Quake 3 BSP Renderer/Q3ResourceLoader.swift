@@ -22,7 +22,6 @@ private var SHADER_WHITELIST: Set<String> = [
     "scripts/skin.shader", "scripts/sky.shader"
 ]
 
-// TODO: Add actual resource loading
 class Q3ResourceLoader {
     let data: ZZArchive
     
@@ -63,18 +62,14 @@ class Q3ResourceLoader {
     
     func loadShader(path: String) -> String? {
         guard let shader = loadResource(path) else { return nil }
-        print("shader: \(path)")
         return String(data: shader, encoding: NSASCIIStringEncoding)
     }
     
     func loadAllShaders() -> Array<String> {
-        return listFiles("scripts/").flatMap({ loadShader($0) })
-    }
-    
-    private func listFiles(path: String) -> Array<String> {
         return data.entries
             .map({ $0.fileName })
             .filter({ SHADER_WHITELIST.contains($0) })
+            .flatMap({ loadShader($0) })
     }
     
     // Finds a resource at path within the data file, and returns the contents

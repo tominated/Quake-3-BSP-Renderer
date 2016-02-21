@@ -57,18 +57,20 @@ enum DestBlendMode {
 }
 
 enum Cull {
-    case Front
-    case Back
-    case None
+    case FrontSided
+    case BackSided
+    case TwoSided
 }
 
 enum VertexDeform {
-    case Wave(divisions: Float, waveform: Waveform)
-    case Normal(divisions: Float, waveform: Waveform)
+    case Wave(spread: Float, waveform: Waveform)
+    case Normal(frequency: Float, amplitude: Float)
     case Bulge(width: Float, height: Float, speed: Float)
     case Move(x: Float, y: Float, z: Float, waveform: Waveform)
+    case ProjectionShadow
     case AutoSprite
     case AutoSprite2
+    case Text // Ignoring the number for now
 }
 
 enum RGBGenerator {
@@ -121,8 +123,9 @@ enum DepthFunction {
     case Equal
 }
 
-enum Map {
+enum TextureMap {
     case Texture(String)
+    case TextureClamp(String)
     case Lightmap
     case White
     case Animated
@@ -156,6 +159,12 @@ enum Sort {
     }
 }
 
+struct SkyParams {
+    var farBox: String? = nil
+    var cloudHeight: Float = 128
+    var nearBox: String? = nil
+}
+
 extension Sort: Equatable {}
 func ==(lhs: Sort, rhs: Sort) -> Bool {
     return lhs.order() == rhs.order()
@@ -168,7 +177,7 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    var map: Map? = nil
+    var map: TextureMap? = nil
     var clamp: Bool = false
     var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Identity
@@ -185,8 +194,8 @@ struct Q3ShaderStage {
 
 struct Q3Shader {
     var name: String = ""
-    var cull: Cull = .Front
-    // sky
+    var cull: Cull = .FrontSided
+    var sky: SkyParams? = nil
     var blend: Bool = false
     var sort: Sort = .Opaque
     var vertexDeforms: Array<VertexDeform> = []
