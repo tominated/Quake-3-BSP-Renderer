@@ -51,22 +51,17 @@ class ViewController: UIViewController {
         
         let map = loader.loadMap("q3dm6")!
         
-        // TESTING SHADER PARSER
-        let parser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
-        let parsedShaders = try! parser.readShaders()
-        
-        print("Parsed shaders! count: \(parsedShaders.count)")
-        // END TESTING
+        let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
+        let shaders = try! shaderParser.readShaders()
         
         var textures: Dictionary<String, UIImage> = Dictionary()
-        
         for textureName in map.textureNames {
             if let texture = loader.loadTexture(textureName) {
                 textures[textureName] = texture
             }
         }
         
-        mapMesh = MapMesh(device: self.device, map: map, textures: textures)
+        mapMesh = MapMesh(device: self.device, map: map, textures: textures, shaders: shaders)
     }
     
     func initializeMetal() {
