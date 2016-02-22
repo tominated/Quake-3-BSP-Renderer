@@ -101,10 +101,6 @@ class Q3Map {
     
     // Read the map data from an NSData buffer containing the bsp file
     init(data: NSData) {
-        vertices = []
-        faces = []
-        lightmaps = []
-        
         buffer = BinaryReader(data: data)
         
         readHeaders()

@@ -33,27 +33,18 @@ struct TurbulanceDescription {
     let frequency: Float
 }
 
-enum SourceBlendMode {
+enum BlendMode {
     case One
     case Zero
-    case DestColor
-    case OneMinusDestColor
+    case SourceColor
     case SourceAlpha
-    case OneMinusSourceAlpha
+    case DestColor
     case DestAlpha
+    case OneMinusSourceColor
+    case OneMinusSourceAlpha
+    case OneMinusDestColor
     case OneMinusDestAlpha
     case SourceAlphaSaturate
-}
-
-enum DestBlendMode {
-    case One
-    case Zero
-    case SourceAlpha
-    case OneMinusSourceAlpha
-    case DestAlpha
-    case OneMinusDestAlpha
-    case SourceColor
-    case OneMinusSourceColor
 }
 
 enum Cull {
@@ -123,12 +114,12 @@ enum DepthFunction {
     case Equal
 }
 
-enum TextureMap {
+enum StageTexture {
     case Texture(String)
     case TextureClamp(String)
     case Lightmap
     case White
-    case Animated
+    case Animated(frequency: Float, Array<String>)
 }
 
 enum Sort {
@@ -177,17 +168,15 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    var map: TextureMap? = nil
+    var map: StageTexture? = nil
     var clamp: Bool = false
     var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Identity
     var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil
-    var blendSource: SourceBlendMode = .One
-    var blendDest: DestBlendMode = .Zero
+    var blendSource: BlendMode = .One
+    var blendDest: BlendMode = .Zero
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
-    var animationMaps: Array<String> = []
-    var animationFrequency: Float = 0
     var depthFunction: DepthFunction = .LessThanOrEqual
     var depthWrite: Bool = true
 }
@@ -200,4 +189,16 @@ struct Q3Shader {
     var sort: Sort = .Opaque
     var vertexDeforms: Array<VertexDeform> = []
     var stages: Array<Q3ShaderStage> = []
+    
+    // This is required to allow instantiation with no arguments
+    init() {}
+    
+    init(textureName: String) {
+        name = textureName
+        
+        var diffuseStage = Q3ShaderStage()
+        diffuseStage.map = .Texture(name)
+        
+        stages.append(diffuseStage)
+    }
 }

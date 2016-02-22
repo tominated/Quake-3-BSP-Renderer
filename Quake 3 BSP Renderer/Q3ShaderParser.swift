@@ -55,33 +55,21 @@ class Q3ShaderParser {
     private func skipLine() {
         scanner.scanUpToCharactersFromSet(NSCharacterSet.newlineCharacterSet())!
     }
-
-    private func readSourceBlendMode(sourceBlendMode: String) throws -> SourceBlendMode {
-        switch sourceBlendMode.uppercaseString {
+    
+    private func readBlendMode(blendMode: String) throws -> BlendMode {
+        switch blendMode.uppercaseString {
         case "GL_ONE": return .One
         case "GL_ZERO": return .Zero
-        case "GL_DST_COLOR": return .DestColor
-        case "GL_ONE_MINUS_DST_COLOR": return .OneMinusDestColor
+        case "GL_SRC_COLOR": return .SourceColor
         case "GL_SRC_ALPHA": return .SourceAlpha
-        case "GL_ONE_MINUS_SRC_ALPHA": return .OneMinusSourceAlpha
+        case "GL_DST_COLOR": return .DestColor
         case "GL_DST_ALPHA": return .DestAlpha
+        case "GL_ONE_MINUS_SRC_COLOR": return .OneMinusSourceColor
+        case "GL_ONE_MINUS_SRC_ALPHA": return .OneMinusSourceAlpha
+        case "GL_ONE_MINUS_DST_COLOR": return .OneMinusDestColor
         case "GL_ONE_MINUS_DST_ALPHA": return .OneMinusDestAlpha
         case "GL_SRC_ALPHA_SATURATE": return .SourceAlphaSaturate
-        default: throw Q3ShaderParserError.UnknownToken(sourceBlendMode)
-        }
-    }
-
-    private func readDestBlendMode(destBlendMode: String) throws -> DestBlendMode {
-        switch destBlendMode.uppercaseString {
-        case "GL_ONE": return .One
-        case "GL_ZERO": return .Zero
-        case "GL_SRC_ALPHA": return .SourceAlpha
-        case "GL_ONE_MINUS_SRC_ALPHA": return .OneMinusSourceAlpha
-        case "GL_DST_ALPHA": return .DestAlpha
-        case "GL_ONE_MINUS_DST_ALPHA": return .OneMinusDestAlpha
-        case "GL_SRC_COLOR": return .SourceColor
-        case "GL_ONE_MINUS_SRC_COLOR": return .OneMinusSourceColor
-        default: throw Q3ShaderParserError.UnknownToken(destBlendMode)
+        default: throw Q3ShaderParserError.UnknownToken(blendMode)
         }
     }
 
@@ -201,7 +189,7 @@ class Q3ShaderParser {
         }
     }
     
-    func readMap() throws -> TextureMap {
+    func readMap() throws -> StageTexture {
         let token = try readString()
         
         switch token.lowercaseString {
@@ -223,8 +211,8 @@ class Q3ShaderParser {
             case "clampmap": stage.map = .TextureClamp(try readString())
                 
             case "animmap":
-                stage.map = .Animated
-                stage.animationFrequency = try readFloat()
+                let freq = try readFloat()
+                var maps: Array<String> = []
                 
                 // Read each animation map
                 while true {
@@ -235,8 +223,10 @@ class Q3ShaderParser {
                         break
                     }
                     
-                    stage.animationMaps.append(map)
+                    maps.append(map)
                 }
+                
+                stage.map = .Animated(frequency: freq, maps)
                 
                 // We read the next token above when trying to get all of the
                 // animation maps, so it's safe to continue
@@ -275,11 +265,11 @@ class Q3ShaderParser {
                     stage.blendSource = .SourceAlpha
                     stage.blendDest = .OneMinusSourceAlpha
                 default:
-                    stage.blendSource = try readSourceBlendMode(blendfunc)
+                    stage.blendSource = try readBlendMode(blendfunc)
                     
                     let destBlend = try readString()
                     
-                    stage.blendDest = try readDestBlendMode(destBlend)
+                    stage.blendDest = try readBlendMode(destBlend)
                 }
             
             case "rgbgen":

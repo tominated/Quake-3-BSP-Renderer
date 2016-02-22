@@ -52,14 +52,10 @@ class ViewController: UIViewController {
         let map = loader.loadMap("q3dm6")!
         
         // TESTING SHADER PARSER
-        var parsedShaders: Array<Q3Shader> = []
+        let parser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
+        let parsedShaders = try! parser.readShaders()
         
-        for shaderFile in loader.loadAllShaders() {
-            let parser = Q3ShaderParser(shaderFile: shaderFile)
-            parsedShaders.appendContentsOf(try! parser.readShaders())
-        }
-        
-        print("Parsed shaders!")
+        print("Parsed shaders! count: \(parsedShaders.count)")
         // END TESTING
         
         var textures: Dictionary<String, UIImage> = Dictionary()

@@ -65,11 +65,12 @@ class Q3ResourceLoader {
         return String(data: shader, encoding: NSASCIIStringEncoding)
     }
     
-    func loadAllShaders() -> Array<String> {
+    func loadAllShaders() -> String {
         return data.entries
             .map({ $0.fileName })
             .filter({ SHADER_WHITELIST.contains($0) })
             .flatMap({ loadShader($0) })
+            .joinWithSeparator("\n")
     }
     
     // Finds a resource at path within the data file, and returns the contents
