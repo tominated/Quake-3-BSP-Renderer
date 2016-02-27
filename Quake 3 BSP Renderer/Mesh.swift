@@ -47,6 +47,7 @@ struct FaceMesh {
 class MapMesh {
     let device: MTLDevice
     let map: Q3Map
+    let textureLoader: Q3TextureLoader
     var vertexBuffer: MTLBuffer! = nil
     var textures: Dictionary<String, MTLTexture> = Dictionary()
     var shaders: Dictionary<String, Q3Shader> = Dictionary()
@@ -55,11 +56,12 @@ class MapMesh {
     var lightmaps: [MTLTexture] = []
     var defaultTexture: MTLTexture! = nil
     
-    init(device: MTLDevice, map: Q3Map, textures: Dictionary<String, UIImage>, shaders: Array<Q3Shader>) {
+    init(device: MTLDevice, map: Q3Map, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
         self.device = device
         self.map = map
+        self.textureLoader = textureLoader
         
-        createTextures(textures)
+        createTextures()
         createLightmaps()
         
         for shader in shaders {
@@ -111,62 +113,29 @@ class MapMesh {
         }
         
         faceMeshes.sortInPlace { a, b in a.shader.sort < b.shader.sort }
+        
+        for fm in faceMeshes {
+            print("\(fm.shader.sort.order()), \(fm.shader.stages.count), \(fm.shader.name)")
+        }
     }
     
-    private func createTextures(textures: Dictionary<String, UIImage>) {
-        let textureLoader = MTKTextureLoader(device: device)
-        let textureOptions = [
-            MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
-            MTKTextureLoaderOptionAllocateMipmaps: 1
-        ]
+    private func createTextures() {
+        defaultTexture = textureLoader.loadWhiteTexture()
         
-        // Create white texture
-        let defaultDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .RGBA8Unorm,
-            width: 128,
-            height: 128,
-            mipmapped: false
-        )
-        defaultTexture = device.newTextureWithDescriptor(defaultDescriptor)
-        defaultTexture.replaceRegion(
-            MTLRegionMake2D(0, 0, 128, 128),
-            mipmapLevel: 0,
-            withBytes: Array(
-                count: 128 * 128 * 4,
-                repeatedValue: UInt8(255)
-            ),
-            bytesPerRow: 128 * 4
-        )
-        
-        for (textureName, texture) in textures {
+        for textureName in map.textureNames {
             print("loading texture '\(textureName)'")
             
-            do {
-                self.textures[textureName] = try textureLoader.newTextureWithCGImage(texture.CGImage!, options: textureOptions)
-            } catch {
+            if let texture = textureLoader.loadTexture(textureName) {
+                self.textures[textureName] = texture
+            } else {
                 print("  Error loading \(textureName)")
             }
         }
     }
     
     private func createLightmaps() {
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .RGBA8Unorm,
-            width: 128,
-            height: 128,
-            mipmapped: true
-        )
-        
         for lm in map.lightmaps {
-            let texture = device.newTextureWithDescriptor(textureDescriptor)
-
-            texture.replaceRegion(
-                MTLRegionMake2D(0, 0, 128, 128),
-                mipmapLevel: 0,
-                withBytes: lm,
-                bytesPerRow: 128 * 4
-            )
-            
+            let texture = textureLoader.loadLightmap(lm)
             self.lightmaps.append(texture)
         }
     }

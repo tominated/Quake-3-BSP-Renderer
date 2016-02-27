@@ -54,14 +54,9 @@ class ViewController: UIViewController {
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
         let shaders = try! shaderParser.readShaders()
         
-        var textures: Dictionary<String, UIImage> = Dictionary()
-        for textureName in map.textureNames {
-            if let texture = loader.loadTexture(textureName) {
-                textures[textureName] = texture
-            }
-        }
+        let textureLoader = Q3TextureLoader(loader: loader, device: device)
         
-        mapMesh = MapMesh(device: self.device, map: map, textures: textures, shaders: shaders)
+        mapMesh = MapMesh(device: self.device, map: map, textureLoader: textureLoader, shaders: shaders)
     }
     
     func initializeMetal() {
@@ -147,22 +142,6 @@ class ViewController: UIViewController {
         msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
     }
     
-    func generateMipMaps() {
-        let commandBuffer = commandQueue.commandBuffer()
-        let commandEncoder = commandBuffer.blitCommandEncoder()
-        
-        for (_, texture) in mapMesh.textures {
-            commandEncoder.generateMipmapsForTexture(texture)
-        }
-        
-        for lightmap in mapMesh.lightmaps {
-            commandEncoder.generateMipmapsForTexture(lightmap)
-        }
-        
-        commandEncoder.endEncoding()
-        commandBuffer.commit()
-    }
-    
     func draw() {
         if let drawable = metalLayer.nextDrawable() {
             uniforms.viewMatrix = camera.getViewMatrix()
@@ -244,7 +223,6 @@ class ViewController: UIViewController {
         loadMap()
         buildPipeline()
         buildResources()
-        generateMipMaps()
         startDisplayTimer()
 
         // Set up gesture recognizers
