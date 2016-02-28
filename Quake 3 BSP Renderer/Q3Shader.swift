@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import Metal
 
 enum WaveformFunction {
     case Sin
@@ -47,12 +47,6 @@ enum BlendMode {
     case SourceAlphaSaturate
 }
 
-enum Cull {
-    case FrontSided
-    case BackSided
-    case TwoSided
-}
-
 enum VertexDeform {
     case Wave(spread: Float, waveform: Waveform)
     case Normal(frequency: Float, amplitude: Float)
@@ -73,6 +67,7 @@ enum RGBGenerator {
     case Entity
     case OneMinusEntity
     case ExactVertex
+    case Undefined
 }
 
 enum AlphaGenerator {
@@ -87,6 +82,14 @@ enum AlphaGenerator {
     case Portal(Float)
 }
 
+enum TextureCoordinateGenerator {
+    case Base
+    case Lightmap
+    case Environment
+    case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
+    case Undefined
+}
+
 enum TextureCoordinateMod {
     case Rotate(degrees: Float)
     case Scale(x: Float, y: Float)
@@ -94,13 +97,6 @@ enum TextureCoordinateMod {
     case Stretch(Waveform)
     case Turbulance(TurbulanceDescription)
     case Transform(m00: Float, m01: Float, m10: Float, m11: Float, t0: Float, t1: Float)
-}
-
-enum TextureCoordinateGenerator {
-    case Base
-    case Lightmap
-    case Environment
-    case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
 }
 
 enum AlphaFunction {
@@ -168,14 +164,12 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    var map: StageTexture? = nil
-    var clamp: Bool = false
-    var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
-    var rgbGenerator: RGBGenerator = .Identity
+    var map: StageTexture = .White
+    var blending: (MTLBlendFactor, MTLBlendFactor)? = nil
+    var textureCoordinateGenerator: TextureCoordinateGenerator = .Undefined
+    var rgbGenerator: RGBGenerator = .Undefined
     var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil
-    var blendSource: BlendMode = .One
-    var blendDest: BlendMode = .Zero
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
     var depthFunction: DepthFunction = .LessThanOrEqual
     var depthWrite: Bool = true
@@ -183,7 +177,7 @@ struct Q3ShaderStage {
 
 struct Q3Shader {
     var name: String = ""
-    var cull: Cull = .FrontSided
+    var cull: MTLCullMode = .Front
     var sky: SkyParams? = nil
     var blend: Bool = false
     var sort: Sort = .Opaque
@@ -193,12 +187,22 @@ struct Q3Shader {
     // This is required to allow instantiation with no arguments
     init() {}
     
+    // Create a default shader for a texture
     init(textureName: String) {
         name = textureName
         
         var diffuseStage = Q3ShaderStage()
         diffuseStage.map = .Texture(name)
+        diffuseStage.textureCoordinateGenerator = .Base
+        diffuseStage.rgbGenerator = .IdentityLighting
+        
+        var lightmapStage = Q3ShaderStage()
+        lightmapStage.map = .Lightmap
+        lightmapStage.blending = (.DestinationColor, .Zero)
+        lightmapStage.textureCoordinateGenerator = .Lightmap
+        lightmapStage.rgbGenerator = .IdentityLighting
         
         stages.append(diffuseStage)
+        stages.append(lightmapStage)
     }
 }

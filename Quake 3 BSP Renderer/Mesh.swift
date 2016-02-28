@@ -123,12 +123,8 @@ class MapMesh {
         defaultTexture = textureLoader.loadWhiteTexture()
         
         for textureName in map.textureNames {
-            print("loading texture '\(textureName)'")
-            
             if let texture = textureLoader.loadTexture(textureName) {
                 self.textures[textureName] = texture
-            } else {
-                print("  Error loading \(textureName)")
             }
         }
     }

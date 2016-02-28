@@ -16,6 +16,7 @@ class Q3TextureLoader {
     private let commandQueue: MTLCommandQueue
     private let textureLoader: MTKTextureLoader
     private var whiteTexture: MTLTexture? = nil
+    private var textureCache: Dictionary<String, MTLTexture> = Dictionary()
     
     private let lightmapDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
         .RGBA8Unorm,
@@ -32,15 +33,26 @@ class Q3TextureLoader {
     }
     
     func loadTexture(path: String) -> MTLTexture? {
+        if let texture = textureCache[path] {
+            print("Loaded texture '\(path)' from cache")
+            return texture
+        }
+        
         guard let image = loader.loadTexture(path) else {
+            print("Error loading texture '\(path)'")
             return nil
         }
         
-        let texture =  try! textureLoader.newTextureWithCGImage(image.CGImage!, options: [
-            MTKTextureLoaderOptionAllocateMipmaps: 1
-        ])
+        let texture =  try! textureLoader.newTextureWithCGImage(
+            image.CGImage!,
+            options: [MTKTextureLoaderOptionAllocateMipmaps: 1]
+        )
         
         generateMipmaps(texture)
+        
+        textureCache[path] = texture
+        
+        print("Loaded texture '\(path)'")
         
         return texture
     }
@@ -83,6 +95,34 @@ class Q3TextureLoader {
         generateMipmaps(texture)
         
         return texture
+    }
+    
+    func loadAllShaderTextures(shaders: Array<Q3Shader>) -> Dictionary<String, MTLTexture> {
+        var textures: Dictionary<String, MTLTexture> = Dictionary()
+        
+        for shader in shaders {
+            for stage in shader.stages {
+                switch stage.map {
+                case .Texture(let name):
+                    if textures[name] != nil { continue }
+                    textures[name] = loadTexture(name) ?? loadWhiteTexture()
+
+                case .TextureClamp(let name):
+                    if textures[name] != nil { continue }
+                    textures[name] = loadTexture(name) ?? loadWhiteTexture()
+                
+                case .Animated(frequency: _, let names):
+                    for name in names {
+                        if textures[name] != nil { continue }
+                        textures[name] = loadTexture(name) ?? loadWhiteTexture()
+                    }
+                    
+                default: break
+                }
+            }
+        }
+        
+        return textures
     }
     
     private func generateMipmaps(texture: MTLTexture) {
