@@ -24,23 +24,14 @@ func ==(lhs: IndexGroupKey, rhs: IndexGroupKey) -> Bool {
 }
 
 struct FaceMesh {
-    let shader: Q3Shader
-    let texture: MTLTexture
+    let sort: Int32
+    let material: Material
     let lightmap: MTLTexture
     let indexCount: Int
     let indexBuffer: MTLBuffer
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        encoder.setFragmentTexture(texture, atIndex: 0)
-        encoder.setFragmentTexture(lightmap, atIndex: 1)
-        
-        encoder.drawIndexedPrimitives(
-            .Triangle,
-            indexCount: indexCount,
-            indexType: .UInt32,
-            indexBuffer: indexBuffer,
-            indexBufferOffset: 0
-        )
+        material.renderWithEncoder(encoder, time: 0, indexBuffer: indexBuffer, indexCount: indexCount, lightmap: lightmap)
     }
 }
 
@@ -92,7 +83,7 @@ class MapMesh {
         
         for (key, indices) in groupedIndices {
             let shader = self.shaders[key.texture] ?? Q3Shader(textureName: key.texture)
-            let texture = self.textures[key.texture] ?? defaultTexture!
+            let material = try! Material(shader: shader, device: device, textureLoader: textureLoader)
             let lightmap = key.lightmap >= 0 ? self.lightmaps[key.lightmap] : defaultTexture
             
             let buffer = device.newBufferWithBytes(
@@ -101,9 +92,13 @@ class MapMesh {
                 options: .CPUCacheModeDefaultCache
             )
             
+            if shader.stages.count < 2 {
+                print("shader \(shader.name) has \(shader.stages.count) stages")
+            }
+            
             let faceMesh = FaceMesh(
-                shader: shader,
-                texture: texture,
+                sort: shader.sort.order(),
+                material: material,
                 lightmap: lightmap,
                 indexCount: indices.count,
                 indexBuffer: buffer
@@ -112,11 +107,7 @@ class MapMesh {
             faceMeshes.append(faceMesh)
         }
         
-        faceMeshes.sortInPlace { a, b in a.shader.sort < b.shader.sort }
-        
-        for fm in faceMeshes {
-            print("\(fm.shader.sort.order()), \(fm.shader.stages.count), \(fm.shader.name)")
-        }
+        faceMeshes.sortInPlace { a, b in a.sort < b.sort }
     }
     
     private func createTextures() {

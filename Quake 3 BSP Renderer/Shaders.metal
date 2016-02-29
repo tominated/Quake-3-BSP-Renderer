@@ -50,8 +50,7 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 }
 
 fragment half4 renderFrag(VertexOut vert [[stage_in]],
-                          texture2d<half> tex [[texture(0)]],
-                          texture2d<half> lm [[texture(1)]])
+                          texture2d<half> tex [[texture(0)]])
 {
     constexpr sampler s(coord::normalized,
                         address::repeat,
@@ -59,8 +58,16 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
                         mip_filter::linear);
     constexpr float2 x = float2(1, 1);
     
-    half4 diffuseColor = tex.sample(s, x - vert.textureCoord);
-    half4 lightColor = lm.sample(s, vert.lightMapCoord);
+    return tex.sample(s, x - vert.textureCoord);
+}
+
+fragment half4 renderFragLM(VertexOut vert [[stage_in]],
+                            texture2d<half> lm [[texture(0)]])
+{
+    constexpr sampler s(coord::normalized,
+                        address::repeat,
+                        filter::linear,
+                        mip_filter::linear);
     
-    return diffuseColor * lightColor;
+    return lm.sample(s, vert.lightMapCoord);
 }
