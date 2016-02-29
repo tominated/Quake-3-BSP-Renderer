@@ -24,14 +24,12 @@ class ViewController: UIViewController {
     let device = MTLCreateSystemDefaultDevice()!
     
     var commandQueue : MTLCommandQueue! = nil
-    var pipeline : MTLRenderPipelineState! = nil
     
     // Resources
     var uniformBufferProvider: BufferProvider! = nil
     var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
     var depthTexture : MTLTexture! = nil
-    var depthState : MTLDepthStencilState! = nil
     var msaaTexture : MTLTexture! = nil
     
     let sampleCount = 2
@@ -70,35 +68,6 @@ class ViewController: UIViewController {
         commandQueue = device.newCommandQueue()
     }
     
-    func buildPipeline() {
-        // Shader setup
-        let library = device.newDefaultLibrary()!
-        let vertexFunction = library.newFunctionWithName("renderVert")
-        let fragmentFunction = library.newFunctionWithName("renderFrag")
-
-        // Pipeline Descriptor
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
-        
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.colorAttachments[0].blendingEnabled = true
-        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .Add
-        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .Add
-        pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .SourceAlpha
-        pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .SourceAlpha
-        pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .OneMinusSourceAlpha
-        pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .OneMinusSourceAlpha
-        
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        pipelineDescriptor.sampleCount = sampleCount
-        
-        // Try creating the pipeline
-        pipeline = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
-    }
-    
     func buildResources() {
         uniforms = Uniforms(
             modelMatrix: GLKMatrix4Identity,
@@ -122,12 +91,6 @@ class ViewController: UIViewController {
         depthTextureDescriptor.textureType = .Type2DMultisample
         depthTextureDescriptor.sampleCount = sampleCount
         depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
-        
-        // Depth stencil
-        let stencilDescriptor = MTLDepthStencilDescriptor()
-        stencilDescriptor.depthCompareFunction = .LessEqual
-        stencilDescriptor.depthWriteEnabled = true
-        depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
         
         // MSAA
         let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
@@ -169,8 +132,6 @@ class ViewController: UIViewController {
             
             // Command Encoder
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
-            commandEncoder.setDepthStencilState(depthState)
-            commandEncoder.setRenderPipelineState(pipeline)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
             mapMesh.renderWithEncoder(commandEncoder, time: Float(timer.timestamp))
@@ -221,7 +182,6 @@ class ViewController: UIViewController {
 
         initializeMetal()
         loadMap()
-        buildPipeline()
         buildResources()
         startDisplayTimer()
 

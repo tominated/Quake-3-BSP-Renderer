@@ -171,7 +171,7 @@ struct Q3ShaderStage {
     var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
-    var depthFunction: DepthFunction = .LessThanOrEqual
+    var depthFunction: MTLCompareFunction = .LessEqual
     var depthWrite: Bool = true
 }
 

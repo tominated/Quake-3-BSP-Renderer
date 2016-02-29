@@ -25,6 +25,7 @@ struct Material {
     
     private struct MaterialStage {
         let pipelineState: MTLRenderPipelineState
+        let depthState: MTLDepthStencilState
         let texture: Material.StageTexture
     }
     
@@ -44,8 +45,9 @@ struct Material {
         let whiteTexture = textureLoader.loadWhiteTexture()
         
         for stage in shader.stages {
-            // Set up pipeline state
+            // Set up pipeline and depth state
             let pipelineDescriptor = MTLRenderPipelineDescriptor()
+            let stencilDescriptor = MTLDepthStencilDescriptor()
             
             pipelineDescriptor.vertexFunction = vertexFunction
             pipelineDescriptor.fragmentFunction = fragmentFunction
@@ -64,6 +66,10 @@ struct Material {
                 colorAttachment.destinationRGBBlendFactor = destinationBlend
                 colorAttachment.destinationAlphaBlendFactor = destinationBlend
             }
+            
+            stencilDescriptor.depthCompareFunction = .LessEqual
+            stencilDescriptor.depthWriteEnabled = stage.depthWrite
+            let depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
             
             var texture: Material.StageTexture = .Static(whiteTexture)
             
@@ -92,6 +98,7 @@ struct Material {
             stages.append(
                 MaterialStage(
                     pipelineState: pipelineState,
+                    depthState: depthState,
                     texture: texture
                 )
             )
@@ -103,8 +110,9 @@ struct Material {
         
         for stage in stages {
             
-            // Set pipeline state
+            // Set pipeline and depth state
             encoder.setRenderPipelineState(stage.pipelineState)
+            encoder.setDepthStencilState(stage.depthState)
             
             // Set the texture
             switch stage.texture {

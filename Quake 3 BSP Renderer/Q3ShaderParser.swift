@@ -202,6 +202,7 @@ class Q3ShaderParser {
     
     func readStage() throws -> Q3ShaderStage {
         var stage = Q3ShaderStage()
+        var depthWriteOverride = false
         
         var token = try readString()
         
@@ -247,13 +248,17 @@ class Q3ShaderParser {
                 let depthFunc = try readString()
                 
                 switch depthFunc {
-                case "lequal": stage.depthFunction = .LessThanOrEqual
+                case "lequal": stage.depthFunction = .LessEqual
                 case "equal": stage.depthFunction = .Equal
                 default: throw Q3ShaderParserError.UnknownToken(depthFunc)
                 }
             
             case "blendfunc":
                 let blendfunc = try readString()
+                
+                if !depthWriteOverride {
+                    stage.depthWrite = false
+                }
                 
                 switch blendfunc.lowercaseString {
                 case "add", "gl_add":
@@ -324,7 +329,9 @@ class Q3ShaderParser {
             
             case "tcmod": stage.textureCoordinateMods.append(try readTextureCoordinateMod())
             
-            case "depthwrite": stage.depthWrite = true
+            case "depthwrite":
+                depthWriteOverride = true
+                stage.depthWrite = true
             
             case "detail": break
             
