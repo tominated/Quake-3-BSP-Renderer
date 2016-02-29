@@ -179,7 +179,6 @@ struct Q3Shader {
     var name: String = ""
     var cull: MTLCullMode = .Front
     var sky: SkyParams? = nil
-    var blend: Bool = false
     var sort: Sort = .Opaque
     var vertexDeforms: Array<VertexDeform> = []
     var stages: Array<Q3ShaderStage> = []

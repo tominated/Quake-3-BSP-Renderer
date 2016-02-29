@@ -30,8 +30,8 @@ struct FaceMesh {
     let indexCount: Int
     let indexBuffer: MTLBuffer
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        material.renderWithEncoder(encoder, time: 0, indexBuffer: indexBuffer, indexCount: indexCount, lightmap: lightmap)
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
+        material.renderWithEncoder(encoder, time: time, indexBuffer: indexBuffer, indexCount: indexCount, lightmap: lightmap)
     }
 }
 
@@ -127,11 +127,11 @@ class MapMesh {
         }
     }
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
         for faceMesh in faceMeshes {
-            faceMesh.renderWithEncoder(encoder)
+            faceMesh.renderWithEncoder(encoder, time: time)
         }
     }
     

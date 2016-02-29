@@ -173,7 +173,7 @@ class ViewController: UIViewController {
             commandEncoder.setRenderPipelineState(pipeline)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
-            mapMesh.renderWithEncoder(commandEncoder)
+            mapMesh.renderWithEncoder(commandEncoder, time: Float(timer.timestamp))
 
             commandEncoder.endEncoding()
             
