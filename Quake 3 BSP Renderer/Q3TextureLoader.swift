@@ -89,40 +89,12 @@ class Q3TextureLoader {
             MTLRegionMake2D(0, 0, 128, 128),
             mipmapLevel: 0,
             withBytes: lightmap,
-            bytesPerRow: 128 * 4 * sizeof(UInt8)
+            bytesPerRow: 128 * 4
         )
         
         generateMipmaps(texture)
         
         return texture
-    }
-    
-    func loadAllShaderTextures(shaders: Array<Q3Shader>) -> Dictionary<String, MTLTexture> {
-        var textures: Dictionary<String, MTLTexture> = Dictionary()
-        
-        for shader in shaders {
-            for stage in shader.stages {
-                switch stage.map {
-                case .Texture(let name):
-                    if textures[name] != nil { continue }
-                    textures[name] = loadTexture(name) ?? loadWhiteTexture()
-
-                case .TextureClamp(let name):
-                    if textures[name] != nil { continue }
-                    textures[name] = loadTexture(name) ?? loadWhiteTexture()
-                
-                case .Animated(frequency: _, let names):
-                    for name in names {
-                        if textures[name] != nil { continue }
-                        textures[name] = loadTexture(name) ?? loadWhiteTexture()
-                    }
-                    
-                default: break
-                }
-            }
-        }
-        
-        return textures
     }
     
     private func generateMipmaps(texture: MTLTexture) {

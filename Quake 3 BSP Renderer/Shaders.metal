@@ -55,12 +55,12 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
 {
     constexpr float2 x = float2(1, 1);
     
-    return tex.sample(smp, x - vert.textureCoord);
+    return half4(vert.color) * tex.sample(smp, x - vert.textureCoord);
 }
 
 fragment half4 renderFragLM(VertexOut vert [[stage_in]],
                             texture2d<half> lm [[texture(0)]],
                             sampler smp [[sampler(0)]])
 {
-    return lm.sample(smp, vert.lightMapCoord);
+    return half4(vert.color) * lm.sample(smp, vert.lightMapCoord);
 }

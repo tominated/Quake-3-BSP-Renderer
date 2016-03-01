@@ -33,20 +33,6 @@ struct TurbulanceDescription {
     let frequency: Float
 }
 
-enum BlendMode {
-    case One
-    case Zero
-    case SourceColor
-    case SourceAlpha
-    case DestColor
-    case DestAlpha
-    case OneMinusSourceColor
-    case OneMinusSourceAlpha
-    case OneMinusDestColor
-    case OneMinusDestAlpha
-    case SourceAlphaSaturate
-}
-
 enum VertexDeform {
     case Wave(spread: Float, waveform: Waveform)
     case Normal(frequency: Float, amplitude: Float)

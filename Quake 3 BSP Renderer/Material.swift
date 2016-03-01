@@ -69,6 +69,7 @@ struct Material {
             
             case .Lightmap:
                 pipelineDescriptor.fragmentFunction = lightmapFragmentFunction
+                texture = .Lightmap
                 
             default: break
             }

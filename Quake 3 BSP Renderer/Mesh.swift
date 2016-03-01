@@ -40,24 +40,25 @@ class MapMesh {
     let map: Q3Map
     let textureLoader: Q3TextureLoader
     var vertexBuffer: MTLBuffer! = nil
-    var textures: Dictionary<String, MTLTexture> = Dictionary()
     var shaders: Dictionary<String, Q3Shader> = Dictionary()
-    var groupedIndices: Dictionary<IndexGroupKey, [UInt32]> = Dictionary()
     var faceMeshes: Array<FaceMesh> = []
-    var lightmaps: [MTLTexture] = []
-    var defaultTexture: MTLTexture! = nil
     
     init(device: MTLDevice, map: Q3Map, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
         self.device = device
         self.map = map
         self.textureLoader = textureLoader
         
-        createTextures()
-        createLightmaps()
+        let defaultTexture = textureLoader.loadWhiteTexture()
+        
+        let texturesInMap = Set(map.textureNames)
         
         for shader in shaders {
-            self.shaders[shader.name] = shader
+            if texturesInMap.contains(shader.name) {
+                self.shaders[shader.name] = shader
+            }
         }
+        
+        var groupedIndices: Dictionary<IndexGroupKey, [UInt32]> = Dictionary()
         
         for face in map.faces {
             if (face.textureName == "noshader") { continue }
@@ -84,17 +85,16 @@ class MapMesh {
         for (key, indices) in groupedIndices {
             let shader = self.shaders[key.texture] ?? Q3Shader(textureName: key.texture)
             let material = try! Material(shader: shader, device: device, textureLoader: textureLoader)
-            let lightmap = key.lightmap >= 0 ? self.lightmaps[key.lightmap] : defaultTexture
+            
+            let lightmap = key.lightmap >= 0
+                ? textureLoader.loadLightmap(map.lightmaps[key.lightmap])
+                : defaultTexture
             
             let buffer = device.newBufferWithBytes(
                 indices,
                 length: indices.count * sizeof(UInt32),
                 options: .CPUCacheModeDefaultCache
             )
-            
-            if shader.stages.count < 2 {
-                print("shader \(shader.name) has \(shader.stages.count) stages")
-            }
             
             let faceMesh = FaceMesh(
                 sort: shader.sort.order(),
@@ -108,23 +108,6 @@ class MapMesh {
         }
         
         faceMeshes.sortInPlace { a, b in a.sort < b.sort }
-    }
-    
-    private func createTextures() {
-        defaultTexture = textureLoader.loadWhiteTexture()
-        
-        for textureName in map.textureNames {
-            if let texture = textureLoader.loadTexture(textureName) {
-                self.textures[textureName] = texture
-            }
-        }
-    }
-    
-    private func createLightmaps() {
-        for lm in map.lightmaps {
-            let texture = textureLoader.loadLightmap(lm)
-            self.lightmaps.append(texture)
-        }
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
