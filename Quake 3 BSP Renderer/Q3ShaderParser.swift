@@ -435,13 +435,15 @@ class Q3ShaderParser {
             case "portal": shader.sort = .Portal
                 
             case "sort": shader.sort = try readSort()
+            
+            case "nomipmap", "nomipmaps": shader.mipmapsEnabled = false
                 
             case "}": return shader
                 
             // Can ignore these safely
-            case "nopicmip", "nomipmap", "nomipmaps", "polygonoffset", "light1",
-                "entitymergable", "qer_nocarve", "q3map_globaltexture",
-                "lightning":
+            case
+                "nopicmip", "polygonoffset", "light1", "entitymergable",
+                "qer_nocarve", "q3map_globaltexture","lightning":
                 break
             
             case

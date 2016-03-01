@@ -25,7 +25,8 @@ struct Material {
     
     private struct MaterialStage {
         let pipelineState: MTLRenderPipelineState
-        let depthState: MTLDepthStencilState
+        let depthStencilState: MTLDepthStencilState
+        let samplerState: MTLSamplerState
         let texture: Material.StageTexture
     }
     
@@ -46,30 +47,9 @@ struct Material {
         
         for stage in shader.stages {
             // Set up pipeline and depth state
-            let pipelineDescriptor = MTLRenderPipelineDescriptor()
-            let stencilDescriptor = MTLDepthStencilDescriptor()
-            
-            pipelineDescriptor.vertexFunction = vertexFunction
-            pipelineDescriptor.fragmentFunction = fragmentFunction
-            pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
-            pipelineDescriptor.sampleCount = 2
-            pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-            
-            let colorAttachment = pipelineDescriptor.colorAttachments[0]
-
-            colorAttachment.pixelFormat = .BGRA8Unorm
-            
-            if let (sourceBlend, destinationBlend) = stage.blending {
-                colorAttachment.blendingEnabled = true
-                colorAttachment.sourceRGBBlendFactor = sourceBlend
-                colorAttachment.sourceAlphaBlendFactor = sourceBlend
-                colorAttachment.destinationRGBBlendFactor = destinationBlend
-                colorAttachment.destinationAlphaBlendFactor = destinationBlend
-            }
-            
-            stencilDescriptor.depthCompareFunction = .LessEqual
-            stencilDescriptor.depthWriteEnabled = stage.depthWrite
-            let depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
+            let pipelineDescriptor = stage.getRenderPipelineDescriptor(vertexFunction!, fragmentFunction!)
+            let depthStencilDescriptor = stage.getDepthStencilDescriptor()
+            let samplerDescriptor = stage.getSamplerDescriptor(shader.mipmapsEnabled)
             
             var texture: Material.StageTexture = .Static(whiteTexture)
             
@@ -94,11 +74,14 @@ struct Material {
             }
             
             let pipelineState = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
+            let depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
+            let samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
             
             stages.append(
                 MaterialStage(
                     pipelineState: pipelineState,
-                    depthState: depthState,
+                    depthStencilState: depthStencilState,
+                    samplerState: samplerState,
                     texture: texture
                 )
             )
@@ -106,13 +89,14 @@ struct Material {
     }
     
     func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float, indexBuffer: MTLBuffer, indexCount: Int, lightmap: MTLTexture) {
-        encoder.setCullMode(.None)
+        encoder.setCullMode(cull)
         
         for stage in stages {
             
             // Set pipeline and depth state
             encoder.setRenderPipelineState(stage.pipelineState)
-            encoder.setDepthStencilState(stage.depthState)
+            encoder.setDepthStencilState(stage.depthStencilState)
+            encoder.setFragmentSamplerState(stage.samplerState, atIndex: 0)
             
             // Set the texture
             switch stage.texture {

@@ -88,21 +88,8 @@ class ViewController: UIViewController {
             height: Int(self.view.frame.height),
             mipmapped: false
         )
-        depthTextureDescriptor.textureType = .Type2DMultisample
-        depthTextureDescriptor.sampleCount = sampleCount
+        depthTextureDescriptor.textureType = .Type2D
         depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
-        
-        // MSAA
-        let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .BGRA8Unorm,
-            width: Int(self.view.frame.width),
-            height: Int(self.view.frame.height),
-            mipmapped: false
-        )
-        
-        msaaDescriptor.textureType = .Type2DMultisample
-        msaaDescriptor.sampleCount = sampleCount
-        msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
     }
     
     func draw() {
@@ -119,12 +106,9 @@ class ViewController: UIViewController {
             
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
-            renderPassDescriptor.colorAttachments[0].texture = msaaTexture
-            renderPassDescriptor.colorAttachments[0].resolveTexture = drawable.texture
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.8, 0.3, 0.2, 1)
+            renderPassDescriptor.colorAttachments[0].texture = drawable.texture
             renderPassDescriptor.colorAttachments[0].loadAction = .Clear
-            renderPassDescriptor.colorAttachments[0].storeAction = .MultisampleResolve
-            
+            renderPassDescriptor.colorAttachments[0].storeAction = .DontCare
             
             renderPassDescriptor.depthAttachment.texture = depthTexture
             renderPassDescriptor.depthAttachment.loadAction = .Clear

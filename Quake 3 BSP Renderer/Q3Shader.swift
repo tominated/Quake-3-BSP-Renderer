@@ -173,13 +173,78 @@ struct Q3ShaderStage {
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
     var depthFunction: MTLCompareFunction = .LessEqual
     var depthWrite: Bool = true
+    
+    func hasBlending() -> Bool {
+        return blending != nil
+    }
+    
+    func getRenderPipelineDescriptor(
+        vertexFunction: MTLFunction,
+        _ fragmentFunction: MTLFunction
+    ) -> MTLRenderPipelineDescriptor {
+        let pipelineDescriptor = MTLRenderPipelineDescriptor()
+        
+        // Set Metal functions
+        pipelineDescriptor.vertexFunction = vertexFunction
+        pipelineDescriptor.fragmentFunction = fragmentFunction
+        pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
+        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        
+        let colorAttachment = pipelineDescriptor.colorAttachments[0]
+        
+        colorAttachment.pixelFormat = .BGRA8Unorm
+        
+        if let (sourceBlend, destinationBlend) = blending {
+            colorAttachment.blendingEnabled = true
+            colorAttachment.sourceRGBBlendFactor = sourceBlend
+            colorAttachment.sourceAlphaBlendFactor = sourceBlend
+            colorAttachment.destinationRGBBlendFactor = destinationBlend
+            colorAttachment.destinationAlphaBlendFactor = destinationBlend
+        }
+        
+        return pipelineDescriptor
+    }
+    
+    func getDepthStencilDescriptor() -> MTLDepthStencilDescriptor {
+        let depthStencilDescriptor = MTLDepthStencilDescriptor()
+        
+        depthStencilDescriptor.depthCompareFunction = depthFunction
+        depthStencilDescriptor.depthWriteEnabled = depthWrite
+        
+        return depthStencilDescriptor
+    }
+    
+    func getSamplerDescriptor(mipmapsEnabled: Bool) -> MTLSamplerDescriptor {
+        let samplerDescriptor = MTLSamplerDescriptor()
+        
+        samplerDescriptor.rAddressMode = .Repeat
+        samplerDescriptor.sAddressMode = .Repeat
+        samplerDescriptor.tAddressMode = .Repeat
+        samplerDescriptor.minFilter = .Linear
+        samplerDescriptor.magFilter = .Linear
+        
+        if mipmapsEnabled {
+            samplerDescriptor.mipFilter = .Linear
+        }
+        
+        switch map {
+        case .TextureClamp(_):
+            samplerDescriptor.rAddressMode = .ClampToEdge
+            samplerDescriptor.sAddressMode = .ClampToEdge
+            samplerDescriptor.tAddressMode = .ClampToEdge
+        default: break
+        }
+        
+        return samplerDescriptor
+    }
 }
 
 struct Q3Shader {
     var name: String = ""
-    var cull: MTLCullMode = .Front
+    var cull: MTLCullMode = .Back
     var sky: SkyParams? = nil
     var sort: Sort = .Opaque
+    var mipmapsEnabled: Bool = true
     var vertexDeforms: Array<VertexDeform> = []
     var stages: Array<Q3ShaderStage> = []
     
@@ -198,10 +263,21 @@ struct Q3Shader {
         var lightmapStage = Q3ShaderStage()
         lightmapStage.map = .Lightmap
         lightmapStage.blending = (.DestinationColor, .Zero)
+        lightmapStage.depthFunction = .Equal
         lightmapStage.textureCoordinateGenerator = .Lightmap
         lightmapStage.rgbGenerator = .IdentityLighting
         
         stages.append(diffuseStage)
         stages.append(lightmapStage)
+    }
+    
+    func hasBlending() -> Bool {
+        for stage in stages {
+            if stage.hasBlending() {
+                return true
+            }
+        }
+        
+        return false
     }
 }
