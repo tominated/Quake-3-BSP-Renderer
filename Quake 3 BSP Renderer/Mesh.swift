@@ -42,6 +42,7 @@ class MapMesh {
     var vertexBuffer: MTLBuffer! = nil
     var shaders: Dictionary<String, Q3Shader> = Dictionary()
     var faceMeshes: Array<FaceMesh> = []
+    var shadedFaceMeshes: Array<FaceMesh> = []
     
     init(device: MTLDevice, map: Q3Map, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
         self.device = device
@@ -83,6 +84,12 @@ class MapMesh {
         )
         
         for (key, indices) in groupedIndices {
+            var shaded = false
+
+            if self.shaders[key.texture] != nil {
+                shaded = true
+            }
+            
             let shader = self.shaders[key.texture] ?? Q3Shader(textureName: key.texture)
             let material = try! Material(shader: shader, device: device, textureLoader: textureLoader)
             
@@ -104,7 +111,11 @@ class MapMesh {
                 indexBuffer: buffer
             )
             
-            faceMeshes.append(faceMesh)
+            if shaded {
+                shadedFaceMeshes.append(faceMesh)
+            } else {
+                faceMeshes.append(faceMesh)
+            }
         }
         
         faceMeshes.sortInPlace { a, b in a.sort < b.sort }
@@ -114,6 +125,10 @@ class MapMesh {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
         for faceMesh in faceMeshes {
+            faceMesh.renderWithEncoder(encoder, time: time)
+        }
+        
+        for faceMesh in shadedFaceMeshes {
             faceMesh.renderWithEncoder(encoder, time: time)
         }
     }
