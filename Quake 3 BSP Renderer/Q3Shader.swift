@@ -85,15 +85,12 @@ enum TextureCoordinateMod {
     case Transform(m00: Float, m01: Float, m10: Float, m11: Float, t0: Float, t1: Float)
 }
 
-enum AlphaFunction {
-    case GT0
-    case LT128
-    case GE128
+enum AlphaFunction: UInt8 {
+    case GT0 = 0, LT128, GE128
 }
 
 enum DepthFunction {
-    case LessThanOrEqual
-    case Equal
+    case LessThanOrEqual, Equal
 }
 
 enum StageTexture {

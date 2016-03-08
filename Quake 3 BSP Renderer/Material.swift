@@ -23,11 +23,17 @@ struct Material {
         case Lightmap
     }
     
+    private struct StageUniforms {
+        let hasAlphaFunc: Bool
+        let alphaFunc: UInt8?
+    }
+    
     private struct MaterialStage {
         let pipelineState: MTLRenderPipelineState
         let depthStencilState: MTLDepthStencilState
         let samplerState: MTLSamplerState
         let texture: Material.StageTexture
+        let uniforms: MTLBuffer
     }
     
     private var textureLoader: Q3TextureLoader
@@ -78,12 +84,16 @@ struct Material {
             let depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
             let samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
             
+            let uniforms = StageUniforms(hasAlphaFunc: stage.alphaFunction != nil, alphaFunc: stage.alphaFunction?.rawValue)
+            let uniformBuffer = device.newBufferWithBytes([uniforms], length: sizeof(StageUniforms), options: .CPUCacheModeDefaultCache)
+            
             stages.append(
                 MaterialStage(
                     pipelineState: pipelineState,
                     depthStencilState: depthStencilState,
                     samplerState: samplerState,
-                    texture: texture
+                    texture: texture,
+                    uniforms: uniformBuffer
                 )
             )
         }
@@ -98,6 +108,7 @@ struct Material {
             encoder.setRenderPipelineState(stage.pipelineState)
             encoder.setDepthStencilState(stage.depthStencilState)
             encoder.setFragmentSamplerState(stage.samplerState, atIndex: 0)
+            encoder.setFragmentBuffer(stage.uniforms, offset: 0, atIndex: 0)
             
             // Set the texture
             switch stage.texture {
