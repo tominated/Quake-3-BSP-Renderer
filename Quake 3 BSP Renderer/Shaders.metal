@@ -34,6 +34,13 @@ struct Uniforms
     float4x4 projectionMatrix;
 };
 
+enum AlphaFunc: uchar { gt0, lt128, ge128 };
+struct StageUniforms
+{
+    bool hasAlphafunc;
+    AlphaFunc alphafunc;
+};
+
 vertex VertexOut renderVert(VertexIn in [[stage_in]],
                             constant Uniforms &uniforms [[buffer(1)]],
                             uint vid [[vertex_id]])
@@ -51,16 +58,29 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 
 fragment half4 renderFrag(VertexOut vert [[stage_in]],
                           texture2d<half> tex [[texture(0)]],
-                          texture2d<half> lm [[texture(1)]])
+                          sampler smp [[sampler(0)]],
+                          constant StageUniforms &stageUniforms [[buffer(0)]])
 {
-    constexpr sampler s(coord::normalized,
-                        address::repeat,
-                        filter::linear,
-                        mip_filter::linear);
     constexpr float2 x = float2(1, 1);
     
-    half4 diffuseColor = tex.sample(s, x - vert.textureCoord);
-    half4 lightColor = lm.sample(s, vert.lightMapCoord);
+    half4 diffuse = half4(vert.color) * tex.sample(smp, x - vert.textureCoord);
     
-    return diffuseColor * lightColor;
+    if (stageUniforms.hasAlphafunc) {
+        bool discard = false;
+        switch (stageUniforms.alphafunc) {
+            case gt0: discard = diffuse[3] <= 0; break;
+            case lt128: discard = diffuse[3] >= 0.5; break;
+            case ge128: discard = diffuse[3] < 0.5; break;
+        }
+        if (discard) discard_fragment();
+    }
+    
+    return diffuse;
+}
+
+fragment half4 renderFragLM(VertexOut vert [[stage_in]],
+                            texture2d<half> lm [[texture(0)]],
+                            sampler smp [[sampler(0)]])
+{
+    return half4(vert.color) * lm.sample(smp, vert.lightMapCoord);
 }

@@ -24,14 +24,12 @@ class ViewController: UIViewController {
     let device = MTLCreateSystemDefaultDevice()!
     
     var commandQueue : MTLCommandQueue! = nil
-    var pipeline : MTLRenderPipelineState! = nil
     
     // Resources
     var uniformBufferProvider: BufferProvider! = nil
     var mapMesh : MapMesh! = nil
     var uniforms : Uniforms! = nil
     var depthTexture : MTLTexture! = nil
-    var depthState : MTLDepthStencilState! = nil
     var msaaTexture : MTLTexture! = nil
     
     let sampleCount = 2
@@ -54,14 +52,9 @@ class ViewController: UIViewController {
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
         let shaders = try! shaderParser.readShaders()
         
-        var textures: Dictionary<String, UIImage> = Dictionary()
-        for textureName in map.textureNames {
-            if let texture = loader.loadTexture(textureName) {
-                textures[textureName] = texture
-            }
-        }
+        let textureLoader = Q3TextureLoader(loader: loader, device: device)
         
-        mapMesh = MapMesh(device: self.device, map: map, textures: textures, shaders: shaders)
+        mapMesh = MapMesh(device: self.device, map: map, textureLoader: textureLoader, shaders: shaders)
     }
     
     func initializeMetal() {
@@ -73,35 +66,6 @@ class ViewController: UIViewController {
         view.layer.addSublayer(metalLayer)
         
         commandQueue = device.newCommandQueue()
-    }
-    
-    func buildPipeline() {
-        // Shader setup
-        let library = device.newDefaultLibrary()!
-        let vertexFunction = library.newFunctionWithName("renderVert")
-        let fragmentFunction = library.newFunctionWithName("renderFrag")
-
-        // Pipeline Descriptor
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
-        
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .BGRA8Unorm
-        pipelineDescriptor.colorAttachments[0].blendingEnabled = true
-        pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .Add
-        pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .Add
-        pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = .SourceAlpha
-        pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .SourceAlpha
-        pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .OneMinusSourceAlpha
-        pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .OneMinusSourceAlpha
-        
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        pipelineDescriptor.sampleCount = sampleCount
-        
-        // Try creating the pipeline
-        pipeline = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
     }
     
     func buildResources() {
@@ -124,43 +88,8 @@ class ViewController: UIViewController {
             height: Int(self.view.frame.height),
             mipmapped: false
         )
-        depthTextureDescriptor.textureType = .Type2DMultisample
-        depthTextureDescriptor.sampleCount = sampleCount
+        depthTextureDescriptor.textureType = .Type2D
         depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
-        
-        // Depth stencil
-        let stencilDescriptor = MTLDepthStencilDescriptor()
-        stencilDescriptor.depthCompareFunction = .LessEqual
-        stencilDescriptor.depthWriteEnabled = true
-        depthState = device.newDepthStencilStateWithDescriptor(stencilDescriptor)
-        
-        // MSAA
-        let msaaDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .BGRA8Unorm,
-            width: Int(self.view.frame.width),
-            height: Int(self.view.frame.height),
-            mipmapped: false
-        )
-        
-        msaaDescriptor.textureType = .Type2DMultisample
-        msaaDescriptor.sampleCount = sampleCount
-        msaaTexture = device.newTextureWithDescriptor(msaaDescriptor)
-    }
-    
-    func generateMipMaps() {
-        let commandBuffer = commandQueue.commandBuffer()
-        let commandEncoder = commandBuffer.blitCommandEncoder()
-        
-        for (_, texture) in mapMesh.textures {
-            commandEncoder.generateMipmapsForTexture(texture)
-        }
-        
-        for lightmap in mapMesh.lightmaps {
-            commandEncoder.generateMipmapsForTexture(lightmap)
-        }
-        
-        commandEncoder.endEncoding()
-        commandBuffer.commit()
     }
     
     func draw() {
@@ -177,12 +106,9 @@ class ViewController: UIViewController {
             
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
-            renderPassDescriptor.colorAttachments[0].texture = msaaTexture
-            renderPassDescriptor.colorAttachments[0].resolveTexture = drawable.texture
-            renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.8, 0.3, 0.2, 1)
+            renderPassDescriptor.colorAttachments[0].texture = drawable.texture
             renderPassDescriptor.colorAttachments[0].loadAction = .Clear
-            renderPassDescriptor.colorAttachments[0].storeAction = .MultisampleResolve
-            
+            renderPassDescriptor.colorAttachments[0].storeAction = .DontCare
             
             renderPassDescriptor.depthAttachment.texture = depthTexture
             renderPassDescriptor.depthAttachment.loadAction = .Clear
@@ -190,11 +116,9 @@ class ViewController: UIViewController {
             
             // Command Encoder
             let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
-            commandEncoder.setDepthStencilState(depthState)
-            commandEncoder.setRenderPipelineState(pipeline)
             commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
 
-            mapMesh.renderWithEncoder(commandEncoder)
+            mapMesh.renderWithEncoder(commandEncoder, time: Float(timer.timestamp))
 
             commandEncoder.endEncoding()
             
@@ -242,9 +166,7 @@ class ViewController: UIViewController {
 
         initializeMetal()
         loadMap()
-        buildPipeline()
         buildResources()
-        generateMipMaps()
         startDisplayTimer()
 
         // Set up gesture recognizers

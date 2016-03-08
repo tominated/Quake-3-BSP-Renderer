@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Metal
 
 class Q3ShaderParser {
     enum Q3ShaderParserError: ErrorType {
@@ -56,19 +57,19 @@ class Q3ShaderParser {
         scanner.scanUpToCharactersFromSet(NSCharacterSet.newlineCharacterSet())!
     }
     
-    private func readBlendMode(blendMode: String) throws -> BlendMode {
+    private func readBlendMode(blendMode: String) throws -> MTLBlendFactor {
         switch blendMode.uppercaseString {
         case "GL_ONE": return .One
         case "GL_ZERO": return .Zero
         case "GL_SRC_COLOR": return .SourceColor
         case "GL_SRC_ALPHA": return .SourceAlpha
-        case "GL_DST_COLOR": return .DestColor
-        case "GL_DST_ALPHA": return .DestAlpha
+        case "GL_DST_COLOR": return .DestinationColor
+        case "GL_DST_ALPHA": return .DestinationAlpha
         case "GL_ONE_MINUS_SRC_COLOR": return .OneMinusSourceColor
         case "GL_ONE_MINUS_SRC_ALPHA": return .OneMinusSourceAlpha
-        case "GL_ONE_MINUS_DST_COLOR": return .OneMinusDestColor
-        case "GL_ONE_MINUS_DST_ALPHA": return .OneMinusDestAlpha
-        case "GL_SRC_ALPHA_SATURATE": return .SourceAlphaSaturate
+        case "GL_ONE_MINUS_DST_COLOR": return .OneMinusDestinationColor
+        case "GL_ONE_MINUS_DST_ALPHA": return .OneMinusDestinationAlpha
+        case "GL_SRC_ALPHA_SATURATE": return .SourceAlphaSaturated
         default: throw Q3ShaderParserError.UnknownToken(blendMode)
         }
     }
@@ -201,6 +202,7 @@ class Q3ShaderParser {
     
     func readStage() throws -> Q3ShaderStage {
         var stage = Q3ShaderStage()
+        var depthWriteOverride = false
         
         var token = try readString()
         
@@ -246,7 +248,7 @@ class Q3ShaderParser {
                 let depthFunc = try readString()
                 
                 switch depthFunc {
-                case "lequal": stage.depthFunction = .LessThanOrEqual
+                case "lequal": stage.depthFunction = .LessEqual
                 case "equal": stage.depthFunction = .Equal
                 default: throw Q3ShaderParserError.UnknownToken(depthFunc)
                 }
@@ -254,22 +256,21 @@ class Q3ShaderParser {
             case "blendfunc":
                 let blendfunc = try readString()
                 
+                if !depthWriteOverride {
+                    stage.depthWrite = false
+                }
+                
                 switch blendfunc.lowercaseString {
                 case "add", "gl_add":
-                    stage.blendSource = .One
-                    stage.blendDest = .One
+                    stage.blending = (.One, .One)
                 case "filter":
-                    stage.blendSource = .DestColor
-                    stage.blendDest = .Zero
+                    stage.blending = (.DestinationColor, .Zero)
                 case "blend":
-                    stage.blendSource = .SourceAlpha
-                    stage.blendDest = .OneMinusSourceAlpha
+                    stage.blending = (.SourceAlpha, .OneMinusSourceAlpha)
                 default:
-                    stage.blendSource = try readBlendMode(blendfunc)
-                    
-                    let destBlend = try readString()
-                    
-                    stage.blendDest = try readBlendMode(destBlend)
+                    let blendSource = try readBlendMode(blendfunc)
+                    let blendDestination = try readBlendMode(try readString())
+                    stage.blending = (blendSource, blendDestination)
                 }
             
             case "rgbgen":
@@ -328,7 +329,9 @@ class Q3ShaderParser {
             
             case "tcmod": stage.textureCoordinateMods.append(try readTextureCoordinateMod())
             
-            case "depthwrite": stage.depthWrite = true
+            case "depthwrite":
+                depthWriteOverride = true
+                stage.depthWrite = true
             
             case "detail": break
             
@@ -363,13 +366,13 @@ class Q3ShaderParser {
         return sky
     }
     
-    private func readCull() throws -> Cull {
+    private func readCull() throws -> MTLCullMode {
         let token = try readString()
         
         switch token.lowercaseString {
-        case "front": return .FrontSided
-        case "none", "twosided", "disable": return .TwoSided
-        case "back", "backside", "backsided": return .BackSided
+        case "front": return .Front
+        case "none", "twosided", "disable": return .None
+        case "back", "backside", "backsided": return .Back
         default: throw Q3ShaderParserError.UnknownToken(token)
         }
     }
@@ -432,13 +435,15 @@ class Q3ShaderParser {
             case "portal": shader.sort = .Portal
                 
             case "sort": shader.sort = try readSort()
+            
+            case "nomipmap", "nomipmaps": shader.mipmapsEnabled = false
                 
             case "}": return shader
                 
             // Can ignore these safely
-            case "nopicmip", "nomipmap", "nomipmaps", "polygonoffset", "light1",
-                "entitymergable", "qer_nocarve", "q3map_globaltexture",
-                "lightning":
+            case
+                "nopicmip", "polygonoffset", "light1", "entitymergable",
+                "qer_nocarve", "q3map_globaltexture","lightning":
                 break
             
             case

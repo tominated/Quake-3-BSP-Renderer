@@ -24,47 +24,42 @@ func ==(lhs: IndexGroupKey, rhs: IndexGroupKey) -> Bool {
 }
 
 struct FaceMesh {
-    let shader: Q3Shader
-    let texture: MTLTexture
+    let sort: Int32
+    let material: Material
     let lightmap: MTLTexture
     let indexCount: Int
     let indexBuffer: MTLBuffer
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
-        encoder.setFragmentTexture(texture, atIndex: 0)
-        encoder.setFragmentTexture(lightmap, atIndex: 1)
-        
-        encoder.drawIndexedPrimitives(
-            .Triangle,
-            indexCount: indexCount,
-            indexType: .UInt32,
-            indexBuffer: indexBuffer,
-            indexBufferOffset: 0
-        )
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
+        material.renderWithEncoder(encoder, time: time, indexBuffer: indexBuffer, indexCount: indexCount, lightmap: lightmap)
     }
 }
 
 class MapMesh {
     let device: MTLDevice
     let map: Q3Map
+    let textureLoader: Q3TextureLoader
     var vertexBuffer: MTLBuffer! = nil
-    var textures: Dictionary<String, MTLTexture> = Dictionary()
     var shaders: Dictionary<String, Q3Shader> = Dictionary()
-    var groupedIndices: Dictionary<IndexGroupKey, [UInt32]> = Dictionary()
     var faceMeshes: Array<FaceMesh> = []
-    var lightmaps: [MTLTexture] = []
-    var defaultTexture: MTLTexture! = nil
+    var shadedFaceMeshes: Array<FaceMesh> = []
     
-    init(device: MTLDevice, map: Q3Map, textures: Dictionary<String, UIImage>, shaders: Array<Q3Shader>) {
+    init(device: MTLDevice, map: Q3Map, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
         self.device = device
         self.map = map
+        self.textureLoader = textureLoader
         
-        createTextures(textures)
-        createLightmaps()
+        let defaultTexture = textureLoader.loadWhiteTexture()
+        
+        let texturesInMap = Set(map.textureNames)
         
         for shader in shaders {
-            self.shaders[shader.name] = shader
+            if texturesInMap.contains(shader.name) {
+                self.shaders[shader.name] = shader
+            }
         }
+        
+        var groupedIndices: Dictionary<IndexGroupKey, [UInt32]> = Dictionary()
         
         for face in map.faces {
             if (face.textureName == "noshader") { continue }
@@ -89,9 +84,18 @@ class MapMesh {
         )
         
         for (key, indices) in groupedIndices {
+            var shaded = false
+
+            if self.shaders[key.texture] != nil {
+                shaded = true
+            }
+            
             let shader = self.shaders[key.texture] ?? Q3Shader(textureName: key.texture)
-            let texture = self.textures[key.texture] ?? defaultTexture!
-            let lightmap = key.lightmap >= 0 ? self.lightmaps[key.lightmap] : defaultTexture
+            let material = try! Material(shader: shader, device: device, textureLoader: textureLoader)
+            
+            let lightmap = key.lightmap >= 0
+                ? textureLoader.loadLightmap(map.lightmaps[key.lightmap])
+                : defaultTexture
             
             let buffer = device.newBufferWithBytes(
                 indices,
@@ -100,82 +104,32 @@ class MapMesh {
             )
             
             let faceMesh = FaceMesh(
-                shader: shader,
-                texture: texture,
+                sort: shader.sort.order(),
+                material: material,
                 lightmap: lightmap,
                 indexCount: indices.count,
                 indexBuffer: buffer
             )
             
-            faceMeshes.append(faceMesh)
-        }
-        
-        faceMeshes.sortInPlace { a, b in a.shader.sort < b.shader.sort }
-    }
-    
-    private func createTextures(textures: Dictionary<String, UIImage>) {
-        let textureLoader = MTKTextureLoader(device: device)
-        let textureOptions = [
-            MTKTextureLoaderOptionTextureUsage: MTLTextureUsage.ShaderRead.rawValue,
-            MTKTextureLoaderOptionAllocateMipmaps: 1
-        ]
-        
-        // Create white texture
-        let defaultDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .RGBA8Unorm,
-            width: 128,
-            height: 128,
-            mipmapped: false
-        )
-        defaultTexture = device.newTextureWithDescriptor(defaultDescriptor)
-        defaultTexture.replaceRegion(
-            MTLRegionMake2D(0, 0, 128, 128),
-            mipmapLevel: 0,
-            withBytes: Array(
-                count: 128 * 128 * 4,
-                repeatedValue: UInt8(255)
-            ),
-            bytesPerRow: 128 * 4
-        )
-        
-        for (textureName, texture) in textures {
-            print("loading texture '\(textureName)'")
-            
-            do {
-                self.textures[textureName] = try textureLoader.newTextureWithCGImage(texture.CGImage!, options: textureOptions)
-            } catch {
-                print("  Error loading \(textureName)")
+            if shaded {
+                shadedFaceMeshes.append(faceMesh)
+            } else {
+                faceMeshes.append(faceMesh)
             }
         }
-    }
-    
-    private func createLightmaps() {
-        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .RGBA8Unorm,
-            width: 128,
-            height: 128,
-            mipmapped: true
-        )
         
-        for lm in map.lightmaps {
-            let texture = device.newTextureWithDescriptor(textureDescriptor)
-
-            texture.replaceRegion(
-                MTLRegionMake2D(0, 0, 128, 128),
-                mipmapLevel: 0,
-                withBytes: lm,
-                bytesPerRow: 128 * 4
-            )
-            
-            self.lightmaps.append(texture)
-        }
+        faceMeshes.sortInPlace { a, b in a.sort < b.sort }
     }
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder) {
+    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
         encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
         
         for faceMesh in faceMeshes {
-            faceMesh.renderWithEncoder(encoder)
+            faceMesh.renderWithEncoder(encoder, time: time)
+        }
+        
+        for faceMesh in shadedFaceMeshes {
+            faceMesh.renderWithEncoder(encoder, time: time)
         }
     }
     
