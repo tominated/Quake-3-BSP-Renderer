@@ -61,9 +61,8 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
                           sampler smp [[sampler(0)]],
                           constant StageUniforms &stageUniforms [[buffer(0)]])
 {
-    constexpr float2 x = float2(1, 1);
-    
-    half4 diffuse = half4(vert.color) * tex.sample(smp, x - vert.textureCoord);
+    vert.textureCoord[1] = 1 - vert.textureCoord[1];
+    half4 diffuse = half4(vert.color) * tex.sample(smp, vert.textureCoord);
     
     if (stageUniforms.hasAlphafunc) {
         bool discard = false;
