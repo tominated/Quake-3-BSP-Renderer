@@ -44,14 +44,15 @@ struct Material {
         self.textureLoader = textureLoader
         cull = shader.cull
         
-        let library = device.newDefaultLibrary()!
-        let vertexFunction = library.newFunctionWithName("renderVert")
-        let fragmentFunction = library.newFunctionWithName("renderFrag")
-        let lightmapFragmentFunction = library.newFunctionWithName("renderFragLM")
-        
         let whiteTexture = textureLoader.loadWhiteTexture()
         
         for stage in shader.stages {
+            let str = buildShaderLibrary(shader, stage: stage)
+            let library = try! device.newLibraryWithSource(str, options: nil)
+            let vertexFunction = library.newFunctionWithName("renderVert")
+            let fragmentFunction = library.newFunctionWithName("renderFrag")
+            let lightmapFragmentFunction = library.newFunctionWithName("renderFragLM")
+            
             // Set up pipeline and depth state
             let pipelineDescriptor = stage.getRenderPipelineDescriptor(vertexFunction!, fragmentFunction!)
             let depthStencilDescriptor = stage.getDepthStencilDescriptor()

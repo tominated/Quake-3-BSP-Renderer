@@ -11,6 +11,7 @@
 		E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */; };
 		E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB91C462C5200BF5B91 /* Q3Map.swift */; };
 		E21CCBBC1C46344D00BF5B91 /* Q3Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */; };
+		E2459AF71C918E9F00C29BFE /* ShaderBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */; };
 		E24920C81C0733D100352118 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24920C71C0733D100352118 /* Mesh.swift */; };
 		E24F12B41C47BD5200DF1DCF /* pak0.pk3 in Resources */ = {isa = PBXBuildFile; fileRef = E24F12B31C47BD5200DF1DCF /* pak0.pk3 */; };
 		E24F12B61C47C2D300DF1DCF /* Targa.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24F12B51C47C2D300DF1DCF /* Targa.swift */; };
@@ -21,8 +22,8 @@
 		E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E27901F11B8D989C00E09E46 /* Images.xcassets */; };
 		E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E27901F31B8D989C00E09E46 /* LaunchScreen.xib */; };
 		E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020A1B8D98CB00E09E46 /* BinaryReader.swift */; };
-		E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = E279020E1B8D9CAC00E09E46 /* Shaders.metal */; };
 		E288A0991C81C3BD00A36DA8 /* Q3TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */; };
+		E2BD2ABE1CB398BD0061F478 /* shaderTemplate.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2BD2ABD1CB398BD0061F478 /* shaderTemplate.mustache */; };
 		E2C573761C6B64A9002004A2 /* Q3Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C573751C6B64A9002004A2 /* Q3Shader.swift */; };
 		E2C7293D1C7C86CF0087A64A /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C7293C1C7C86CF0087A64A /* Material.swift */; };
 		E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */; };
@@ -48,6 +49,7 @@
 		E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ResourceLoader.swift; sourceTree = "<group>"; };
 		E21CCBB91C462C5200BF5B91 /* Q3Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Map.swift; sourceTree = "<group>"; };
 		E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Types.swift; sourceTree = "<group>"; };
+		E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderBuilder.swift; sourceTree = "<group>"; };
 		E24920C71C0733D100352118 /* Mesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		E24F12B31C47BD5200DF1DCF /* pak0.pk3 */ = {isa = PBXFileReference; lastKnownFileType = file; path = pak0.pk3; sourceTree = "<group>"; };
 		E24F12B51C47C2D300DF1DCF /* Targa.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Targa.swift; sourceTree = "<group>"; };
@@ -61,8 +63,8 @@
 		E27901F41B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Quake 3 BSP RendererTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
-		E279020E1B8D9CAC00E09E46 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3TextureLoader.swift; sourceTree = "<group>"; };
+		E2BD2ABD1CB398BD0061F478 /* shaderTemplate.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shaderTemplate.mustache; sourceTree = "<group>"; };
 		E2C573751C6B64A9002004A2 /* Q3Shader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Shader.swift; sourceTree = "<group>"; };
 		E2C7293C1C7C86CF0087A64A /* Material.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferProvider.swift; sourceTree = "<group>"; };
@@ -138,7 +140,6 @@
 				E27901F31B8D989C00E09E46 /* LaunchScreen.xib */,
 				E27901E81B8D989C00E09E46 /* Supporting Files */,
 				E279020A1B8D98CB00E09E46 /* BinaryReader.swift */,
-				E279020E1B8D9CAC00E09E46 /* Shaders.metal */,
 				E24920C71C0733D100352118 /* Mesh.swift */,
 				E26DC7171C15625C003E7A54 /* Camera.swift */,
 				E2E0B6181C2B9FB800365076 /* Bezier.swift */,
@@ -151,6 +152,8 @@
 				E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */,
 				E2C7293C1C7C86CF0087A64A /* Material.swift */,
 				E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */,
+				E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */,
+				E2BD2ABD1CB398BD0061F478 /* shaderTemplate.mustache */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -249,6 +252,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2BD2ABE1CB398BD0061F478 /* shaderTemplate.mustache in Resources */,
 				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
 				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
 				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
@@ -320,6 +324,7 @@
 			files = (
 				E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */,
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
+				E2459AF71C918E9F00C29BFE /* ShaderBuilder.swift in Sources */,
 				E288A0991C81C3BD00A36DA8 /* Q3TextureLoader.swift in Sources */,
 				E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */,
 				E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */,
@@ -333,7 +338,6 @@
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
 				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
 				E26DC7181C15625C003E7A54 /* Camera.swift in Sources */,
-				E279020F1B8D9CAC00E09E46 /* Shaders.metal in Sources */,
 				E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

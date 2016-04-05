@@ -73,7 +73,6 @@ enum TextureCoordinateGenerator {
     case Lightmap
     case Environment
     case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
-    case Undefined
 }
 
 enum TextureCoordinateMod {
@@ -149,7 +148,7 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 struct Q3ShaderStage {
     var map: StageTexture = .White
     var blending: (MTLBlendFactor, MTLBlendFactor)? = nil
-    var textureCoordinateGenerator: TextureCoordinateGenerator = .Undefined
+    var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Undefined
     var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil

@@ -46,13 +46,13 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
                             uint vid [[vertex_id]])
 {
     VertexOut out;
-    
+
     out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(in.position);
     out.normal = float4(in.normal);
     out.color = float4(in.color);
     out.textureCoord = float2(in.textureCoord);
     out.lightMapCoord = float2(in.lightMapCoord);
-    
+
     return out;
 }
 
@@ -63,7 +63,7 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
 {
     vert.textureCoord[1] = 1 - vert.textureCoord[1];
     half4 diffuse = half4(vert.color) * tex.sample(smp, vert.textureCoord);
-    
+
     if (stageUniforms.hasAlphafunc) {
         bool discard = false;
         switch (stageUniforms.alphafunc) {
@@ -73,7 +73,7 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
         }
         if (discard) discard_fragment();
     }
-    
+
     return diffuse;
 }
 

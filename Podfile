@@ -3,6 +3,7 @@ use_frameworks!
 
 target 'Quake 3 BSP Renderer' do
   pod 'zipzap'
+  pod 'GRMustache.swift'
 end
 
 target 'Quake 3 BSP RendererTests' do
