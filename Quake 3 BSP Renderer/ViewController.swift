@@ -139,7 +139,7 @@ class ViewController: UIViewController {
     }
     
     func startDisplayTimer() {
-        timer = CADisplayLink(target: self, selector: Selector("redraw"))
+        timer = CADisplayLink(target: self, selector: #selector(ViewController.redraw))
         timer.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     }
 
@@ -170,8 +170,8 @@ class ViewController: UIViewController {
         startDisplayTimer()
 
         // Set up gesture recognizers
-        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "handlePan:"))
-        view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: "handlePinch:"))
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePan(_:))))
+        view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(ViewController.handlePinch(_:))))
     }
 
     override func didReceiveMemoryWarning() {
