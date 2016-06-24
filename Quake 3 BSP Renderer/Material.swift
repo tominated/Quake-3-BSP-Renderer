@@ -34,15 +34,14 @@ struct Material {
     private var stages: Array<MaterialStage> = []
     private var cull: MTLCullMode
     
-    init(shader: Q3Shader, device: MTLDevice, textureLoader: Q3TextureLoader) throws {
+    init(shader: Q3Shader, device: MTLDevice, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader) throws {
         self.textureLoader = textureLoader
         cull = shader.cull
         
         let whiteTexture = textureLoader.loadWhiteTexture()
         
         for stage in shader.stages {
-            let str = buildShaderLibrary(shader, stage: stage)
-            let library = try! device.newLibraryWithSource(str, options: nil)
+            let library = shaderBuilder.buildShaderLibrary(shader, stage)
             let vertexFunction = library.newFunctionWithName("renderVert")
             let fragmentFunction = library.newFunctionWithName("renderFrag")
             

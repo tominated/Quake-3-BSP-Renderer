@@ -23,6 +23,7 @@ struct VertexOut
 
 struct Uniforms
 {
+    float time;
     float4x4 modelMatrix;
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
@@ -44,6 +45,7 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 }
 
 fragment half4 renderFrag(VertexOut vert [[stage_in]],
+                          constant Uniforms &uniforms [[buffer(0)]],
                           texture2d<half> tex [[texture(0)]],
                           sampler smp [[sampler(0)]])
 {
@@ -51,8 +53,14 @@ fragment half4 renderFrag(VertexOut vert [[stage_in]],
 
     half4 color = {{rgbGenerator}};
     half4 diffuse = tex.sample(smp, textureCoord);
+    half alpha = {{alphaGenerator}};
 
     {{alphaFunction}}
 
-    return color * diffuse;
+    {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}
+
+    half4 result = color * diffuse;
+    result[3] = alpha;
+
+    return result;
 }

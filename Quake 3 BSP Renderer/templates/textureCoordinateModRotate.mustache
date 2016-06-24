@@ -1,0 +1,9 @@
+{
+    float r = {{ angle }} * uniforms.time;
+    textureCoord -= float2(0.5, 0.5);
+    textureCoord = float2(
+        textureCoord[0] * cos(r) - textureCoord[1] * sin(r),
+        textureCoord[1] * cos(r) + textureCoord[0] * sin(r)
+    );
+    textureCoord += float2(0.5, 0.5);
+}
