@@ -49,14 +49,14 @@ class ShaderBuilder {
     
     private func buildTextureCoordinateGenerator(val: TextureCoordinateGenerator) -> String {
         switch val {
-        case .Lightmap: return "vert.lightmapCoord"
-        default: return "vert.textureCoord"
+        case .Lightmap: return "in.lightmapCoord"
+        default: return "in.textureCoord"
         }
     }
     
     private func buildRGBGenerator(val: RGBGenerator) -> String {
         switch val {
-        case .Vertex: return "half4(vert.color)"
+        case .Vertex: return "half4(in.color)"
         default: return "half4(1,1,1,1)"
         }
     }
@@ -81,6 +81,30 @@ class ShaderBuilder {
         return "if (alpha \(condition)) discard_fragment();"
     }
     
+    private func buildWaveform(name: String, val: Waveform) -> MustacheBox {
+        let templateName: String = {
+            switch val.function {
+            case .Sin: return "waveformSin"
+            case .Triangle: return "waveformTriangle"
+            case .Square: return "waveformSquare"
+            case .Sawtooth: return "waveformSawtooth"
+            case .InverseSawtooth: return "waveformInverseSawtooth"
+            case .Noise: return "waveformNoise"
+            }
+        }()
+        
+        let template = try! repo.template(named: templateName)
+        
+        return Box([
+            "template": template,
+            "name": name,
+            "base": val.base,
+            "amplitude": val.amplitude,
+            "phase": val.phase,
+            "frequency": val.frequency
+        ])
+    }
+    
     private func buildTextureCoordinateMod(val: TextureCoordinateMod) -> MustacheBox {
         switch val {
         case .Rotate(let degrees):
@@ -99,6 +123,11 @@ class ShaderBuilder {
                 "template": try! repo.template(named: "textureCoordinateModScroll"),
                 "x": x,
                 "y": y
+            ])
+        case .Stretch(let waveform):
+            return Box([
+                "template": try! repo.template(named: "textureCoordinateModStretch"),
+                "waveform": buildWaveform("stretchWave", val: waveform)
             ])
         default:
             return Box("")

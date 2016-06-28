@@ -18,7 +18,6 @@ struct VertexOut
     float4 normal;
     float4 color;
     float2 textureCoord;
-    float2 lightmapCoord;
 };
 
 struct Uniforms
@@ -35,29 +34,29 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 {
     VertexOut out;
 
-    out.position = uniforms.projectionMatrix * uniforms.viewMatrix * uniforms.modelMatrix * float4(in.position);
+    float4 worldPosition = uniforms.viewMatrix * uniforms.modelMatrix * float4(in.position);
+    float2 textureCoord = {{textureCoordinateGenerator}};
+
+    {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}
+
+    out.position = uniforms.projectionMatrix * worldPosition;
     out.normal = float4(in.normal);
     out.color = float4(in.color);
-    out.textureCoord = float2(in.textureCoord);
-    out.lightmapCoord = float2(in.lightmapCoord);
+    out.textureCoord = textureCoord;
 
     return out;
 }
 
-fragment half4 renderFrag(VertexOut vert [[stage_in]],
+fragment half4 renderFrag(VertexOut in [[stage_in]],
                           constant Uniforms &uniforms [[buffer(0)]],
                           texture2d<half> tex [[texture(0)]],
                           sampler smp [[sampler(0)]])
 {
-    float2 textureCoord = {{textureCoordinateGenerator}};
-
     half4 color = {{rgbGenerator}};
-    half4 diffuse = tex.sample(smp, textureCoord);
+    half4 diffuse = tex.sample(smp, in.textureCoord);
     half alpha = {{alphaGenerator}};
 
     {{alphaFunction}}
-
-    {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}
 
     half4 result = color * diffuse;
     result[3] = alpha;
