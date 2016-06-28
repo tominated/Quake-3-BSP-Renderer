@@ -34,7 +34,11 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 {
     VertexOut out;
 
-    float4 worldPosition = uniforms.viewMatrix * uniforms.modelMatrix * float4(in.position);
+    float3 position = in.position.xyz;
+
+    {{#vertexDeforms}}{{template}}{{/vertexDeforms}}
+
+    float4 worldPosition = uniforms.viewMatrix * uniforms.modelMatrix * float4(position, 1.0);
     float2 textureCoord = {{textureCoordinateGenerator}};
 
     {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}
@@ -52,14 +56,11 @@ fragment half4 renderFrag(VertexOut in [[stage_in]],
                           texture2d<half> tex [[texture(0)]],
                           sampler smp [[sampler(0)]])
 {
-    half4 color = {{rgbGenerator}};
     half4 diffuse = tex.sample(smp, in.textureCoord);
-    half alpha = {{alphaGenerator}};
 
+    {{#rgbGenerator}}{{template}}{{/rgbGenerator}}
+    {{alphaGenerator}}
     {{alphaFunction}}
 
-    half4 result = color * diffuse;
-    result[3] = alpha;
-
-    return result;
+    return half4(color.rgb, alpha);
 }

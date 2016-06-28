@@ -38,6 +38,10 @@
 		E2C7293D1C7C86CF0087A64A /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C7293C1C7C86CF0087A64A /* Material.swift */; };
 		E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */; };
 		E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0B6181C2B9FB800365076 /* Bezier.swift */; };
+		E2EE7EA41D22012800640A0A /* rgbGeneratorWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */; };
+		E2EE7EA61D2207BC00640A0A /* rgbGeneratorVertex.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */; };
+		E2EE7EA81D22080700640A0A /* rgbGeneratorDefault.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */; };
+		E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */; };
 		E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */; };
 		E2FB31071C6EDAA800912E77 /* NSScanner+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31061C6EDAA800912E77 /* NSScanner+Swift.swift */; };
 /* End PBXBuildFile section */
@@ -89,6 +93,10 @@
 		E2C7293C1C7C86CF0087A64A /* Material.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferProvider.swift; sourceTree = "<group>"; };
 		E2E0B6181C2B9FB800365076 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
+		E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorWave.mustache; path = templates/rgbGeneratorWave.mustache; sourceTree = "<group>"; };
+		E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorVertex.mustache; path = templates/rgbGeneratorVertex.mustache; sourceTree = "<group>"; };
+		E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorDefault.mustache; path = templates/rgbGeneratorDefault.mustache; sourceTree = "<group>"; };
+		E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vertexDeformWave.mustache; path = templates/vertexDeformWave.mustache; sourceTree = "<group>"; };
 		E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ShaderParser.swift; sourceTree = "<group>"; };
 		E2FB31061C6EDAA800912E77 /* NSScanner+Swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSScanner+Swift.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -143,6 +151,10 @@
 				E2921B141D212FC60060FCE4 /* waveformSin.mustache */,
 				E2921B181D21318B0060FCE4 /* waveformSquare.mustache */,
 				E2921B161D2130F00060FCE4 /* waveformTriangle.mustache */,
+				E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */,
+				E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */,
+				E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */,
+				E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */,
 			);
 			name = templates;
 			sourceTree = "<group>";
@@ -296,15 +308,19 @@
 				E2921B201D21CE8F0060FCE4 /* waveformNoise.mustache in Resources */,
 				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
 				E25B8E301D1D1E4A009EDC8C /* textureCoordinateModScale.mustache in Resources */,
+				E2EE7EA61D2207BC00640A0A /* rgbGeneratorVertex.mustache in Resources */,
+				E2EE7EA41D22012800640A0A /* rgbGeneratorWave.mustache in Resources */,
 				E25B8E321D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache in Resources */,
 				E2921B191D21318B0060FCE4 /* waveformSquare.mustache in Resources */,
 				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
 				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
 				E2921B1E1D2132A00060FCE4 /* waveformInverseSawtooth.mustache in Resources */,
+				E2EE7EA81D22080700640A0A /* rgbGeneratorDefault.mustache in Resources */,
 				E25B8E2A1D1D186B009EDC8C /* main.mustache in Resources */,
 				E2921B171D2130F00060FCE4 /* waveformTriangle.mustache in Resources */,
 				E24F12B41C47BD5200DF1DCF /* pak0.pk3 in Resources */,
 				E2921B221D21D17A0060FCE4 /* textureCoordinateModStretch.mustache in Resources */,
+				E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -41,6 +41,7 @@ class ShaderBuilder {
             "rgbGenerator": Box(buildRGBGenerator(stage.rgbGenerator)),
             "alphaGenerator": Box(buildAlphaGenerator(stage.alphaGenerator)),
             "alphaFunction": Box(buildAlphaFunction(stage.alphaFunction)),
+            "vertexDeforms": Box(shader.vertexDeforms.map(buildVertexDeform)),
             "textureCoordinateMods": Box(stage.textureCoordinateMods.map(buildTextureCoordinateMod))
         ])
         
@@ -54,20 +55,35 @@ class ShaderBuilder {
         }
     }
     
-    private func buildRGBGenerator(val: RGBGenerator) -> String {
+    private func buildRGBGenerator(val: RGBGenerator) -> MustacheBox {
         switch val {
-        case .Vertex: return "half4(in.color)"
-        default: return "half4(1,1,1,1)"
+        case .Vertex:
+            return Box([
+                "template": try! repo.template(named: "rgbGeneratorVertex")
+            ])
+        case .Wave(let waveform):
+            return Box([
+                "template": try! repo.template(named: "rgbGeneratorWave"),
+                "waveform": buildWaveform("rgbWave", val: waveform)
+            ])
+        default:
+            return Box([
+                "template": try! repo.template(named: "rgbGeneratorDefault")
+            ])
         }
     }
     
-    private func buildAlphaGenerator(val: AlphaGenerator) -> String {
-        return "diffuse[3]"
+    private func buildAlphaGenerator(val: AlphaGenerator) -> MustacheBox {
+        switch val {
+        case .Constant(let a): return Box("float alpha = \(a);")
+        case .Wave(let waveform): return buildWaveform("alpha", val: waveform)
+        default: return Box("float alpha = diffuse.a;")
+        }
     }
     
-    private func buildAlphaFunction(val: AlphaFunction?) -> String {
+    private func buildAlphaFunction(val: AlphaFunction?) -> MustacheBox {
         guard let alphaFunc = val else {
-            return ""
+            return Box()
         }
         
         var condition = ""
@@ -78,7 +94,7 @@ class ShaderBuilder {
         case .GE128: condition = "< 0.5"
         }
         
-        return "if (alpha \(condition)) discard_fragment();"
+        return Box("if (alpha \(condition)) discard_fragment();")
     }
     
     private func buildWaveform(name: String, val: Waveform) -> MustacheBox {
@@ -103,6 +119,19 @@ class ShaderBuilder {
             "phase": val.phase,
             "frequency": val.frequency
         ])
+    }
+    
+    private func buildVertexDeform(val: VertexDeform) -> MustacheBox {
+        switch val {
+        case .Wave(let spread, let waveform):
+            return Box([
+                "template": try! repo.template(named: "vertexDeformWave"),
+                "waveform": buildWaveform("deformWave", val: waveform),
+                "spread": spread
+            ])
+        default:
+            return Box()
+        }
     }
     
     private func buildTextureCoordinateMod(val: TextureCoordinateMod) -> MustacheBox {
