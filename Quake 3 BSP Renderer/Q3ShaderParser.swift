@@ -208,7 +208,11 @@ class Q3ShaderParser {
         
         while true {
             switch token.lowercaseString {
-            case "map": stage.map = try readMap()
+            case "map":
+                stage.map = try readMap()
+                if case .Lightmap = stage.map {
+                    stage.textureCoordinateGenerator = .Lightmap
+                }
             
             case "clampmap": stage.map = .TextureClamp(try readString())
                 
