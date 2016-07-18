@@ -23,35 +23,28 @@ struct Material {
         case Lightmap
     }
     
-    private struct StageUniforms {
-        let hasAlphaFunc: Bool
-        let alphaFunc: UInt8?
-    }
-    
     private struct MaterialStage {
         let pipelineState: MTLRenderPipelineState
         let depthStencilState: MTLDepthStencilState
         let samplerState: MTLSamplerState
         let texture: Material.StageTexture
-        let uniforms: MTLBuffer
     }
     
     private var textureLoader: Q3TextureLoader
     private var stages: Array<MaterialStage> = []
     private var cull: MTLCullMode
     
-    init(shader: Q3Shader, device: MTLDevice, textureLoader: Q3TextureLoader) throws {
+    init(shader: Q3Shader, device: MTLDevice, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader) throws {
         self.textureLoader = textureLoader
         cull = shader.cull
-        
-        let library = device.newDefaultLibrary()!
-        let vertexFunction = library.newFunctionWithName("renderVert")
-        let fragmentFunction = library.newFunctionWithName("renderFrag")
-        let lightmapFragmentFunction = library.newFunctionWithName("renderFragLM")
         
         let whiteTexture = textureLoader.loadWhiteTexture()
         
         for stage in shader.stages {
+            let library = shaderBuilder.buildShaderLibrary(shader, stage)
+            let vertexFunction = library.newFunctionWithName("renderVert")
+            let fragmentFunction = library.newFunctionWithName("renderFrag")
+            
             // Set up pipeline and depth state
             let pipelineDescriptor = stage.getRenderPipelineDescriptor(vertexFunction!, fragmentFunction!)
             let depthStencilDescriptor = stage.getDepthStencilDescriptor()
@@ -74,7 +67,6 @@ struct Material {
                 texture = .Animated(frequency: f, textures)
             
             case .Lightmap:
-                pipelineDescriptor.fragmentFunction = lightmapFragmentFunction
                 texture = .Lightmap
                 
             default: break
@@ -84,16 +76,12 @@ struct Material {
             let depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
             let samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
             
-            let uniforms = StageUniforms(hasAlphaFunc: stage.alphaFunction != nil, alphaFunc: stage.alphaFunction?.rawValue)
-            let uniformBuffer = device.newBufferWithBytes([uniforms], length: sizeof(StageUniforms), options: .CPUCacheModeDefaultCache)
-            
             stages.append(
                 MaterialStage(
                     pipelineState: pipelineState,
                     depthStencilState: depthStencilState,
                     samplerState: samplerState,
-                    texture: texture,
-                    uniforms: uniformBuffer
+                    texture: texture
                 )
             )
         }
@@ -108,7 +96,6 @@ struct Material {
             encoder.setRenderPipelineState(stage.pipelineState)
             encoder.setDepthStencilState(stage.depthStencilState)
             encoder.setFragmentSamplerState(stage.samplerState, atIndex: 0)
-            encoder.setFragmentBuffer(stage.uniforms, offset: 0, atIndex: 0)
             
             // Set the texture
             switch stage.texture {

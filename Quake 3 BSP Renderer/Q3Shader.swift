@@ -73,7 +73,6 @@ enum TextureCoordinateGenerator {
     case Lightmap
     case Environment
     case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
-    case Undefined
 }
 
 enum TextureCoordinateMod {
@@ -112,7 +111,7 @@ enum Sort {
     case Nearest
     case Underwater
     case Explicit(Int32)
-    
+
     func order() -> Int32 {
         switch self {
         case .Portal: return 1
@@ -149,34 +148,34 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 struct Q3ShaderStage {
     var map: StageTexture = .White
     var blending: (MTLBlendFactor, MTLBlendFactor)? = nil
-    var textureCoordinateGenerator: TextureCoordinateGenerator = .Undefined
+    var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
     var rgbGenerator: RGBGenerator = .Undefined
     var alphaGenerator: AlphaGenerator = .Identity
     var alphaFunction: AlphaFunction? = nil
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
     var depthFunction: MTLCompareFunction = .LessEqual
     var depthWrite: Bool = true
-    
+
     func hasBlending() -> Bool {
         return blending != nil
     }
-    
+
     func getRenderPipelineDescriptor(
         vertexFunction: MTLFunction,
         _ fragmentFunction: MTLFunction
     ) -> MTLRenderPipelineDescriptor {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        
+
         // Set Metal functions
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
         pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
-        
+
         let colorAttachment = pipelineDescriptor.colorAttachments[0]
-        
+
         colorAttachment.pixelFormat = .BGRA8Unorm
-        
+
         if let (sourceBlend, destinationBlend) = blending {
             colorAttachment.blendingEnabled = true
             colorAttachment.sourceRGBBlendFactor = sourceBlend
@@ -184,32 +183,32 @@ struct Q3ShaderStage {
             colorAttachment.destinationRGBBlendFactor = destinationBlend
             colorAttachment.destinationAlphaBlendFactor = destinationBlend
         }
-        
+
         return pipelineDescriptor
     }
-    
+
     func getDepthStencilDescriptor() -> MTLDepthStencilDescriptor {
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
-        
+
         depthStencilDescriptor.depthCompareFunction = depthFunction
         depthStencilDescriptor.depthWriteEnabled = depthWrite
-        
+
         return depthStencilDescriptor
     }
-    
+
     func getSamplerDescriptor(mipmapsEnabled: Bool) -> MTLSamplerDescriptor {
         let samplerDescriptor = MTLSamplerDescriptor()
-        
+
         samplerDescriptor.rAddressMode = .Repeat
         samplerDescriptor.sAddressMode = .Repeat
         samplerDescriptor.tAddressMode = .Repeat
         samplerDescriptor.minFilter = .Linear
         samplerDescriptor.magFilter = .Linear
-        
+
         if mipmapsEnabled {
             samplerDescriptor.mipFilter = .Linear
         }
-        
+
         switch map {
         case .TextureClamp(_):
             samplerDescriptor.rAddressMode = .ClampToEdge
@@ -217,7 +216,7 @@ struct Q3ShaderStage {
             samplerDescriptor.tAddressMode = .ClampToEdge
         default: break
         }
-        
+
         return samplerDescriptor
     }
 }
@@ -230,37 +229,37 @@ struct Q3Shader {
     var mipmapsEnabled: Bool = true
     var vertexDeforms: Array<VertexDeform> = []
     var stages: Array<Q3ShaderStage> = []
-    
+
     // This is required to allow instantiation with no arguments
     init() {}
-    
+
     // Create a default shader for a texture
     init(textureName: String) {
         name = textureName
-        
+
         var diffuseStage = Q3ShaderStage()
         diffuseStage.map = .Texture(name)
         diffuseStage.textureCoordinateGenerator = .Base
         diffuseStage.rgbGenerator = .IdentityLighting
-        
+
         var lightmapStage = Q3ShaderStage()
         lightmapStage.map = .Lightmap
         lightmapStage.blending = (.DestinationColor, .Zero)
         lightmapStage.depthFunction = .Equal
         lightmapStage.textureCoordinateGenerator = .Lightmap
         lightmapStage.rgbGenerator = .IdentityLighting
-        
+
         stages.append(diffuseStage)
         stages.append(lightmapStage)
     }
-    
+
     func hasBlending() -> Bool {
         for stage in stages {
             if stage.hasBlending() {
                 return true
             }
         }
-        
+
         return false
     }
 }

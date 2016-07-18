@@ -1,0 +1,66 @@
+{{% CONTENT_TYPE:TEXT }}
+
+#include <metal_stdlib>
+using namespace metal;
+
+struct VertexIn
+{
+    float4 position [[attribute(0)]];
+    float4 normal [[attribute(1)]];
+    float4 color [[attribute(2)]];
+    float2 textureCoord [[attribute(3)]];
+    float2 lightmapCoord [[attribute(4)]];
+};
+
+struct VertexOut
+{
+    float4 position [[position]];
+    float4 normal;
+    float4 color;
+    float2 textureCoord;
+};
+
+struct Uniforms
+{
+    float time;
+    float4x4 modelMatrix;
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
+};
+
+vertex VertexOut renderVert(VertexIn in [[stage_in]],
+                            constant Uniforms &uniforms [[buffer(1)]],
+                            uint vid [[vertex_id]])
+{
+    VertexOut out;
+
+    float3 position = in.position.xyz;
+
+    {{#vertexDeforms}}{{template}}{{/vertexDeforms}}
+
+    float4 worldPosition = uniforms.viewMatrix * uniforms.modelMatrix * float4(position, 1.0);
+    float2 textureCoord = {{textureCoordinateGenerator}};
+
+    {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}
+
+    out.position = uniforms.projectionMatrix * worldPosition;
+    out.normal = float4(in.normal);
+    out.color = float4(in.color);
+    out.textureCoord = textureCoord;
+
+    return out;
+}
+
+fragment half4 renderFrag(VertexOut in [[stage_in]],
+                          constant Uniforms &uniforms [[buffer(0)]],
+                          texture2d<half> tex [[texture(0)]],
+                          sampler smp [[sampler(0)]])
+{
+    half4 diffuse = tex.sample(smp, in.textureCoord);
+
+    {{#rgbGenerator}}{{template}}{{/rgbGenerator}}
+    {{alphaGenerator}}
+    {{alphaFunction}}
+
+    return half4(color.rgb, alpha);
+}

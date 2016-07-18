@@ -136,7 +136,7 @@ class Q3Map {
     private func readVertices() -> Array<Q3Vertex> {
         return readEntry(10, length: 44) { buffer in
             let position = self.swizzle(float4(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0))
-            let textureCoord = float2(buffer.getFloat32(), buffer.getFloat32())
+            let textureCoord = float2(buffer.getFloat32(), 1 - buffer.getFloat32())
             let lightmapCoord = float2(buffer.getFloat32(), buffer.getFloat32())
             let normal = self.swizzle(float4(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0))
             let r = Float(buffer.getUInt8()) / 255

@@ -1,0 +1,6 @@
+{
+    {{#waveform}}{{template}}{{/waveform}}
+    stretchWave = 1.0 / stretchWave;
+    textureCoord *= stretchWave;
+    textureCoord += float2(0.5 - (0.5 * stretchWave), 0.5 - (0.5 * stretchWave));
+}
