@@ -84,8 +84,6 @@ class ViewController: UIViewController {
             bufferSize: sizeof(Uniforms)
         )
         
-        print("Uniform buffer size: \(sizeof(Uniforms))")
-        
         // Depth buffer
         let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
             .Depth32Float,
