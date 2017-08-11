@@ -1,5 +1,5 @@
 PODS:
-  - GRMustache.swift (0.11.0)
+  - GRMustache.swift (2.0.0)
   - zipzap (8.1.1)
 
 DEPENDENCIES:
@@ -7,7 +7,9 @@ DEPENDENCIES:
   - zipzap
 
 SPEC CHECKSUMS:
-  GRMustache.swift: 9d0eb125308a6a935169b5734a7ec460f561495e
+  GRMustache.swift: 8a547c12bea16052071b2b540af83d770075f0eb
   zipzap: 940162d9c9c60472c2eab341385e4214da0fdf1c
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: 51bf47536360d9829fe6f97e272139b5e9c9a136
+
+COCOAPODS: 1.2.1

@@ -9,30 +9,30 @@
 import Foundation
 import MetalKit
 
-private let whiteTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-    .RGBA8Unorm,
+private let whiteTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+    pixelFormat: .rgba8Unorm,
     width: 1,
     height: 1,
     mipmapped: false
 )
 
 struct Material {
-    private enum StageTexture {
-        case Static(MTLTexture)
-        case Animated(frequency: Float, Array<MTLTexture>)
-        case Lightmap
+    fileprivate enum StageTexture {
+        case `static`(MTLTexture)
+        case animated(frequency: Float, Array<MTLTexture>)
+        case lightmap
     }
     
-    private struct MaterialStage {
+    fileprivate struct MaterialStage {
         let pipelineState: MTLRenderPipelineState
         let depthStencilState: MTLDepthStencilState
         let samplerState: MTLSamplerState
         let texture: Material.StageTexture
     }
     
-    private var textureLoader: Q3TextureLoader
-    private var stages: Array<MaterialStage> = []
-    private var cull: MTLCullMode
+    fileprivate var textureLoader: Q3TextureLoader
+    fileprivate var stages: Array<MaterialStage> = []
+    fileprivate var cull: MTLCullMode
     
     init(shader: Q3Shader, device: MTLDevice, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader) throws {
         self.textureLoader = textureLoader
@@ -42,39 +42,39 @@ struct Material {
         
         for stage in shader.stages {
             let library = shaderBuilder.buildShaderLibrary(shader, stage)
-            let vertexFunction = library.newFunctionWithName("renderVert")
-            let fragmentFunction = library.newFunctionWithName("renderFrag")
+            let vertexFunction = library.makeFunction(name: "renderVert")
+            let fragmentFunction = library.makeFunction(name: "renderFrag")
             
             // Set up pipeline and depth state
             let pipelineDescriptor = stage.getRenderPipelineDescriptor(vertexFunction!, fragmentFunction!)
             let depthStencilDescriptor = stage.getDepthStencilDescriptor()
             let samplerDescriptor = stage.getSamplerDescriptor(shader.mipmapsEnabled)
             
-            var texture: Material.StageTexture = .Static(whiteTexture)
+            var texture: Material.StageTexture = .static(whiteTexture)
             
             switch stage.map {
-            case .Texture(let path):
-                texture = .Static(textureLoader.loadTexture(path) ?? whiteTexture)
+            case .texture(let path):
+                texture = .static(textureLoader.loadTexture(path) ?? whiteTexture)
                 
-            case .TextureClamp(let path):
-                texture = .Static(textureLoader.loadTexture(path) ?? whiteTexture)
+            case .textureClamp(let path):
+                texture = .static(textureLoader.loadTexture(path) ?? whiteTexture)
                 
-            case .Animated(let f, let paths):
+            case .animated(let f, let paths):
                 let textures = paths.map { path in
                     return textureLoader.loadTexture(path) ?? whiteTexture
                 }
                 
-                texture = .Animated(frequency: f, textures)
+                texture = .animated(frequency: f, textures)
             
-            case .Lightmap:
-                texture = .Lightmap
+            case .lightmap:
+                texture = .lightmap
                 
             default: break
             }
             
-            let pipelineState = try! device.newRenderPipelineStateWithDescriptor(pipelineDescriptor)
-            let depthStencilState = device.newDepthStencilStateWithDescriptor(depthStencilDescriptor)
-            let samplerState = device.newSamplerStateWithDescriptor(samplerDescriptor)
+            let pipelineState = try! device.makeRenderPipelineState(descriptor: pipelineDescriptor)
+            let depthStencilState = device.makeDepthStencilState(descriptor: depthStencilDescriptor)
+            let samplerState = device.makeSamplerState(descriptor: samplerDescriptor)
             
             stages.append(
                 MaterialStage(
@@ -87,7 +87,7 @@ struct Material {
         }
     }
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float, indexBuffer: MTLBuffer, indexCount: Int, lightmap: MTLTexture) {
+    func renderWithEncoder(_ encoder: MTLRenderCommandEncoder, time: Float, indexBuffer: MTLBuffer, indexCount: Int, lightmap: MTLTexture) {
         encoder.setCullMode(cull)
         
         for stage in stages {
@@ -95,25 +95,25 @@ struct Material {
             // Set pipeline and depth state
             encoder.setRenderPipelineState(stage.pipelineState)
             encoder.setDepthStencilState(stage.depthStencilState)
-            encoder.setFragmentSamplerState(stage.samplerState, atIndex: 0)
+            encoder.setFragmentSamplerState(stage.samplerState, at: 0)
             
             // Set the texture
             switch stage.texture {
-            case .Static(let texture):
-                encoder.setFragmentTexture(texture, atIndex: 0)
+            case .static(let texture):
+                encoder.setFragmentTexture(texture, at: 0)
                 
-            case .Animated(let frequency, let textures):
+            case .animated(let frequency, let textures):
                 let index = Int(time * frequency) % textures.count
-                encoder.setFragmentTexture(textures[index], atIndex: 0)
+                encoder.setFragmentTexture(textures[index], at: 0)
             
-            case .Lightmap:
-                encoder.setFragmentTexture(lightmap, atIndex: 0)
+            case .lightmap:
+                encoder.setFragmentTexture(lightmap, at: 0)
             }
             
             encoder.drawIndexedPrimitives(
-                .Triangle,
+                type: .triangle,
                 indexCount: indexCount,
-                indexType: .UInt32,
+                indexType: .uint32,
                 indexBuffer: indexBuffer,
                 indexBufferOffset: 0
             )

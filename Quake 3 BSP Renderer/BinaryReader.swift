@@ -10,9 +10,9 @@ import Foundation
 
 class BinaryReader {
     var position: Int
-    var data: NSData
+    var data: Data
     
-    init(data: NSData) {
+    init(data: Data) {
         position = 0
         self.data = data
     }
@@ -21,11 +21,11 @@ class BinaryReader {
         position = 0
     }
     
-    func jump(addr: Int) {
+    func jump(_ addr: Int) {
         position = addr
     }
     
-    func skip(length: Int) {
+    func skip(_ length: Int) {
         position += length
     }
     
@@ -57,13 +57,7 @@ class BinaryReader {
         return getNumber(0)
     }
     
-    func getASCII(length: Int) -> NSString? {
-        let strData = data.subdataWithRange(NSMakeRange(position, length))
-        position += length
-        return NSString(bytes: strData.bytes, length: length, encoding: NSASCIIStringEncoding)
-    }
-    
-    func getASCIIUntilNull(max: Int, skipAhead: Bool = true) -> String {
+    func getASCIIUntilNull(_ max: Int, skipAhead: Bool = true) -> String {
         var chars: [CChar] = []
         var iterations = 0
         
@@ -84,14 +78,14 @@ class BinaryReader {
         }
         
         return chars.withUnsafeBufferPointer({ buffer in
-            return String.fromCString(buffer.baseAddress)!
+            return String(cString: buffer.baseAddress!)
         })
     }
     
-    private func getNumber<T>(zero: T) -> T {
+    fileprivate func getNumber<T>(_ zero: T) -> T {
         var x = zero
-        data.getBytes(&x, range: NSMakeRange(position, sizeof(T)))
-        position += sizeof(T)
+        (data as NSData).getBytes(&x, range: NSMakeRange(position, MemoryLayout<T>.size))
+        position += MemoryLayout<T>.size
         return x
     }
 }

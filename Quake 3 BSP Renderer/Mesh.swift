@@ -30,7 +30,7 @@ struct FaceMesh {
     let indexCount: Int
     let indexBuffer: MTLBuffer
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
+    func renderWithEncoder(_ encoder: MTLRenderCommandEncoder, time: Float) {
         material.renderWithEncoder(encoder, time: time, indexBuffer: indexBuffer, indexCount: indexCount, lightmap: lightmap)
     }
 }
@@ -74,13 +74,13 @@ class MapMesh {
                 groupedIndices[key] = []
             }
             
-            groupedIndices[key]?.appendContentsOf(face.vertexIndices)
+            groupedIndices[key]?.append(contentsOf: face.vertexIndices)
         }
         
-        vertexBuffer = device.newBufferWithBytes(
-            map.vertices,
-            length: map.vertices.count * sizeof(Q3Vertex),
-            options: .CPUCacheModeDefaultCache
+        vertexBuffer = device.makeBuffer(
+            bytes: map.vertices,
+            length: map.vertices.count * MemoryLayout<Q3Vertex>.size,
+            options: MTLResourceOptions()
         )
         
         for (key, indices) in groupedIndices {
@@ -97,10 +97,10 @@ class MapMesh {
                 ? textureLoader.loadLightmap(map.lightmaps[key.lightmap])
                 : defaultTexture
             
-            let buffer = device.newBufferWithBytes(
-                indices,
-                length: indices.count * sizeof(UInt32),
-                options: .CPUCacheModeDefaultCache
+            let buffer = device.makeBuffer(
+                bytes: indices,
+                length: indices.count * MemoryLayout<UInt32>.size,
+                options: MTLResourceOptions()
             )
             
             let faceMesh = FaceMesh(
@@ -118,11 +118,11 @@ class MapMesh {
             }
         }
         
-        faceMeshes.sortInPlace { a, b in a.sort < b.sort }
+        faceMeshes.sort { a, b in a.sort < b.sort }
     }
     
-    func renderWithEncoder(encoder: MTLRenderCommandEncoder, time: Float) {
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, atIndex: 0)
+    func renderWithEncoder(_ encoder: MTLRenderCommandEncoder, time: Float) {
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
         
         for faceMesh in faceMeshes {
             faceMesh.renderWithEncoder(encoder, time: time)
@@ -138,31 +138,31 @@ class MapMesh {
         var offset = 0
         
         descriptor.attributes[0].offset = offset
-        descriptor.attributes[0].format = .Float4
+        descriptor.attributes[0].format = .float4
         descriptor.attributes[0].bufferIndex = 0
-        offset += sizeof(float4)
+        offset += MemoryLayout<float4>.size
         
         descriptor.attributes[1].offset = offset
-        descriptor.attributes[1].format = .Float4
+        descriptor.attributes[1].format = .float4
         descriptor.attributes[1].bufferIndex = 0
-        offset += sizeof(float4)
+        offset += MemoryLayout<float4>.size
         
         descriptor.attributes[2].offset = offset
-        descriptor.attributes[2].format = .Float4
+        descriptor.attributes[2].format = .float4
         descriptor.attributes[2].bufferIndex = 0
-        offset += sizeof(float4)
+        offset += MemoryLayout<float4>.size
         
         descriptor.attributes[3].offset = offset
-        descriptor.attributes[3].format = .Float2
+        descriptor.attributes[3].format = .float2
         descriptor.attributes[3].bufferIndex = 0
-        offset += sizeof(float2)
+        offset += MemoryLayout<float2>.size
         
         descriptor.attributes[4].offset = offset
-        descriptor.attributes[4].format = .Float2
+        descriptor.attributes[4].format = .float2
         descriptor.attributes[4].bufferIndex = 0
-        offset += sizeof(float2)
+        offset += MemoryLayout<float2>.size
         
-        descriptor.layouts[0].stepFunction = .PerVertex
+        descriptor.layouts[0].stepFunction = .perVertex
         descriptor.layouts[0].stride = offset
         
         return descriptor

@@ -45,7 +45,7 @@ class ViewController: UIViewController {
     var camera : Camera = Camera()
     
     func loadMap() {
-        let pk3 = NSBundle.mainBundle().URLForResource("pak0", withExtension: "pk3")!
+        let pk3 = Bundle.main.url(forResource: "pak0", withExtension: "pk3")!
         let loader = Q3ResourceLoader(dataFilePath: pk3)
         
         let map = loader.loadMap("q3dm6")!
@@ -61,13 +61,13 @@ class ViewController: UIViewController {
     
     func initializeMetal() {
         metalLayer.device = device
-        metalLayer.pixelFormat = .BGRA8Unorm
+        metalLayer.pixelFormat = .bgra8Unorm
         metalLayer.framebufferOnly = true
         metalLayer.frame = view.layer.frame
         
         view.layer.addSublayer(metalLayer)
         
-        commandQueue = device.newCommandQueue()
+        commandQueue = device.makeCommandQueue()
     }
     
     func buildResources() {
@@ -81,18 +81,18 @@ class ViewController: UIViewController {
         uniformBufferProvider = BufferProvider(
             device: device,
             inflightBuffersCount: 3,
-            bufferSize: sizeof(Uniforms)
+            bufferSize: MemoryLayout<Uniforms>.size
         )
         
         // Depth buffer
-        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .Depth32Float,
+        let depthTextureDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .depth32Float,
             width: Int(self.view.frame.width),
             height: Int(self.view.frame.height),
             mipmapped: false
         )
-        depthTextureDescriptor.textureType = .Type2D
-        depthTexture = device.newTextureWithDescriptor(depthTextureDescriptor)
+        depthTextureDescriptor.textureType = .type2D
+        depthTexture = device.makeTexture(descriptor: depthTextureDescriptor)
     }
     
     func draw() {
@@ -103,25 +103,25 @@ class ViewController: UIViewController {
             let uniformBuffer = uniformBufferProvider.nextBuffer()
             
             // Copy uniforms to GPU
-            memcpy(uniformBuffer.contents(), &uniforms, sizeof(Uniforms))
+            memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<Uniforms>.size)
             
             // Create Command Buffer
-            let commandBuffer = commandQueue.commandBuffer()
+            let commandBuffer = commandQueue.makeCommandBuffer()
             
             // Render Pass Descriptor
             let renderPassDescriptor = MTLRenderPassDescriptor()
             renderPassDescriptor.colorAttachments[0].texture = drawable.texture
-            renderPassDescriptor.colorAttachments[0].loadAction = .Clear
-            renderPassDescriptor.colorAttachments[0].storeAction = .DontCare
+            renderPassDescriptor.colorAttachments[0].loadAction = .clear
+            renderPassDescriptor.colorAttachments[0].storeAction = .dontCare
             
             renderPassDescriptor.depthAttachment.texture = depthTexture
-            renderPassDescriptor.depthAttachment.loadAction = .Clear
+            renderPassDescriptor.depthAttachment.loadAction = .clear
             renderPassDescriptor.depthAttachment.clearDepth = 1.0
             
             // Command Encoder
-            let commandEncoder = commandBuffer.renderCommandEncoderWithDescriptor(renderPassDescriptor)
-            commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, atIndex: 1)
-            commandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, atIndex: 0)
+            let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+            commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
+            commandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, at: 0)
 
             mapMesh.renderWithEncoder(commandEncoder, time: Float(timer.timestamp))
 
@@ -132,14 +132,14 @@ class ViewController: UIViewController {
             }
             
             // Commit command buffer
-            commandBuffer.presentDrawable(drawable)
+            commandBuffer.present(drawable)
             commandBuffer.commit()
         }
     }
     
     
     
-    func redraw(displayLink: CADisplayLink) {
+    func redraw(_ displayLink: CADisplayLink) {
         if startTime == 0.0 {
             startTime = displayLink.timestamp
         }
@@ -153,11 +153,11 @@ class ViewController: UIViewController {
     
     func startDisplayTimer() {
         timer = CADisplayLink(target: self, selector: #selector(ViewController.redraw(_:)))
-        timer.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        timer.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
     }
 
-    func handlePan(gesture: UIPanGestureRecognizer) {
-        let velocity = gesture.velocityInView(self.view)
+    func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let velocity = gesture.velocity(in: self.view)
         let newPitch = GLKMathDegreesToRadians(Float(velocity.y / -100))
         let newYaw = GLKMathDegreesToRadians(Float(velocity.x / -100))
         
@@ -165,7 +165,7 @@ class ViewController: UIViewController {
         camera.turn(newYaw)
     }
 
-    func handlePinch(gesture: UIPinchGestureRecognizer) {
+    func handlePinch(_ gesture: UIPinchGestureRecognizer) {
         let velocity = Float(gesture.velocity / 2)
         if velocity.isNaN || velocity < 0.1  { return }
         camera.moveForward(velocity)
@@ -174,7 +174,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.whiteColor()
+        view.backgroundColor = UIColor.white
         aspect = Float(self.view.bounds.size.width / self.view.bounds.size.height)
 
         initializeMetal()
@@ -192,7 +192,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true
     }
     

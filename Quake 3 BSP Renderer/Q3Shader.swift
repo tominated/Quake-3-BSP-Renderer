@@ -10,12 +10,12 @@ import Foundation
 import Metal
 
 enum WaveformFunction {
-    case Sin
-    case Triangle
-    case Square
-    case Sawtooth
-    case InverseSawtooth
-    case Noise
+    case sin
+    case triangle
+    case square
+    case sawtooth
+    case inverseSawtooth
+    case noise
 }
 
 struct Waveform {
@@ -34,96 +34,96 @@ struct TurbulanceDescription {
 }
 
 enum VertexDeform {
-    case Wave(spread: Float, waveform: Waveform)
-    case Normal(frequency: Float, amplitude: Float)
-    case Bulge(width: Float, height: Float, speed: Float)
-    case Move(x: Float, y: Float, z: Float, waveform: Waveform)
-    case ProjectionShadow
-    case AutoSprite
-    case AutoSprite2
-    case Text // Ignoring the number for now
+    case wave(spread: Float, waveform: Waveform)
+    case normal(frequency: Float, amplitude: Float)
+    case bulge(width: Float, height: Float, speed: Float)
+    case move(x: Float, y: Float, z: Float, waveform: Waveform)
+    case projectionShadow
+    case autoSprite
+    case autoSprite2
+    case text // Ignoring the number for now
 }
 
 enum RGBGenerator {
-    case Identity
-    case IdentityLighting
-    case Wave(Waveform)
-    case Vertex
-    case LightingDiffuse
-    case Entity
-    case OneMinusEntity
-    case ExactVertex
-    case Undefined
+    case identity
+    case identityLighting
+    case wave(Waveform)
+    case vertex
+    case lightingDiffuse
+    case entity
+    case oneMinusEntity
+    case exactVertex
+    case undefined
 }
 
 enum AlphaGenerator {
-    case Wave(Waveform)
-    case Constant(Float)
-    case Identity
-    case Entity
-    case OneMinusEntity
-    case Vertex
-    case LightingSpecular
-    case OneMinusVertex
-    case Portal(Float)
+    case wave(Waveform)
+    case constant(Float)
+    case identity
+    case entity
+    case oneMinusEntity
+    case vertex
+    case lightingSpecular
+    case oneMinusVertex
+    case portal(Float)
 }
 
 enum TextureCoordinateGenerator {
-    case Base
-    case Lightmap
-    case Environment
-    case Vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
+    case base
+    case lightmap
+    case environment
+    case vector(sx: Float, sy: Float, sz: Float, tx: Float, ty: Float, tz: Float)
 }
 
 enum TextureCoordinateMod {
-    case Rotate(degrees: Float)
-    case Scale(x: Float, y: Float)
-    case Scroll(x: Float, y: Float)
-    case Stretch(Waveform)
-    case Turbulance(TurbulanceDescription)
-    case Transform(m00: Float, m01: Float, m10: Float, m11: Float, t0: Float, t1: Float)
+    case rotate(degrees: Float)
+    case scale(x: Float, y: Float)
+    case scroll(x: Float, y: Float)
+    case stretch(Waveform)
+    case turbulance(TurbulanceDescription)
+    case transform(m00: Float, m01: Float, m10: Float, m11: Float, t0: Float, t1: Float)
 }
 
 enum AlphaFunction: UInt8 {
-    case GT0 = 0, LT128, GE128
+    case gt0 = 0, lt128, ge128
 }
 
 enum DepthFunction {
-    case LessThanOrEqual, Equal
+    case lessThanOrEqual, equal
 }
 
 enum StageTexture {
-    case Texture(String)
-    case TextureClamp(String)
-    case Lightmap
-    case White
-    case Animated(frequency: Float, Array<String>)
+    case texture(String)
+    case textureClamp(String)
+    case lightmap
+    case white
+    case animated(frequency: Float, Array<String>)
 }
 
 enum Sort {
-    case Portal
-    case Sky
-    case Opaque
-    case Decal
-    case SeeThrough
-    case Banner
-    case Additive
-    case Nearest
-    case Underwater
-    case Explicit(Int32)
+    case portal
+    case sky
+    case opaque
+    case decal
+    case seeThrough
+    case banner
+    case additive
+    case nearest
+    case underwater
+    case explicit(Int32)
 
     func order() -> Int32 {
         switch self {
-        case .Portal: return 1
-        case .Sky: return 2
-        case .Opaque: return 3
-        case .Decal: return 4
-        case .SeeThrough: return 5
-        case .Banner: return 6
-        case .Additive: return 9
-        case .Nearest: return 16
-        case .Underwater: return 8
-        case .Explicit(let x): return x
+        case .portal: return 1
+        case .sky: return 2
+        case .opaque: return 3
+        case .decal: return 4
+        case .seeThrough: return 5
+        case .banner: return 6
+        case .additive: return 9
+        case .nearest: return 16
+        case .underwater: return 8
+        case .explicit(let x): return x
         }
     }
 }
@@ -146,14 +146,14 @@ func <(lhs: Sort, rhs: Sort) -> Bool {
 
 
 struct Q3ShaderStage {
-    var map: StageTexture = .White
+    var map: StageTexture = .white
     var blending: (MTLBlendFactor, MTLBlendFactor)? = nil
-    var textureCoordinateGenerator: TextureCoordinateGenerator = .Base
-    var rgbGenerator: RGBGenerator = .Undefined
-    var alphaGenerator: AlphaGenerator = .Identity
+    var textureCoordinateGenerator: TextureCoordinateGenerator = .base
+    var rgbGenerator: RGBGenerator = .undefined
+    var alphaGenerator: AlphaGenerator = .identity
     var alphaFunction: AlphaFunction? = nil
     var textureCoordinateMods: Array<TextureCoordinateMod> = []
-    var depthFunction: MTLCompareFunction = .LessEqual
+    var depthFunction: MTLCompareFunction = .lessEqual
     var depthWrite: Bool = true
 
     func hasBlending() -> Bool {
@@ -161,7 +161,7 @@ struct Q3ShaderStage {
     }
 
     func getRenderPipelineDescriptor(
-        vertexFunction: MTLFunction,
+        _ vertexFunction: MTLFunction,
         _ fragmentFunction: MTLFunction
     ) -> MTLRenderPipelineDescriptor {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
@@ -170,18 +170,18 @@ struct Q3ShaderStage {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = MapMesh.vertexDescriptor()
-        pipelineDescriptor.depthAttachmentPixelFormat = .Depth32Float
+        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 
         let colorAttachment = pipelineDescriptor.colorAttachments[0]
 
-        colorAttachment.pixelFormat = .BGRA8Unorm
+        colorAttachment?.pixelFormat = .bgra8Unorm
 
         if let (sourceBlend, destinationBlend) = blending {
-            colorAttachment.blendingEnabled = true
-            colorAttachment.sourceRGBBlendFactor = sourceBlend
-            colorAttachment.sourceAlphaBlendFactor = sourceBlend
-            colorAttachment.destinationRGBBlendFactor = destinationBlend
-            colorAttachment.destinationAlphaBlendFactor = destinationBlend
+            colorAttachment?.isBlendingEnabled = true
+            colorAttachment?.sourceRGBBlendFactor = sourceBlend
+            colorAttachment?.sourceAlphaBlendFactor = sourceBlend
+            colorAttachment?.destinationRGBBlendFactor = destinationBlend
+            colorAttachment?.destinationAlphaBlendFactor = destinationBlend
         }
 
         return pipelineDescriptor
@@ -191,29 +191,29 @@ struct Q3ShaderStage {
         let depthStencilDescriptor = MTLDepthStencilDescriptor()
 
         depthStencilDescriptor.depthCompareFunction = depthFunction
-        depthStencilDescriptor.depthWriteEnabled = depthWrite
+        depthStencilDescriptor.isDepthWriteEnabled = depthWrite
 
         return depthStencilDescriptor
     }
 
-    func getSamplerDescriptor(mipmapsEnabled: Bool) -> MTLSamplerDescriptor {
+    func getSamplerDescriptor(_ mipmapsEnabled: Bool) -> MTLSamplerDescriptor {
         let samplerDescriptor = MTLSamplerDescriptor()
 
-        samplerDescriptor.rAddressMode = .Repeat
-        samplerDescriptor.sAddressMode = .Repeat
-        samplerDescriptor.tAddressMode = .Repeat
-        samplerDescriptor.minFilter = .Linear
-        samplerDescriptor.magFilter = .Linear
+        samplerDescriptor.rAddressMode = .repeat
+        samplerDescriptor.sAddressMode = .repeat
+        samplerDescriptor.tAddressMode = .repeat
+        samplerDescriptor.minFilter = .linear
+        samplerDescriptor.magFilter = .linear
 
         if mipmapsEnabled {
-            samplerDescriptor.mipFilter = .Linear
+            samplerDescriptor.mipFilter = .linear
         }
 
         switch map {
-        case .TextureClamp(_):
-            samplerDescriptor.rAddressMode = .ClampToEdge
-            samplerDescriptor.sAddressMode = .ClampToEdge
-            samplerDescriptor.tAddressMode = .ClampToEdge
+        case .textureClamp(_):
+            samplerDescriptor.rAddressMode = .clampToEdge
+            samplerDescriptor.sAddressMode = .clampToEdge
+            samplerDescriptor.tAddressMode = .clampToEdge
         default: break
         }
 
@@ -223,9 +223,9 @@ struct Q3ShaderStage {
 
 struct Q3Shader {
     var name: String = ""
-    var cull: MTLCullMode = .Back
+    var cull: MTLCullMode = .back
     var sky: SkyParams? = nil
-    var sort: Sort = .Opaque
+    var sort: Sort = .opaque
     var mipmapsEnabled: Bool = true
     var vertexDeforms: Array<VertexDeform> = []
     var stages: Array<Q3ShaderStage> = []
@@ -238,16 +238,16 @@ struct Q3Shader {
         name = textureName
 
         var diffuseStage = Q3ShaderStage()
-        diffuseStage.map = .Texture(name)
-        diffuseStage.textureCoordinateGenerator = .Base
-        diffuseStage.rgbGenerator = .IdentityLighting
+        diffuseStage.map = .texture(name)
+        diffuseStage.textureCoordinateGenerator = .base
+        diffuseStage.rgbGenerator = .identityLighting
 
         var lightmapStage = Q3ShaderStage()
-        lightmapStage.map = .Lightmap
-        lightmapStage.blending = (.DestinationColor, .Zero)
-        lightmapStage.depthFunction = .Equal
-        lightmapStage.textureCoordinateGenerator = .Lightmap
-        lightmapStage.rgbGenerator = .IdentityLighting
+        lightmapStage.map = .lightmap
+        lightmapStage.blending = (.destinationColor, .zero)
+        lightmapStage.depthFunction = .equal
+        lightmapStage.textureCoordinateGenerator = .lightmap
+        lightmapStage.rgbGenerator = .identityLighting
 
         stages.append(diffuseStage)
         stages.append(lightmapStage)

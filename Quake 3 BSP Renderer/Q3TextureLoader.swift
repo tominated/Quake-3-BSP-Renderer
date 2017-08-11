@@ -13,13 +13,13 @@ class Q3TextureLoader {
     let loader: Q3ResourceLoader
     let device: MTLDevice
     
-    private let commandQueue: MTLCommandQueue
-    private let textureLoader: MTKTextureLoader
-    private var whiteTexture: MTLTexture? = nil
-    private var textureCache: Dictionary<String, MTLTexture> = Dictionary()
+    fileprivate let commandQueue: MTLCommandQueue
+    fileprivate let textureLoader: MTKTextureLoader
+    fileprivate var whiteTexture: MTLTexture? = nil
+    fileprivate var textureCache: Dictionary<String, MTLTexture> = Dictionary()
     
-    private let lightmapDescriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-        .RGBA8Unorm,
+    fileprivate let lightmapDescriptor = MTLTextureDescriptor.texture2DDescriptor(
+        pixelFormat: .rgba8Unorm,
         width: 128,
         height: 128,
         mipmapped: true
@@ -28,11 +28,11 @@ class Q3TextureLoader {
     init(loader: Q3ResourceLoader, device: MTLDevice) {
         self.loader = loader
         self.device = device
-        commandQueue = device.newCommandQueue()
+        commandQueue = device.makeCommandQueue()
         textureLoader = MTKTextureLoader(device: device)
     }
     
-    func loadTexture(path: String) -> MTLTexture? {
+    func loadTexture(_ path: String) -> MTLTexture? {
         if let texture = textureCache[path] {
             print("Loaded texture '\(path)' from cache")
             return texture
@@ -43,9 +43,9 @@ class Q3TextureLoader {
             return nil
         }
         
-        let texture =  try! textureLoader.newTextureWithCGImage(
-            image.CGImage!,
-            options: [MTKTextureLoaderOptionAllocateMipmaps: 1]
+        let texture =  try! textureLoader.newTexture(
+            with: image.cgImage!,
+            options: [MTKTextureLoaderOptionAllocateMipmaps: 1 as NSObject]
         )
         
         generateMipmaps(texture)
@@ -62,19 +62,19 @@ class Q3TextureLoader {
             return whiteTexture
         }
         
-        let descriptor = MTLTextureDescriptor.texture2DDescriptorWithPixelFormat(
-            .RGBA8Unorm,
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .rgba8Unorm,
             width: 1,
             height: 1,
             mipmapped: false
         )
         
-        let whiteTexture = device.newTextureWithDescriptor(descriptor)
-        whiteTexture.replaceRegion(
-            MTLRegionMake2D(0, 0, 1, 1),
+        let whiteTexture = device.makeTexture(descriptor: descriptor)
+        whiteTexture.replace(
+            region: MTLRegionMake2D(0, 0, 1, 1),
             mipmapLevel: 0,
             withBytes: [UInt8(255), UInt8(255), UInt8(255), UInt8(255)],
-            bytesPerRow: 4 * sizeof(UInt8)
+            bytesPerRow: 4 * MemoryLayout<UInt8>.size
         )
         
         self.whiteTexture = whiteTexture
@@ -82,11 +82,11 @@ class Q3TextureLoader {
         return whiteTexture
     }
     
-    func loadLightmap(lightmap: Q3Lightmap) -> MTLTexture {
-        let texture = device.newTextureWithDescriptor(lightmapDescriptor)
+    func loadLightmap(_ lightmap: Q3Lightmap) -> MTLTexture {
+        let texture = device.makeTexture(descriptor: lightmapDescriptor)
         
-        texture.replaceRegion(
-            MTLRegionMake2D(0, 0, 128, 128),
+        texture.replace(
+            region: MTLRegionMake2D(0, 0, 128, 128),
             mipmapLevel: 0,
             withBytes: lightmap,
             bytesPerRow: 128 * 4
@@ -97,11 +97,11 @@ class Q3TextureLoader {
         return texture
     }
     
-    private func generateMipmaps(texture: MTLTexture) {
-        let commandBuffer = commandQueue.commandBuffer()
-        let commandEncoder = commandBuffer.blitCommandEncoder()
+    fileprivate func generateMipmaps(_ texture: MTLTexture) {
+        let commandBuffer = commandQueue.makeCommandBuffer()
+        let commandEncoder = commandBuffer.makeBlitCommandEncoder()
         
-        commandEncoder.generateMipmapsForTexture(texture)
+        commandEncoder.generateMipmaps(for: texture)
         
         commandEncoder.endEncoding()
         commandBuffer.commit()

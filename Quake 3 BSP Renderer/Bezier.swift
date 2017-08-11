@@ -9,8 +9,8 @@
 import Foundation
 
 class Bezier {
-    private let level: Int
-    private let controls: [Q3Vertex]
+    fileprivate let level: Int
+    fileprivate let controls: [Q3Vertex]
     
     var vertices: [Q3Vertex] = []
     var indices: [UInt32] = []
@@ -28,7 +28,7 @@ class Bezier {
         // Calculate the final vertices by tesellating the rows from the
         // previous calculations
         for i in 0...level {
-            vertices.appendContentsOf(tessellate(v0v6[i], v1v7[i], v2v8[i]))
+            vertices.append(contentsOf: tessellate(v0v6[i], v1v7[i], v2v8[i]))
         }
         
         // Calculate the triangles to form between the tesellated points
@@ -66,7 +66,7 @@ class Bezier {
         }
     }
     
-    private func bezier(v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex, t: Float) -> Q3Vertex {
+    fileprivate func bezier(_ v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex, t: Float) -> Q3Vertex {
         let a = 1 - t
         let tt = t * t
         
@@ -79,7 +79,7 @@ class Bezier {
         return w + y * x + z
     }
     
-    private func tessellate(v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex) -> [Q3Vertex] {
+    fileprivate func tessellate(_ v0: Q3Vertex, _ v1: Q3Vertex, _ v2: Q3Vertex) -> [Q3Vertex] {
         var vertices: [Q3Vertex] = []
         let step = 1.0 / Float(level)
         

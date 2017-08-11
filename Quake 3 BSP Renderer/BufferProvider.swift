@@ -11,30 +11,30 @@ import Metal
 
 class BufferProvider {
     let inflightBuffersCount: Int
-    private var buffers: [MTLBuffer] = []
-    private var nextBufferIndex: Int = 0
-    private var availableBuffers: dispatch_semaphore_t
+    fileprivate var buffers: [MTLBuffer] = []
+    fileprivate var nextBufferIndex: Int = 0
+    fileprivate var availableBuffers: DispatchSemaphore
     
     init(device: MTLDevice, inflightBuffersCount: Int, bufferSize: Int) {
         self.inflightBuffersCount = inflightBuffersCount
-        availableBuffers = dispatch_semaphore_create(inflightBuffersCount)
+        availableBuffers = DispatchSemaphore(value: inflightBuffersCount)
         
         for _ in 0..<inflightBuffersCount {
             buffers.append(
-                device.newBufferWithLength(bufferSize, options: .CPUCacheModeDefaultCache)
+                device.makeBuffer(length: bufferSize, options: MTLResourceOptions())
             )
         }
     }
     
     func nextBuffer() -> MTLBuffer {
-        dispatch_semaphore_wait(availableBuffers, DISPATCH_TIME_FOREVER)
+        let _ = availableBuffers.wait(timeout: DispatchTime.distantFuture)
         let buffer = buffers[nextBufferIndex]
         nextBufferIndex = (nextBufferIndex + 1) % inflightBuffersCount
         return buffer
     }
     
     func finishedWithBuffer() {
-        dispatch_semaphore_signal(availableBuffers)
+        availableBuffers.signal()
     }
     
     deinit {

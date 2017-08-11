@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A79F753796F93BE62F0AB329 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475322413CA8375A752571AF /* Pods_Quake_3_BSP_Renderer.framework */; };
+		9CBFBE9497A4D60933676794 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */; };
 		E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */; };
 		E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB91C462C5200BF5B91 /* Q3Map.swift */; };
 		E21CCBBC1C46344D00BF5B91 /* Q3Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */; };
@@ -44,6 +44,7 @@
 		E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */; };
 		E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */; };
 		E2FB31071C6EDAA800912E77 /* NSScanner+Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31061C6EDAA800912E77 /* NSScanner+Swift.swift */; };
+		F79769825C2D8FDC53C53A27 /* Pods_Quake_3_BSP_RendererTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02400AFFB3ACEA707DFAAA87 /* Pods_Quake_3_BSP_RendererTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,9 +58,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		463EDD83127DC7FDF8435C5B /* Pods-Quake 3 BSP Renderer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.release.xcconfig"; sourceTree = "<group>"; };
-		475322413CA8375A752571AF /* Pods_Quake_3_BSP_Renderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_Renderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		91FC9E179FF0E33E9F2EA5B5 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.debug.xcconfig"; sourceTree = "<group>"; };
+		02400AFFB3ACEA707DFAAA87 /* Pods_Quake_3_BSP_RendererTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_RendererTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		20629CE9A6C518FC5AF12C68 /* Pods-Quake 3 BSP RendererTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP RendererTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests.debug.xcconfig"; sourceTree = "<group>"; };
+		2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP RendererTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests.release.xcconfig"; sourceTree = "<group>"; };
+		6658A5057F2CE94B488896DA /* Pods-Quake 3 BSP Renderer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.release.xcconfig"; sourceTree = "<group>"; };
+		A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_Renderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ResourceLoader.swift; sourceTree = "<group>"; };
 		E21CCBB91C462C5200BF5B91 /* Q3Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Map.swift; sourceTree = "<group>"; };
 		E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Types.swift; sourceTree = "<group>"; };
@@ -99,6 +102,7 @@
 		E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vertexDeformWave.mustache; path = templates/vertexDeformWave.mustache; sourceTree = "<group>"; };
 		E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ShaderParser.swift; sourceTree = "<group>"; };
 		E2FB31061C6EDAA800912E77 /* NSScanner+Swift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSScanner+Swift.swift"; sourceTree = "<group>"; };
+		F941E96EC399B060791B7115 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A79F753796F93BE62F0AB329 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */,
+				9CBFBE9497A4D60933676794 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,27 +118,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F79769825C2D8FDC53C53A27 /* Pods_Quake_3_BSP_RendererTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		D41E1A8C7C970E37C41FC01D /* Pods */ = {
+		2D158D429B3C569FDD10F290 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				91FC9E179FF0E33E9F2EA5B5 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */,
-				463EDD83127DC7FDF8435C5B /* Pods-Quake 3 BSP Renderer.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		DF93E42F912BEA2A30D0ADBA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				475322413CA8375A752571AF /* Pods_Quake_3_BSP_Renderer.framework */,
+				A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */,
+				02400AFFB3ACEA707DFAAA87 /* Pods_Quake_3_BSP_RendererTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DCEB8B4508043A3BAF6719D9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F941E96EC399B060791B7115 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */,
+				6658A5057F2CE94B488896DA /* Pods-Quake 3 BSP Renderer.release.xcconfig */,
+				20629CE9A6C518FC5AF12C68 /* Pods-Quake 3 BSP RendererTests.debug.xcconfig */,
+				2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		E25B8E2C1D1D18A3009EDC8C /* templates */ = {
@@ -164,8 +172,8 @@
 			children = (
 				E27901E71B8D989C00E09E46 /* Quake 3 BSP Renderer */,
 				E27901E61B8D989C00E09E46 /* Products */,
-				D41E1A8C7C970E37C41FC01D /* Pods */,
-				DF93E42F912BEA2A30D0ADBA /* Frameworks */,
+				DCEB8B4508043A3BAF6719D9 /* Pods */,
+				2D158D429B3C569FDD10F290 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -223,12 +231,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E27902041B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP Renderer" */;
 			buildPhases = (
-				C67F708CA01454CC4112CA64 /* Check Pods Manifest.lock */,
+				2A60BADD68E2F339D0B90691 /* [CP] Check Pods Manifest.lock */,
 				E27901E11B8D989C00E09E46 /* Sources */,
 				E27901E21B8D989C00E09E46 /* Frameworks */,
 				E27901E31B8D989C00E09E46 /* Resources */,
-				5F73E9B5822B3AD6E9A43B15 /* Embed Pods Frameworks */,
-				B1BA9CC0B23D30CEA5FE06E8 /* Copy Pods Resources */,
+				0ECED33B75BC8DA9DFE0D2D0 /* [CP] Embed Pods Frameworks */,
+				A52D6E61C0B4C6F9BBB08F03 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -243,9 +251,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */;
 			buildPhases = (
+				99CCB3EF0EA123DDC2B0BA3D /* [CP] Check Pods Manifest.lock */,
 				E27901F61B8D989C00E09E46 /* Sources */,
 				E27901F71B8D989C00E09E46 /* Frameworks */,
 				E27901F81B8D989C00E09E46 /* Resources */,
+				1AC378F1794DDB68100F7919 /* [CP] Embed Pods Frameworks */,
+				A02A8B1A4041F7F53E6C1E2B /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -265,12 +276,13 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Thomas Brunoli";
 				TargetAttributes = {
 					E27901E41B8D989C00E09E46 = {
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = XVVR4L7TTW;
+						LastSwiftMigration = 0830;
 					};
 					E27901F91B8D989C00E09E46 = {
 						CreatedOnToolsVersion = 6.4;
@@ -334,14 +346,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5F73E9B5822B3AD6E9A43B15 /* Embed Pods Frameworks */ = {
+		0ECED33B75BC8DA9DFE0D2D0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -349,34 +361,79 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B1BA9CC0B23D30CEA5FE06E8 /* Copy Pods Resources */ = {
+		1AC378F1794DDB68100F7919 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		2A60BADD68E2F339D0B90691 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		99CCB3EF0EA123DDC2B0BA3D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A02A8B1A4041F7F53E6C1E2B /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A52D6E61C0B4C6F9BBB08F03 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C67F708CA01454CC4112CA64 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -456,8 +513,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -501,8 +560,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -521,13 +582,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		E27902051B8D989C00E09E46 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 91FC9E179FF0E33E9F2EA5B5 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */;
+			baseConfigurationReference = F941E96EC399B060791B7115 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -537,12 +599,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		E27902061B8D989C00E09E46 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 463EDD83127DC7FDF8435C5B /* Pods-Quake 3 BSP Renderer.release.xcconfig */;
+			baseConfigurationReference = 6658A5057F2CE94B488896DA /* Pods-Quake 3 BSP Renderer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -552,11 +615,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 		E27902081B8D989C00E09E46 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20629CE9A6C518FC5AF12C68 /* Pods-Quake 3 BSP RendererTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -577,6 +642,7 @@
 		};
 		E27902091B8D989C00E09E46 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
