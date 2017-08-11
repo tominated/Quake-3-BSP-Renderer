@@ -91,6 +91,7 @@ class ViewController: UIViewController {
             height: Int(self.view.frame.height),
             mipmapped: false
         )
+        depthTextureDescriptor.usage = [.renderTarget, .shaderRead]
         depthTextureDescriptor.textureType = .type2D
         depthTexture = device.makeTexture(descriptor: depthTextureDescriptor)
     }
@@ -116,6 +117,7 @@ class ViewController: UIViewController {
             
             renderPassDescriptor.depthAttachment.texture = depthTexture
             renderPassDescriptor.depthAttachment.loadAction = .clear
+            renderPassDescriptor.depthAttachment.storeAction = .store
             renderPassDescriptor.depthAttachment.clearDepth = 1.0
             
             // Command Encoder

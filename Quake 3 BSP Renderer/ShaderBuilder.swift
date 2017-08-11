@@ -20,15 +20,15 @@ class ShaderBuilder {
         repo = TemplateRepository(
             bundle: Bundle.main,
             templateExtension: "mustache",
-            encoding: NSASCIIStringEncoding
+            encoding: String.Encoding.ascii
         )
         
         repo.configuration.contentType = .text
     }
     
     func buildShaderLibrary(_ shader: Q3Shader, _ stage: Q3ShaderStage) -> MTLLibrary {
-        return try! device.newLibraryWithSource(
-            buildShaderSource(shader, stage),
+        return try! device.makeLibrary(
+            source: buildShaderSource(shader, stage),
             options: nil
         )
     }
@@ -37,13 +37,13 @@ class ShaderBuilder {
         let template = try! repo.template(named: "main")
         
         let data = Box([
-            "textureCoordinateGenerator": Box(buildTextureCoordinateGenerator(stage.textureCoordinateGenerator)),
-            "rgbGenerator": Box(buildRGBGenerator(stage.rgbGenerator)),
-            "alphaGenerator": Box(buildAlphaGenerator(stage.alphaGenerator)),
-            "alphaFunction": Box(buildAlphaFunction(stage.alphaFunction)),
+            "textureCoordinateGenerator": Box(buildTextureCoordinateGenerator(val: stage.textureCoordinateGenerator)),
+            "rgbGenerator": Box(buildRGBGenerator(val: stage.rgbGenerator)),
+            "alphaGenerator": Box(buildAlphaGenerator(val: stage.alphaGenerator)),
+            "alphaFunction": Box(buildAlphaFunction(val:stage.alphaFunction)),
             "vertexDeforms": Box(shader.vertexDeforms.map(buildVertexDeform)),
             "textureCoordinateMods": Box(stage.textureCoordinateMods.map(buildTextureCoordinateMod))
-        ])
+        ] as [String: Any])
         
         return try! template.render(data)
     }
@@ -64,8 +64,8 @@ class ShaderBuilder {
         case .wave(let waveform):
             return Box([
                 "template": try! repo.template(named: "rgbGeneratorWave"),
-                "waveform": buildWaveform("rgbWave", val: waveform)
-            ])
+                "waveform": buildWaveform(name: "rgbWave", val: waveform)
+            ] as [String: Any])
         default:
             return Box([
                 "template": try! repo.template(named: "rgbGeneratorDefault")
@@ -76,14 +76,14 @@ class ShaderBuilder {
     private func buildAlphaGenerator(val: AlphaGenerator) -> MustacheBox {
         switch val {
         case .constant(let a): return Box("float alpha = \(a);")
-        case .wave(let waveform): return buildWaveform("alpha", val: waveform)
+        case .wave(let waveform): return buildWaveform(name: "alpha", val: waveform)
         default: return Box("float alpha = diffuse.a;")
         }
     }
     
     private func buildAlphaFunction(val: AlphaFunction?) -> MustacheBox {
         guard let alphaFunc = val else {
-            return Box()
+            return Box(nil)
         }
         
         var condition = ""
@@ -126,11 +126,11 @@ class ShaderBuilder {
         case .wave(let spread, let waveform):
             return Box([
                 "template": try! repo.template(named: "vertexDeformWave"),
-                "waveform": buildWaveform("deformWave", val: waveform),
+                "waveform": buildWaveform(name: "deformWave", val: waveform),
                 "spread": spread
-            ])
+            ] as [String: Any])
         default:
-            return Box()
+            return Box(nil)
         }
     }
     
@@ -156,8 +156,8 @@ class ShaderBuilder {
         case .stretch(let waveform):
             return Box([
                 "template": try! repo.template(named: "textureCoordinateModStretch"),
-                "waveform": buildWaveform("stretchWave", val: waveform)
-            ])
+                "waveform": buildWaveform(name: "stretchWave", val: waveform)
+            ] as [String: Any])
         default:
             return Box("")
         }

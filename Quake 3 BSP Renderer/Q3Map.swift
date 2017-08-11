@@ -113,7 +113,7 @@ class Q3Map {
     
     fileprivate func readHeaders() {
         // Magic should always equal IBSP for Q3 maps
-        let magic = buffer.getASCIIUntilNull(4)
+        let magic = buffer.getASCII(4)!
         assert(magic == "IBSP", "Magic must be equal to \"IBSP\"")
         
         // Version should always equal 0x2e for Q3 maps

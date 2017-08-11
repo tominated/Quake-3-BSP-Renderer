@@ -33,10 +33,12 @@ struct Material {
     fileprivate var textureLoader: Q3TextureLoader
     fileprivate var stages: Array<MaterialStage> = []
     fileprivate var cull: MTLCullMode
+    private let name: String
     
     init(shader: Q3Shader, device: MTLDevice, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader) throws {
         self.textureLoader = textureLoader
         cull = shader.cull
+        name = shader.name
         
         let whiteTexture = textureLoader.loadWhiteTexture()
         
@@ -88,9 +90,11 @@ struct Material {
     }
     
     func renderWithEncoder(_ encoder: MTLRenderCommandEncoder, time: Float, indexBuffer: MTLBuffer, indexCount: Int, lightmap: MTLTexture) {
+        encoder.pushDebugGroup("Material(\(self.name))")
         encoder.setCullMode(cull)
         
-        for stage in stages {
+        for (i, stage) in stages.enumerated() {
+            encoder.pushDebugGroup("stage \(i)")
             
             // Set pipeline and depth state
             encoder.setRenderPipelineState(stage.pipelineState)
@@ -117,6 +121,8 @@ struct Material {
                 indexBuffer: indexBuffer,
                 indexBufferOffset: 0
             )
+            encoder.popDebugGroup()
         }
+        encoder.popDebugGroup()
     }
 }

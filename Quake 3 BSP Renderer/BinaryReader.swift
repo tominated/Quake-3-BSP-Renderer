@@ -57,6 +57,12 @@ class BinaryReader {
         return getNumber(0)
     }
     
+    func getASCII(_ length: Int) -> NSString? {
+        let strData = data.subdata(in: position..<(position + length))
+        position += length
+        return NSString(bytes: (strData as NSData).bytes, length: length, encoding: String.Encoding.ascii.rawValue)
+    }
+
     func getASCIIUntilNull(_ max: Int, skipAhead: Bool = true) -> String {
         var chars: [CChar] = []
         var iterations = 0
