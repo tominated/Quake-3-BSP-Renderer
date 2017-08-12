@@ -104,6 +104,9 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         view.colorPixelFormat = .bgra8Unorm
         view.depthStencilPixelFormat = .depth32Float
         view.preferredFramesPerSecond = 60
+
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(QuakeRenderer.handlePan(_:))))
+        view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(QuakeRenderer.handlePinch(_:))))
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
@@ -152,7 +155,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         commandBuffer.present(currentDrawable)
     }
 
-    /*
+
     func handlePan(_ gesture: UIPanGestureRecognizer) {
         let velocity = gesture.velocity(in: self.view)
         let newPitch = GLKMathDegreesToRadians(Float(velocity.y / -100))
@@ -160,12 +163,14 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
 
         camera.pitch(newPitch)
         camera.turn(newYaw)
+        uniforms.viewMatrix = camera.getViewMatrix()
     }
 
     func handlePinch(_ gesture: UIPinchGestureRecognizer) {
         let velocity = Float(gesture.velocity / 2)
         if velocity.isNaN || velocity < 0.1  { return }
         camera.moveForward(velocity)
+        uniforms.viewMatrix = camera.getViewMatrix()
     }
-    */
+
 }

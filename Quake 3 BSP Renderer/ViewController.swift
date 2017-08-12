@@ -18,7 +18,7 @@ class ViewController: UIViewController {
         let view = self.view as! MTKView
         view.device = MTLCreateSystemDefaultDevice()
 
-        renderer = try! QuakeRenderer(withMetalKitView: view, andMap: "test_bigbox")
+        renderer = try! QuakeRenderer(withMetalKitView: view, andMap: "q3dm6")
 
         view.delegate = renderer
         renderer.mtkView(view, drawableSizeWillChange: view.drawableSize)
