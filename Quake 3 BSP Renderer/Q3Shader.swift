@@ -174,7 +174,7 @@ struct Q3ShaderStage {
 
         let colorAttachment = pipelineDescriptor.colorAttachments[0]
 
-        colorAttachment?.pixelFormat = .bgra8Unorm
+        colorAttachment?.pixelFormat = .bgra8Unorm_srgb
 
         if let (sourceBlend, destinationBlend) = blending {
             colorAttachment?.isBlendingEnabled = true

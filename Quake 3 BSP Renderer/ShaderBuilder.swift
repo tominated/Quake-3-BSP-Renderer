@@ -51,7 +51,7 @@ class ShaderBuilder {
     private func buildTextureCoordinateGenerator(val: TextureCoordinateGenerator) -> String {
         switch val {
         case .lightmap: return "in.lightmapCoord"
-        default: return "in.textureCoord"
+        default: return "in.textureCoord * float2(1.0, -1.0)"
         }
     }
     

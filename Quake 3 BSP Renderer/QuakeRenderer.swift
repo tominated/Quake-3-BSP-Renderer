@@ -99,11 +99,8 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
     }
 
     func configureView() {
-        view.clearColor = MTLClearColorMake(1.0, 0, 0, 1.0) // Red
-        view.clearDepth = 1.0
-        view.colorPixelFormat = .bgra8Unorm
+        view.colorPixelFormat = .bgra8Unorm_srgb
         view.depthStencilPixelFormat = .depth32Float
-        view.preferredFramesPerSecond = 60
 
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(QuakeRenderer.handlePan(_:))))
         view.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(QuakeRenderer.handlePinch(_:))))
