@@ -40,7 +40,7 @@ func *(left: Q3Vertex, right: Float) -> Q3Vertex {
 typealias Q3Lightmap = Array<(UInt8, UInt8, UInt8, UInt8)>
 
 enum Q3FaceType: Int {
-    case Polygon = 1, Patch = 2, Mesh = 3, Billboard = 4
+    case polygon = 1, patch = 2, mesh = 3, billboard = 4
 }
 
 struct Q3Face {

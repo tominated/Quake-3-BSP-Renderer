@@ -18,54 +18,54 @@ class ShaderBuilder {
         self.device = device
         
         repo = TemplateRepository(
-            bundle: NSBundle.mainBundle(),
+            bundle: Bundle.main,
             templateExtension: "mustache",
-            encoding: NSASCIIStringEncoding
+            encoding: String.Encoding.ascii
         )
         
-        repo.configuration.contentType = .Text
+        repo.configuration.contentType = .text
     }
     
-    func buildShaderLibrary(shader: Q3Shader, _ stage: Q3ShaderStage) -> MTLLibrary {
-        return try! device.newLibraryWithSource(
-            buildShaderSource(shader, stage),
+    func buildShaderLibrary(_ shader: Q3Shader, _ stage: Q3ShaderStage) -> MTLLibrary {
+        return try! device.makeLibrary(
+            source: buildShaderSource(shader, stage),
             options: nil
         )
     }
     
-    private func buildShaderSource(shader: Q3Shader, _ stage: Q3ShaderStage) -> String {
+    private func buildShaderSource(_ shader: Q3Shader, _ stage: Q3ShaderStage) -> String {
         let template = try! repo.template(named: "main")
         
         let data = Box([
-            "textureCoordinateGenerator": Box(buildTextureCoordinateGenerator(stage.textureCoordinateGenerator)),
-            "rgbGenerator": Box(buildRGBGenerator(stage.rgbGenerator)),
-            "alphaGenerator": Box(buildAlphaGenerator(stage.alphaGenerator)),
-            "alphaFunction": Box(buildAlphaFunction(stage.alphaFunction)),
+            "textureCoordinateGenerator": Box(buildTextureCoordinateGenerator(val: stage.textureCoordinateGenerator)),
+            "rgbGenerator": Box(buildRGBGenerator(val: stage.rgbGenerator)),
+            "alphaGenerator": Box(buildAlphaGenerator(val: stage.alphaGenerator)),
+            "alphaFunction": Box(buildAlphaFunction(val:stage.alphaFunction)),
             "vertexDeforms": Box(shader.vertexDeforms.map(buildVertexDeform)),
             "textureCoordinateMods": Box(stage.textureCoordinateMods.map(buildTextureCoordinateMod))
-        ])
+        ] as [String: Any])
         
         return try! template.render(data)
     }
     
     private func buildTextureCoordinateGenerator(val: TextureCoordinateGenerator) -> String {
         switch val {
-        case .Lightmap: return "in.lightmapCoord"
+        case .lightmap: return "in.lightmapCoord"
         default: return "in.textureCoord"
         }
     }
     
     private func buildRGBGenerator(val: RGBGenerator) -> MustacheBox {
         switch val {
-        case .Vertex:
+        case .vertex:
             return Box([
                 "template": try! repo.template(named: "rgbGeneratorVertex")
             ])
-        case .Wave(let waveform):
+        case .wave(let waveform):
             return Box([
                 "template": try! repo.template(named: "rgbGeneratorWave"),
-                "waveform": buildWaveform("rgbWave", val: waveform)
-            ])
+                "waveform": buildWaveform(name: "rgbWave", val: waveform)
+            ] as [String: Any])
         default:
             return Box([
                 "template": try! repo.template(named: "rgbGeneratorDefault")
@@ -75,23 +75,23 @@ class ShaderBuilder {
     
     private func buildAlphaGenerator(val: AlphaGenerator) -> MustacheBox {
         switch val {
-        case .Constant(let a): return Box("float alpha = \(a);")
-        case .Wave(let waveform): return buildWaveform("alpha", val: waveform)
+        case .constant(let a): return Box("float alpha = \(a);")
+        case .wave(let waveform): return buildWaveform(name: "alpha", val: waveform)
         default: return Box("float alpha = diffuse.a;")
         }
     }
     
     private func buildAlphaFunction(val: AlphaFunction?) -> MustacheBox {
         guard let alphaFunc = val else {
-            return Box()
+            return Box(nil)
         }
         
         var condition = ""
         
         switch alphaFunc {
-        case .GT0: condition = "<= 0"
-        case .LT128: condition = ">= 0.5"
-        case .GE128: condition = "< 0.5"
+        case .gt0: condition = "<= 0"
+        case .lt128: condition = ">= 0.5"
+        case .ge128: condition = "< 0.5"
         }
         
         return Box("if (alpha \(condition)) discard_fragment();")
@@ -100,12 +100,12 @@ class ShaderBuilder {
     private func buildWaveform(name: String, val: Waveform) -> MustacheBox {
         let templateName: String = {
             switch val.function {
-            case .Sin: return "waveformSin"
-            case .Triangle: return "waveformTriangle"
-            case .Square: return "waveformSquare"
-            case .Sawtooth: return "waveformSawtooth"
-            case .InverseSawtooth: return "waveformInverseSawtooth"
-            case .Noise: return "waveformNoise"
+            case .sin: return "waveformSin"
+            case .triangle: return "waveformTriangle"
+            case .square: return "waveformSquare"
+            case .sawtooth: return "waveformSawtooth"
+            case .inverseSawtooth: return "waveformInverseSawtooth"
+            case .noise: return "waveformNoise"
             }
         }()
         
@@ -123,41 +123,41 @@ class ShaderBuilder {
     
     private func buildVertexDeform(val: VertexDeform) -> MustacheBox {
         switch val {
-        case .Wave(let spread, let waveform):
+        case .wave(let spread, let waveform):
             return Box([
                 "template": try! repo.template(named: "vertexDeformWave"),
-                "waveform": buildWaveform("deformWave", val: waveform),
+                "waveform": buildWaveform(name: "deformWave", val: waveform),
                 "spread": spread
-            ])
+            ] as [String: Any])
         default:
-            return Box()
+            return Box(nil)
         }
     }
     
     private func buildTextureCoordinateMod(val: TextureCoordinateMod) -> MustacheBox {
         switch val {
-        case .Rotate(let degrees):
+        case .rotate(let degrees):
             return Box([
                 "template": try! repo.template(named: "textureCoordinateModRotate"),
                 "angle": degrees
             ])
-        case .Scale(let x, let y):
+        case .scale(let x, let y):
             return Box([
                 "template": try! repo.template(named: "textureCoordinateModScale"),
                 "x": x,
                 "y": y
             ])
-        case .Scroll(let x, let y):
+        case .scroll(let x, let y):
             return Box([
                 "template": try! repo.template(named: "textureCoordinateModScroll"),
                 "x": x,
                 "y": y
             ])
-        case .Stretch(let waveform):
+        case .stretch(let waveform):
             return Box([
                 "template": try! repo.template(named: "textureCoordinateModStretch"),
-                "waveform": buildWaveform("stretchWave", val: waveform)
-            ])
+                "waveform": buildWaveform(name: "stretchWave", val: waveform)
+            ] as [String: Any])
         default:
             return Box("")
         }

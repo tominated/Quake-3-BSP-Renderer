@@ -14,32 +14,32 @@ class Camera {
     var orientation: GLKQuaternion
     
     init() {
-        position = GLKVector3Make(0, 0, 0)
+        position = GLKVector3Make(30, 30, 30)
         orientation = GLKQuaternionMakeWithAngleAndAxis(0, 1, 0, 0)
     }
     
-    func rotate(rotation: GLKQuaternion) {
+    func rotate(_ rotation: GLKQuaternion) {
         orientation = GLKQuaternionNormalize(GLKQuaternionMultiply(rotation, orientation))
     }
     
-    func rotate(radians: Float, x: Float, y: Float, z: Float) {
+    func rotate(_ radians: Float, x: Float, y: Float, z: Float) {
         let q = GLKQuaternionMakeWithAngleAndAxis(radians, x, y, z)
         rotate(q)
     }
     
-    func pitch(radians: Float) {
+    func pitch(_ radians: Float) {
         rotate(radians, x: 1, y: 0, z: 0)
     }
     
-    func yaw(radians: Float) {
+    func yaw(_ radians: Float) {
         rotate(radians, x: 0, y: 1, z: 0)
     }
     
-    func roll(radians: Float) {
+    func roll(_ radians: Float) {
         rotate(radians, x: 0, y: 0, z: 1)
     }
     
-    func turn(radians: Float) {
+    func turn(_ radians: Float) {
         let axis = GLKQuaternionRotateVector3(orientation, GLKVector3Make(0, 1, 0))
         let q = GLKQuaternionMakeWithAngleAndAxis(radians, axis.x, axis.y, axis.z)
         return rotate(q)
@@ -66,7 +66,7 @@ class Camera {
         )
     }
     
-    func moveForward(movement: Float) {
+    func moveForward(_ movement: Float) {
         position = GLKVector3Add(
             position,
             GLKVector3MultiplyScalar(getForward(), movement)

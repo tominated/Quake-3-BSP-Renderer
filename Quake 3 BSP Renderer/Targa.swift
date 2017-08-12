@@ -9,8 +9,9 @@
 import Foundation
 import UIKit
 
-func imageFromTGAData(data: NSData) -> UIImage? {
-    data.bytes
+/*
+func imageFromTGAData(_ data: Data) -> UIImage? {
+    (data as NSData).bytes
     let buffer = BinaryReader(data: data)
     buffer.skip(2)
     
@@ -59,39 +60,40 @@ func imageFromTGAData(data: NSData) -> UIImage? {
         }
     }
     
-    let finalData = NSData(bytes: imageData, length: imageDataLength)
+    let finalData = Data(bytes: UnsafePointer<UInt8>(imageData), count: imageDataLength)
     
     return imageFromRGBAData(finalData, width: width, height: height)
 }
     
-private func imageFromRGBAData(data: NSData, width: Int, height: Int) -> UIImage? {
-    let pixelData = data.bytes
+private func imageFromRGBAData(_ data: Data, width: Int, height: Int) -> UIImage? {
+    let pixelData = (data as NSData).bytes
     let bytesPerPixel = 4
     let scanWidth = bytesPerPixel * width
     
-    let provider = CGDataProviderCreateWithData(nil, pixelData, height * scanWidth, nil)
+    let provider = CGDataProvider(dataInfo: nil, data: pixelData, size: height * scanWidth, releaseData: nil)
     
     let colorSpaceRef = CGColorSpaceCreateDeviceRGB()
-    let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.ByteOrder32Little.rawValue | CGImageAlphaInfo.Last.rawValue)
-    let renderingIntent: CGColorRenderingIntent = .RenderingIntentDefault
+    let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.last.rawValue)
+    let renderingIntent: CGColorRenderingIntent = .defaultIntent
     
-    let imageRef = CGImageCreate(
-        width,
-        height,
-        8, // bitsPerComponent
-        32, // bitsPerPixel
-        scanWidth, // bytesPerRow
-        colorSpaceRef, // colorspace
-        bitmapInfo, // bitmapInfo
-        provider, // provider
-        nil, // decode
-        false, // shouldInterpolate
-        renderingIntent // intent
+    let imageRef = CGImage(
+        width: width,
+        height: height,
+        bitsPerComponent: 8, // bitsPerComponent
+        bitsPerPixel: 32, // bitsPerPixel
+        bytesPerRow: scanWidth, // bytesPerRow
+        space: colorSpaceRef, // colorspace
+        bitmapInfo: bitmapInfo, // bitmapInfo
+        provider: provider, // provider
+        decode: nil, // decode
+        shouldInterpolate: false, // shouldInterpolate
+        intent: renderingIntent // intent
     )
     
     if let ref = imageRef {
-        return UIImage(CGImage: ref)
+        return UIImage(cgImage: ref)
     }
     
     return nil
 }
+*/

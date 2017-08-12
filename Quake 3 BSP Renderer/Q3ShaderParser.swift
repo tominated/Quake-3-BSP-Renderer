@@ -10,85 +10,87 @@ import Foundation
 import Metal
 
 class Q3ShaderParser {
-    enum Q3ShaderParserError: ErrorType {
-        case InvalidShader(reason: String)
-        case UnknownToken(String)
-        case InvalidFloat
-        case InvalidInt
-        case EndOfData
+    enum Q3ShaderParserError: Error {
+        case invalidShader(reason: String)
+        case unknownToken(String)
+        case invalidFloat
+        case invalidInt
+        case endOfData
     }
 
-    let scanner: NSScanner
+    let scanner: Scanner
 
     init(shaderFile: String) {
-        let lineComments = try! NSRegularExpression(pattern: "//(.*?)\r?\n", options: [.CaseInsensitive, .DotMatchesLineSeparators])
+        let lineComments = try! NSRegularExpression(pattern: "//(.*?)\r?\n", options: [.caseInsensitive, .dotMatchesLineSeparators])
         
-        let length = shaderFile.lengthOfBytesUsingEncoding(NSASCIIStringEncoding)
+        let length = shaderFile.lengthOfBytes(using: String.Encoding.ascii)
         
-        let stripped = lineComments.stringByReplacingMatchesInString(shaderFile, options: [], range: NSMakeRange(0, length), withTemplate: "\n")
-        scanner = NSScanner(string: stripped)
+        let stripped = lineComments.stringByReplacingMatches(in: shaderFile, options: [], range: NSMakeRange(0, length), withTemplate: "\n")
+        scanner = Scanner(string: stripped)
     }
 
-    private func readString() throws -> String {
-        guard let str = scanner.scanUpToCharactersFromSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()) else {
-            throw Q3ShaderParserError.EndOfData
+    fileprivate func readString() throws -> String {
+        var str: NSString?
+        guard scanner.scanUpToCharacters(from: CharacterSet.whitespacesAndNewlines, into: &str) else {
+            throw Q3ShaderParserError.endOfData
         }
-        
-        return str
+
+        return str! as String
+    }
+
+    fileprivate func readFloat() throws -> Float {
+        var n: Float = 0
+        guard scanner.scanFloat(&n) else {
+            throw Q3ShaderParserError.invalidFloat
+        }
+        return n
     }
     
-    private func readFloat() throws -> Float {
-        guard let n = scanner.scanFloat() else {
-            throw Q3ShaderParserError.InvalidFloat
+    fileprivate func readInt() throws -> Int32 {
+        var n: Int32 = 0
+        guard scanner.scanInt32(&n) else {
+            throw Q3ShaderParserError.invalidInt
         }
         
         return n
     }
     
-    private func readInt() throws -> Int32 {
-        guard let n = scanner.scanInt() else {
-            throw Q3ShaderParserError.InvalidInt
-        }
-        
-        return n
+    fileprivate func skipLine() {
+        scanner.scanUpToCharacters(from: CharacterSet.newlines, into: nil)
     }
     
-    private func skipLine() {
-        scanner.scanUpToCharactersFromSet(NSCharacterSet.newlineCharacterSet())!
-    }
-    
-    private func readBlendMode(blendMode: String) throws -> MTLBlendFactor {
-        switch blendMode.uppercaseString {
-        case "GL_ONE": return .One
-        case "GL_ZERO": return .Zero
-        case "GL_SRC_COLOR": return .SourceColor
-        case "GL_SRC_ALPHA": return .SourceAlpha
-        case "GL_DST_COLOR": return .DestinationColor
-        case "GL_DST_ALPHA": return .DestinationAlpha
-        case "GL_ONE_MINUS_SRC_COLOR": return .OneMinusSourceColor
-        case "GL_ONE_MINUS_SRC_ALPHA": return .OneMinusSourceAlpha
-        case "GL_ONE_MINUS_DST_COLOR": return .OneMinusDestinationColor
-        case "GL_ONE_MINUS_DST_ALPHA": return .OneMinusDestinationAlpha
-        case "GL_SRC_ALPHA_SATURATE": return .SourceAlphaSaturated
-        default: throw Q3ShaderParserError.UnknownToken(blendMode)
+    fileprivate func readBlendMode(_ blendMode: String) throws -> MTLBlendFactor {
+        switch blendMode.uppercased() {
+        case "GL_ONE": return .one
+        case "GL_ZERO": return .zero
+        case "GL_SRC_COLOR": return .sourceColor
+        case "GL_SRC_ALPHA": return .sourceAlpha
+        case "GL_DST_COLOR": return .destinationColor
+        case "GL_DST_ALPHA": return .destinationAlpha
+        case "GL_ONE_MINUS_SRC_COLOR": return .oneMinusSourceColor
+        case "GL_ONE_MINUS_SRC_ALPHA": return .oneMinusSourceAlpha
+        case "GL_ONE_MINUS_DST_COLOR": return .oneMinusDestinationColor
+        case "GL_ONE_MINUS_DST_ALPHA": return .oneMinusDestinationAlpha
+        case "GL_SRC_ALPHA_SATURATE": return .sourceAlphaSaturated
+        default: throw Q3ShaderParserError.unknownToken(blendMode)
         }
     }
 
-    private func readWaveformFunction() throws -> WaveformFunction {
+    fileprivate func readWaveformFunction() throws -> WaveformFunction {
         let waveformFunction = try readString()
 
-        switch waveformFunction.lowercaseString {
-        case "sin": return .Sin
-        case "triangle": return .Triangle
-        case "square": return .Square
-        case "sawtooth": return .Sawtooth
-        case "inversesawtooth": return .InverseSawtooth
-        case "noise": return .Noise
-        default: throw Q3ShaderParserError.UnknownToken(waveformFunction)
+        switch waveformFunction.lowercased() {
+        case "sin": return .sin
+        case "triangle": return .triangle
+        case "square": return .square
+        case "sawtooth": return .sawtooth
+        case "inversesawtooth": return .inverseSawtooth
+        case "noise": return .noise
+        default: throw Q3ShaderParserError.unknownToken(waveformFunction)
         }
     }
 
-    private func readWaveform() throws -> Waveform {
+    fileprivate func readWaveform() throws -> Waveform {
         let waveformFunction = try readWaveformFunction()
         let base = try readFloat()
         let amplitude = try readFloat()
@@ -104,28 +106,28 @@ class Q3ShaderParser {
         )
     }
 
-    private func readSort() throws -> Sort {
+    fileprivate func readSort() throws -> Sort {
         let offset = scanner.scanLocation
         let sort = try readString()
 
-        switch sort.lowercaseString {
-        case "portal": return .Portal
-        case "sky": return .Sky
-        case "opaque": return .Opaque
-        case "decal": return .Decal
-        case "seeThrough": return .SeeThrough
-        case "banner": return .Banner
-        case "additive": return .Additive
-        case "nearest": return .Nearest
-        case "underwater": return .Underwater
+        switch sort.lowercased() {
+        case "portal": return .portal
+        case "sky": return .sky
+        case "opaque": return .opaque
+        case "decal": return .decal
+        case "seeThrough": return .seeThrough
+        case "banner": return .banner
+        case "additive": return .additive
+        case "nearest": return .nearest
+        case "underwater": return .underwater
         default: break
         }
 
         scanner.scanLocation = offset
-        return .Explicit(try readInt())
+        return .explicit(try readInt())
     }
 
-    private func readTurbulance() throws -> TurbulanceDescription {
+    fileprivate func readTurbulance() throws -> TurbulanceDescription {
         // Potential waveform func as first param
         let token = try readString()
         let base = try Float(token) ?? readFloat()
@@ -142,27 +144,27 @@ class Q3ShaderParser {
         )
     }
     
-    private func readTextureCoordinateMod() throws -> TextureCoordinateMod {
+    fileprivate func readTextureCoordinateMod() throws -> TextureCoordinateMod {
         let type = try readString()
         
-        switch type.lowercaseString {
+        switch type.lowercased() {
         case "turb":
-            return .Turbulance(try readTurbulance())
+            return .turbulance(try readTurbulance())
             
         case "scale":
             let x = try readFloat()
             let y = try readFloat()
             
-            return .Scale(x: x, y: y)
+            return .scale(x: x, y: y)
             
         case "scroll":
             let x = try readFloat()
             let y = try readFloat()
             
-            return .Scroll(x: x, y: y)
+            return .scroll(x: x, y: y)
             
         case "stretch":
-            return .Stretch(try readWaveform())
+            return .stretch(try readWaveform())
         
         case "rotate":
             let degrees = try readFloat()
@@ -173,7 +175,7 @@ class Q3ShaderParser {
                 scanner.scanLocation = offset
             }
             
-            return .Rotate(degrees: degrees)
+            return .rotate(degrees: degrees)
             
             
         case "transform":
@@ -184,19 +186,19 @@ class Q3ShaderParser {
             let t0 = try readFloat()
             let t1 = try readFloat()
             
-            return .Transform(m00: m00, m01: m01, m10: m10, m11: m11, t0: t0, t1: t1)
+            return .transform(m00: m00, m01: m01, m10: m10, m11: m11, t0: t0, t1: t1)
             
-        default: throw Q3ShaderParserError.UnknownToken(type)
+        default: throw Q3ShaderParserError.unknownToken(type)
         }
     }
     
     func readMap() throws -> StageTexture {
         let token = try readString()
         
-        switch token.lowercaseString {
-        case "$whiteimage": return .White
-        case "$lightmap": return .Lightmap
-        default: return .Texture(token)
+        switch token.lowercased() {
+        case "$whiteimage": return .white
+        case "$lightmap": return .lightmap
+        default: return .texture(token)
         }
     }
     
@@ -207,14 +209,14 @@ class Q3ShaderParser {
         var token = try readString()
         
         while true {
-            switch token.lowercaseString {
+            switch token.lowercased() {
             case "map":
                 stage.map = try readMap()
-                if case .Lightmap = stage.map {
-                    stage.textureCoordinateGenerator = .Lightmap
+                if case .lightmap = stage.map {
+                    stage.textureCoordinateGenerator = .lightmap
                 }
             
-            case "clampmap": stage.map = .TextureClamp(try readString())
+            case "clampmap": stage.map = .textureClamp(try readString())
                 
             case "animmap":
                 let freq = try readFloat()
@@ -232,7 +234,7 @@ class Q3ShaderParser {
                     maps.append(map)
                 }
                 
-                stage.map = .Animated(frequency: freq, maps)
+                stage.map = .animated(frequency: freq, maps)
                 
                 // We read the next token above when trying to get all of the
                 // animation maps, so it's safe to continue
@@ -242,19 +244,19 @@ class Q3ShaderParser {
                 let alphaFunc = try readString()
                 
                 switch alphaFunc {
-                case "GT0": stage.alphaFunction = .GT0
-                case "LT128": stage.alphaFunction = .LT128
-                case "GE128": stage.alphaFunction = .GE128
-                default: throw Q3ShaderParserError.UnknownToken(alphaFunc)
+                case "GT0": stage.alphaFunction = .gt0
+                case "LT128": stage.alphaFunction = .lt128
+                case "GE128": stage.alphaFunction = .ge128
+                default: throw Q3ShaderParserError.unknownToken(alphaFunc)
                 }
                 
             case "depthfunc":
                 let depthFunc = try readString()
                 
                 switch depthFunc {
-                case "lequal": stage.depthFunction = .LessEqual
-                case "equal": stage.depthFunction = .Equal
-                default: throw Q3ShaderParserError.UnknownToken(depthFunc)
+                case "lequal": stage.depthFunction = .lessEqual
+                case "equal": stage.depthFunction = .equal
+                default: throw Q3ShaderParserError.unknownToken(depthFunc)
                 }
             
             case "blendfunc":
@@ -264,13 +266,13 @@ class Q3ShaderParser {
                     stage.depthWrite = false
                 }
                 
-                switch blendfunc.lowercaseString {
+                switch blendfunc.lowercased() {
                 case "add", "gl_add":
-                    stage.blending = (.One, .One)
+                    stage.blending = (.one, .one)
                 case "filter":
-                    stage.blending = (.DestinationColor, .Zero)
+                    stage.blending = (.destinationColor, .zero)
                 case "blend":
-                    stage.blending = (.SourceAlpha, .OneMinusSourceAlpha)
+                    stage.blending = (.sourceAlpha, .oneMinusSourceAlpha)
                 default:
                     let blendSource = try readBlendMode(blendfunc)
                     let blendDestination = try readBlendMode(try readString())
@@ -280,43 +282,43 @@ class Q3ShaderParser {
             case "rgbgen":
                 let gen = try readString()
                 
-                switch gen.lowercaseString {
-                case "identity": stage.rgbGenerator = .Identity
-                case "identitylighting": stage.rgbGenerator = .IdentityLighting
-                case "wave": stage.rgbGenerator = .Wave(try readWaveform())
-                case "vertex": stage.rgbGenerator = .Vertex
-                case "lightingdiffuse": stage.rgbGenerator = .LightingDiffuse
-                case "entity": stage.rgbGenerator = .Entity
-                case "oneminusentity": stage.rgbGenerator = .OneMinusEntity
-                case "exactvertex": stage.rgbGenerator = .ExactVertex
-                default: throw Q3ShaderParserError.UnknownToken(gen)
+                switch gen.lowercased() {
+                case "identity": stage.rgbGenerator = .identity
+                case "identitylighting": stage.rgbGenerator = .identityLighting
+                case "wave": stage.rgbGenerator = .wave(try readWaveform())
+                case "vertex": stage.rgbGenerator = .vertex
+                case "lightingdiffuse": stage.rgbGenerator = .lightingDiffuse
+                case "entity": stage.rgbGenerator = .entity
+                case "oneminusentity": stage.rgbGenerator = .oneMinusEntity
+                case "exactvertex": stage.rgbGenerator = .exactVertex
+                default: throw Q3ShaderParserError.unknownToken(gen)
                 }
                 
             case "alphagen":
                 let gen = try readString()
                 
-                switch gen.lowercaseString {
-                case "wave": stage.alphaGenerator = .Wave(try readWaveform())
-                case "const": stage.alphaGenerator = .Constant(try readFloat())
-                case "identity": stage.alphaGenerator = .Identity
-                case "entity": stage.alphaGenerator = .Entity
-                case "oneminusentity": stage.alphaGenerator = .OneMinusEntity
-                case "vertex": stage.alphaGenerator = .Vertex
-                case "lightingspecular": stage.alphaGenerator = .LightingSpecular
-                case "oneminusvertex": stage.alphaGenerator = .OneMinusVertex
-                case "portal": stage.alphaGenerator = .Portal(try readFloat())
-                default: throw Q3ShaderParserError.UnknownToken(gen)
+                switch gen.lowercased() {
+                case "wave": stage.alphaGenerator = .wave(try readWaveform())
+                case "const": stage.alphaGenerator = .constant(try readFloat())
+                case "identity": stage.alphaGenerator = .identity
+                case "entity": stage.alphaGenerator = .entity
+                case "oneminusentity": stage.alphaGenerator = .oneMinusEntity
+                case "vertex": stage.alphaGenerator = .vertex
+                case "lightingspecular": stage.alphaGenerator = .lightingSpecular
+                case "oneminusvertex": stage.alphaGenerator = .oneMinusVertex
+                case "portal": stage.alphaGenerator = .portal(try readFloat())
+                default: throw Q3ShaderParserError.unknownToken(gen)
                 }
                 
             case "tcgen", "texgen":
                 let gen = try readString()
                 
-                switch gen.lowercaseString {
-                case "texture", "base": stage.textureCoordinateGenerator = .Base
+                switch gen.lowercased() {
+                case "texture", "base": stage.textureCoordinateGenerator = .base
                 
-                case "environment": stage.textureCoordinateGenerator = .Environment
+                case "environment": stage.textureCoordinateGenerator = .environment
                 
-                case "lightmap": stage.textureCoordinateGenerator = .Lightmap
+                case "lightmap": stage.textureCoordinateGenerator = .lightmap
                 
                 case "vector":
                     let sx = try readFloat()
@@ -326,9 +328,9 @@ class Q3ShaderParser {
                     let ty = try readFloat()
                     let tz = try readFloat()
                     
-                    stage.textureCoordinateGenerator = .Vector(sx: sx, sy: sy, sz: sz, tx: tx, ty: ty, tz: tz)
+                    stage.textureCoordinateGenerator = .vector(sx: sx, sy: sy, sz: sz, tx: tx, ty: ty, tz: tz)
                     
-                default: throw Q3ShaderParserError.UnknownToken(gen)
+                default: throw Q3ShaderParserError.unknownToken(gen)
                 }
             
             case "tcmod": stage.textureCoordinateMods.append(try readTextureCoordinateMod())
@@ -342,14 +344,14 @@ class Q3ShaderParser {
             case "}": return stage
             
             default:
-                throw Q3ShaderParserError.UnknownToken(token)
+                throw Q3ShaderParserError.unknownToken(token)
             }
             
             token = try readString()
         }
     }
     
-    private func readSkyParams() throws -> SkyParams {
+    fileprivate func readSkyParams() throws -> SkyParams {
         var sky = SkyParams()
         
         let farBox = try readString()
@@ -370,64 +372,64 @@ class Q3ShaderParser {
         return sky
     }
     
-    private func readCull() throws -> MTLCullMode {
+    fileprivate func readCull() throws -> MTLCullMode {
         let token = try readString()
         
-        switch token.lowercaseString {
-        case "front": return .Front
-        case "none", "twosided", "disable": return .None
-        case "back", "backside", "backsided": return .Back
-        default: throw Q3ShaderParserError.UnknownToken(token)
+        switch token.lowercased() {
+        case "front": return .front
+        case "none", "twosided", "disable": return .none
+        case "back", "backside", "backsided": return .back
+        default: throw Q3ShaderParserError.unknownToken(token)
         }
     }
     
-    private func readVertexDeform() throws -> VertexDeform {
+    fileprivate func readVertexDeform() throws -> VertexDeform {
         let token = try readString()
         
-        if token.lowercaseString.hasPrefix("text") {
-            return .Text
+        if token.lowercased().hasPrefix("text") {
+            return .text
         }
         
-        switch token.lowercaseString {
-        case "autosprite": return .AutoSprite
-        case "autosprite2": return .AutoSprite2
-        case "projectionshadow": return .ProjectionShadow
+        switch token.lowercased() {
+        case "autosprite": return .autoSprite
+        case "autosprite2": return .autoSprite2
+        case "projectionshadow": return .projectionShadow
         
         case "bulge":
             let width = try readFloat()
             let height = try readFloat()
             let speed = try readFloat()
-            return .Bulge(width: width, height: height, speed: speed)
+            return .bulge(width: width, height: height, speed: speed)
         
         case "wave":
             let spread = try readFloat()
             let wave = try readWaveform()
-            return .Wave(spread: spread, waveform: wave)
+            return .wave(spread: spread, waveform: wave)
         
         case "normal":
             let freq = try readFloat()
             let amp = try readFloat()
-            return .Normal(frequency: freq, amplitude: amp)
+            return .normal(frequency: freq, amplitude: amp)
         
         case "move":
             let x = try readFloat()
             let y = try readFloat()
             let z = try readFloat()
             let wave = try readWaveform()
-            return .Move(x: x, y: y, z: z, waveform: wave)
+            return .move(x: x, y: y, z: z, waveform: wave)
         
-        default: throw Q3ShaderParserError.UnknownToken(token)
+        default: throw Q3ShaderParserError.unknownToken(token)
         }
     }
     
-    private func readShader(name: String) throws -> Q3Shader {
+    fileprivate func readShader(_ name: String) throws -> Q3Shader {
         var shader = Q3Shader()
         shader.name = name
         
         while true {
             let token = try readString()
             
-            switch token.lowercaseString {
+            switch token.lowercased() {
             case "{": shader.stages.append(try readStage())
             
             case "skyparms": shader.sky = try readSkyParams()
@@ -436,7 +438,7 @@ class Q3ShaderParser {
             
             case "deformvertexes": shader.vertexDeforms.append(try readVertexDeform())
             
-            case "portal": shader.sort = .Portal
+            case "portal": shader.sort = .portal
                 
             case "sort": shader.sort = try readSort()
             
@@ -457,7 +459,7 @@ class Q3ShaderParser {
                 "cloudparms", "tesssize", "surfaceparm", "light", "fogparms":
                 skipLine()
                 
-            default: throw Q3ShaderParserError.UnknownToken(token)
+            default: throw Q3ShaderParserError.unknownToken(token)
             }
         }
     }
@@ -470,12 +472,12 @@ class Q3ShaderParser {
             let brace = try readString()
             
             if brace != "{" {
-                throw Q3ShaderParserError.InvalidShader(reason: "No opening brace")
+                throw Q3ShaderParserError.invalidShader(reason: "No opening brace")
             }
 
             shaders.append(try readShader(name))
             
-            if scanner.atEnd {
+            if scanner.isAtEnd {
                 break
             }
         }

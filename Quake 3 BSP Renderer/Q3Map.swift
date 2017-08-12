@@ -25,7 +25,7 @@ private struct Q3PolygonFace {
 
 private struct Q3PatchFace {
     var vertices: Array<Q3Vertex> = []
-    private var indices: Array<UInt32> = []
+    fileprivate var indices: Array<UInt32> = []
     
     init(vertices: Array<Q3Vertex>, firstVertex: Int, vertexCount: Int, size: (Int, Int)) {
         let numPatchesX = ((size.0) - 1) / 2
@@ -39,11 +39,11 @@ private struct Q3PatchFace {
             
             // Initialise the vertex grid
             var vertexGrid: [[Q3Vertex]] = Array(
-                count: Int(size.0),
-                repeatedValue: Array(
-                    count: Int(size.1),
-                    repeatedValue: Q3Vertex()
-                )
+                repeating: Array(
+                    repeating: Q3Vertex(),
+                    count: Int(size.1)
+                ),
+                count: Int(size.0)
             )
             
             var gridX = 0
@@ -71,14 +71,14 @@ private struct Q3PatchFace {
             }
             
             let bezier = Bezier(controls: controlVertices)
-            self.indices.appendContentsOf(
-                bezier.indices.map { i in i + UInt32(self.vertices.count) }
+            self.indices.append(
+                contentsOf: bezier.indices.map { i in i + UInt32(self.vertices.count) }
             )
-            self.vertices.appendContentsOf(bezier.vertices)
+            self.vertices.append(contentsOf: bezier.vertices)
         }
     }
     
-    func offsetIndices(offset: UInt32) -> Array<UInt32> {
+    func offsetIndices(_ offset: UInt32) -> Array<UInt32> {
         return self.indices.map { $0 + offset }
     }
 }
@@ -95,12 +95,12 @@ class Q3Map {
     var textureNames: Array<String> = []
     var lightmaps: Array<Q3Lightmap> = []
     
-    private var buffer: BinaryReader
-    private var directoryEntries: Array<Q3DirectoryEntry> = []
-    private var meshverts: Array<UInt32> = []
+    fileprivate var buffer: BinaryReader
+    fileprivate var directoryEntries: Array<Q3DirectoryEntry> = []
+    fileprivate var meshverts: Array<UInt32> = []
     
     // Read the map data from an NSData buffer containing the bsp file
-    init(data: NSData) {
+    init(data: Data) {
         buffer = BinaryReader(data: data)
         
         readHeaders()
@@ -111,7 +111,7 @@ class Q3Map {
         faces = readFaces()
     }
     
-    private func readHeaders() {
+    fileprivate func readHeaders() {
         // Magic should always equal IBSP for Q3 maps
         let magic = buffer.getASCII(4)!
         assert(magic == "IBSP", "Magic must be equal to \"IBSP\"")
@@ -127,13 +127,13 @@ class Q3Map {
         }
     }
     
-    private func readTextureNames() -> Array<String> {
+    fileprivate func readTextureNames() -> Array<String> {
         return readEntry(1, length: 72) { buffer in
             return buffer.getASCIIUntilNull(64)
         }
     }
     
-    private func readVertices() -> Array<Q3Vertex> {
+    fileprivate func readVertices() -> Array<Q3Vertex> {
         return readEntry(10, length: 44) { buffer in
             let position = self.swizzle(float4(buffer.getFloat32(), buffer.getFloat32(), buffer.getFloat32(), 1.0))
             let textureCoord = float2(buffer.getFloat32(), 1 - buffer.getFloat32())
@@ -155,14 +155,14 @@ class Q3Map {
         }
     }
     
-    private func readMeshverts() -> Array<UInt32> {
+    fileprivate func readMeshverts() -> Array<UInt32> {
         return readEntry(11, length: 4) { buffer in
             return UInt32(buffer.getInt32())
         }
     }
     
     
-    private func readLightmaps() -> Array<Q3Lightmap> {
+    fileprivate func readLightmaps() -> Array<Q3Lightmap> {
         return readEntry(14, length: 128 * 128 * 3) { buffer in
             var lm: Q3Lightmap = []
             
@@ -174,7 +174,7 @@ class Q3Map {
         }
     }
     
-    private func readFaces() -> Array<Q3Face> {
+    fileprivate func readFaces() -> Array<Q3Face> {
         return readEntry(13, length: 104) { buffer in
             let textureIndex = Int(buffer.getInt32())
             buffer.skip(4) // effect
@@ -190,7 +190,7 @@ class Q3Map {
             
             let textureName = self.textureNames[textureIndex]
             
-            if type == .Polygon || type == .Mesh {
+            if type == .polygon || type == .mesh {
                 let polygonFace = Q3PolygonFace(
                     meshverts: self.meshverts,
                     firstVertex: firstVertex,
@@ -203,7 +203,7 @@ class Q3Map {
                     lightmapIndex: lightmapIndex,
                     vertexIndices: polygonFace.indices
                 )
-            } else if type == .Patch {
+            } else if type == .patch {
                 let patchFace = Q3PatchFace(
                     vertices: self.vertices,
                     firstVertex: firstVertex,
@@ -215,7 +215,7 @@ class Q3Map {
                 // Offset them by the amount of vertices in the map, then add
                 // the patch's own vertices to the list
                 let indices = patchFace.offsetIndices(UInt32(self.vertices.count))
-                self.vertices.appendContentsOf(patchFace.vertices)
+                self.vertices.append(contentsOf: patchFace.vertices)
                 
                 return Q3Face(
                     textureName: textureName,
@@ -228,7 +228,7 @@ class Q3Map {
         }
     }
     
-    private func readEntry<T>(index: Int, length: Int, each: (BinaryReader) -> T?) -> Array<T> {
+    fileprivate func readEntry<T>(_ index: Int, length: Int, each: (BinaryReader) -> T?) -> Array<T> {
         let entry = directoryEntries[index]
         let itemCount = Int(entry.length) / length
         var accumulator: Array<T> = []
@@ -241,11 +241,11 @@ class Q3Map {
         return accumulator
     }
     
-    private func swizzle(v: float3) -> float3 {
+    fileprivate func swizzle(_ v: float3) -> float3 {
         return float3(v.x, v.z, -v.y)
     }
     
-    private func swizzle(v: float4) -> float4 {
+    fileprivate func swizzle(_ v: float4) -> float4 {
         return float4(v.x, v.z, -v.y, 1)
     }
 }
