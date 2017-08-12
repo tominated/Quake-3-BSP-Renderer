@@ -55,9 +55,7 @@ class Q3ResourceLoader {
                 if fileType == "jpg" {
                     return UIImage(data: data)
                 } else if fileType == "tga" {
-                    // FIXME: Temporarily disabling TGA
-                    // return imageFromTGAData(data)
-                    return nil
+                    return imageFromTGAData(data)
                 }
             }
         }

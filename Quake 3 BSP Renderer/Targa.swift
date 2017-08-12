@@ -9,9 +9,8 @@
 import Foundation
 import UIKit
 
-/*
+
 func imageFromTGAData(_ data: Data) -> UIImage? {
-    (data as NSData).bytes
     let buffer = BinaryReader(data: data)
     buffer.skip(2)
     
@@ -50,17 +49,23 @@ func imageFromTGAData(_ data: Data) -> UIImage? {
     }
     
     // Invert the Y axis
-    let imageDataAsUInt32 = UnsafeMutablePointer<UInt32>(imageData)
+
     for y in 0..<(height / 2) {
         for x in 0..<width {
-            let top = imageDataAsUInt32[y * width + x]
-            let bottom = imageDataAsUInt32[(height - 1 - y) * width + x]
-            imageDataAsUInt32[(height - 1 - y) * width + x] = top
-            imageDataAsUInt32[y * width + x] = bottom
+            let topIndex = y * width + x
+            let bottomIndex = (height - 1 - y) * width + x
+
+            for i in 0 ..< 4 {
+                let top = imageData[topIndex + i]
+                let bottom = imageData[bottomIndex + i]
+
+                imageData[topIndex + i] = bottom
+                imageData[bottomIndex + i] = top
+            }
         }
     }
     
-    let finalData = Data(bytes: UnsafePointer<UInt8>(imageData), count: imageDataLength)
+    let finalData = Data(bytes: imageData, count: imageDataLength)
     
     return imageFromRGBAData(finalData, width: width, height: height)
 }
@@ -70,7 +75,7 @@ private func imageFromRGBAData(_ data: Data, width: Int, height: Int) -> UIImage
     let bytesPerPixel = 4
     let scanWidth = bytesPerPixel * width
     
-    let provider = CGDataProvider(dataInfo: nil, data: pixelData, size: height * scanWidth, releaseData: nil)
+    let provider = CGDataProvider(dataInfo: nil, data: pixelData, size: height * scanWidth, releaseData: { _ in () })
     
     let colorSpaceRef = CGColorSpaceCreateDeviceRGB()
     let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.last.rawValue)
@@ -84,7 +89,7 @@ private func imageFromRGBAData(_ data: Data, width: Int, height: Int) -> UIImage
         bytesPerRow: scanWidth, // bytesPerRow
         space: colorSpaceRef, // colorspace
         bitmapInfo: bitmapInfo, // bitmapInfo
-        provider: provider, // provider
+        provider: provider!, // provider
         decode: nil, // decode
         shouldInterpolate: false, // shouldInterpolate
         intent: renderingIntent // intent
@@ -96,4 +101,4 @@ private func imageFromRGBAData(_ data: Data, width: Int, height: Int) -> UIImage
     
     return nil
 }
-*/
+
