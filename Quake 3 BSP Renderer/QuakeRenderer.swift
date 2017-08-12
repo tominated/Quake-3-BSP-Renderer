@@ -32,6 +32,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
     private var commandQueue: MTLCommandQueue! = nil
 
     private var aspectRatio: Float = 0.0
+    private var startTime = CACurrentMediaTime()
 
     // Resources
     var uniformBufferProvider: BufferProvider! = nil
@@ -85,7 +86,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         aspectRatio = Float(view.drawableSize.width / view.drawableSize.height)
 
         uniforms = Uniforms(
-            time: 1,
+            time: 0,
             modelMatrix: GLKMatrix4Identity,
             viewMatrix: camera.getViewMatrix(),
             projectionMatrix: GLKMatrix4MakePerspective(FOV, aspectRatio, 0.01, 10000.0)
@@ -132,6 +133,9 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         commandBuffer.addCompletedHandler { _ in
             self.uniformBufferProvider.finishedWithBuffer()
         }
+
+        // Update the time in the uniforms
+        uniforms.time = Float(CACurrentMediaTime() - startTime)
 
         // Fill the uniform buffer
         memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<Uniforms>.size)
