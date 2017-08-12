@@ -14,7 +14,7 @@ class Camera {
     var orientation: GLKQuaternion
     
     init() {
-        position = GLKVector3Make(0, 0, 0)
+        position = GLKVector3Make(30, 30, 30)
         orientation = GLKQuaternionMakeWithAngleAndAxis(0, 1, 0, 0)
     }
     
