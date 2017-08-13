@@ -40,6 +40,14 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
     var uniforms: Uniforms! = nil
     var camera: Camera! = nil
 
+    // Testing new stuff:
+    var bsp: Quake3BSP! = nil
+    var visTester: VisibilityTester! = nil
+    var newMapMesh: MTKMesh! = nil
+    var materials: Dictionary<String, Material> = Dictionary()
+    var lightmaps: Array<MTLTexture> = []
+    var defaultTexture: MTLTexture! = nil
+
     init(withMetalKitView view: MTKView, map mapName: String, camera: Camera) throws {
         super.init()
 
@@ -68,25 +76,69 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
             let map = loader.loadMap(mapName)
         else { throw RendererError.invalidMap }
 
-        print("running new map parser")
-        let mapParser = try BSPParser(bspData: map)
-        let _ = try mapParser.parse()
-        print("new map parser ran!")
-
         let parsedMap = Q3Map(data: map)
 
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
-        let shaders = try! shaderParser.readShaders()
+        let allShaders = try! shaderParser.readShaders()
 
         let shaderBuilder = ShaderBuilder(device: device)
         let textureLoader = Q3TextureLoader(loader: loader, device: device)
+
+        // TRYING OUT NEW STUFF
+
+        // Parse the BSP file
+        print("running new map parser")
+        let mapParser = try BSPParser(bspData: map)
+        bsp = try mapParser.parse()
+        print("new map parser ran!")
+
+        // Get the face visibility tester
+        visTester = VisibilityTester(bsp: bsp)
+
+        // Get the meshes
+        print("building meshes")
+        let allocator = MTKMeshBufferAllocator(device: device)
+        let meshBuilder = BSPMeshBuilder(withAllocator: allocator, for: bsp)
+        let mdlMesh = try meshBuilder.buildMapMesh()
+        newMapMesh = try MTKMesh(mesh: mdlMesh, device: device)
+        print("finished building meshes")
+
+        // Build the 'Material's from the list of textures and build shaders
+        let texturesInMap = Set(bsp.textures.map { $0.name })
+        var shaders: Dictionary<String, Q3Shader> = [:]
+
+        for shader in allShaders {
+            if texturesInMap.contains(shader.name) {
+                shaders[shader.name] = shader
+            }
+        }
+
+        for texture in bsp.textures {
+            let shader = shaders[texture.name] ?? Q3Shader(textureName: texture.name)
+            materials[texture.name] = try Material(
+                shader: shader,
+                device: device,
+                shaderBuilder: shaderBuilder,
+                textureLoader: textureLoader
+            )
+        }
+
+        // Build the lightmap textures
+        defaultTexture = textureLoader.loadWhiteTexture()
+
+        for lightmap in bsp.lightmaps {
+            self.lightmaps.append(textureLoader.loadLightmap(lightmap.lightmap))
+        }
+
+
+        // END NEW STUFF
 
         mapMesh = MapMesh(
             device: device,
             map: parsedMap,
             shaderBuilder: shaderBuilder,
             textureLoader: textureLoader,
-            shaders: shaders
+            shaders: allShaders
         )
     }
 
@@ -118,6 +170,12 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
     }
 
     func draw(in view: MTKView) {
+        // Figure out what faces are visibile
+        let visibleIndices = visTester.getVisibleFaceIndices(at:
+            float3(camera.position.x, camera.position.y, camera.position.z))
+        let percentVisible: Float = (Float(visibleIndices.count) / Float(bsp.faces.count)) * 100
+        print("percent visible: \(percentVisible)%")
+
         // Get a command buffer if possible
         guard let commandBuffer = commandQueue?.makeCommandBuffer()
             else { return }
@@ -162,4 +220,59 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         commandBuffer.present(currentDrawable)
     }
 
+    // This function will get all the currently visible faces, then group them
+    // by their texture so the shaders/textures/etc don't have to be re-bound
+    // for every face
+    private func getRenderGroups() -> Array<Array<Int>> {
+        let position = float3(camera.position.x, camera.position.y, camera.position.z)
+        let visibleFaceIndices = visTester.getVisibleFaceIndices(at: position)
+        let sortedFaceIndices = visibleFaceIndices.sorted(by: compareFaces)
+
+        // We group the faces by their texture in order to set up the shader,
+        // then draw all stages in minimal state changes
+        var groupedFaces: Array<Array<Int>> = []
+        var currentGroup: Array<Int> = []
+
+        for faceIndex in sortedFaceIndices {
+            let face = bsp.faces[faceIndex]
+
+            // If currentGroup has entries, and last entry has different texture
+            // we can add the currentGroup array to the groupedFaces array
+            if let lastFaceIndex = currentGroup.last {
+                if face.textureIndex != bsp.faces[lastFaceIndex].textureIndex {
+                    groupedFaces.append(currentGroup)
+                    currentGroup = []
+                }
+            }
+
+            currentGroup.append(faceIndex)
+        }
+
+        // The last group needs to be added manually
+        groupedFaces.append(currentGroup)
+
+        return groupedFaces
+    }
+
+    // Sort faces by texture name, then lightmap index
+    private func compareFaces(_ a: Int, _ b: Int) -> Bool {
+        let faceA = self.bsp.faces[a]
+        let faceB = self.bsp.faces[b]
+        let textureA = self.bsp.textures[Int(faceA.textureIndex)]
+        let textureB = self.bsp.textures[Int(faceB.textureIndex)]
+
+        if textureA.name > textureB.name {
+            return true
+        }
+
+        if textureB.name > textureA.name {
+            return false
+        }
+
+        if faceA.lightmapIndex > faceB.lightmapIndex {
+            return true
+        }
+        
+        return false
+    }
 }

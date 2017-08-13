@@ -162,7 +162,7 @@ public struct BSPFace {
 }
 
 public struct BSPLightmap {
-    public let lightmap: Array<(UInt8, UInt8, UInt8)>;
+    public let lightmap: Array<(UInt8, UInt8, UInt8, UInt8)>;
 }
 
 public struct BSPLightVol {

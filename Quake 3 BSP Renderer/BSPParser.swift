@@ -269,10 +269,10 @@ public class BSPParser {
 
     private func parseLightmaps() throws {
         bsp.lightmaps = try readEntry(index: LIGHTMAPS_INDEX, entryLength: 128 * 128 * 3) { parser in
-            var lightmap: Array<(UInt8, UInt8, UInt8)> = []
+            var lightmap: Array<(UInt8, UInt8, UInt8, UInt8)> = []
 
             for _ in 0 ..< (128 * 128) {
-                lightmap.append((parser.getNumber(), parser.getNumber(), parser.getNumber()))
+                lightmap.append((parser.getNumber(), parser.getNumber(), parser.getNumber(), 1))
             }
 
             return BSPLightmap(lightmap: lightmap)
