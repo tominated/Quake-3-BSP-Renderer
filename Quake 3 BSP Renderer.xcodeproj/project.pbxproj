@@ -44,18 +44,7 @@
 		E2EE7EA81D22080700640A0A /* rgbGeneratorDefault.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */; };
 		E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */; };
 		E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */; };
-		F79769825C2D8FDC53C53A27 /* Pods_Quake_3_BSP_RendererTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02400AFFB3ACEA707DFAAA87 /* Pods_Quake_3_BSP_RendererTests.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		E27901FB1B8D989C00E09E46 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E27901DD1B8D989C00E09E46 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E27901E41B8D989C00E09E46;
-			remoteInfo = "Quake 3 BSP Renderer";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		02400AFFB3ACEA707DFAAA87 /* Pods_Quake_3_BSP_RendererTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_RendererTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,7 +72,6 @@
 		E27901EF1B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E27901F11B8D989C00E09E46 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		E27901F41B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Quake 3 BSP RendererTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 		E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3TextureLoader.swift; sourceTree = "<group>"; };
 		E2921B141D212FC60060FCE4 /* waveformSin.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformSin.mustache; path = templates/waveformSin.mustache; sourceTree = "<group>"; };
@@ -111,14 +99,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CBFBE9497A4D60933676794 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E27901F71B8D989C00E09E46 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F79769825C2D8FDC53C53A27 /* Pods_Quake_3_BSP_RendererTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,7 +161,6 @@
 			isa = PBXGroup;
 			children = (
 				E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */,
-				E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -247,27 +226,6 @@
 			productReference = E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E27901F91B8D989C00E09E46 /* Quake 3 BSP RendererTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */;
-			buildPhases = (
-				99CCB3EF0EA123DDC2B0BA3D /* [CP] Check Pods Manifest.lock */,
-				E27901F61B8D989C00E09E46 /* Sources */,
-				E27901F71B8D989C00E09E46 /* Frameworks */,
-				E27901F81B8D989C00E09E46 /* Resources */,
-				1AC378F1794DDB68100F7919 /* [CP] Embed Pods Frameworks */,
-				A02A8B1A4041F7F53E6C1E2B /* [CP] Copy Pods Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				E27901FC1B8D989C00E09E46 /* PBXTargetDependency */,
-			);
-			name = "Quake 3 BSP RendererTests";
-			productName = "Quake 3 BSP RendererTests";
-			productReference = E27901FA1B8D989C00E09E46 /* Quake 3 BSP RendererTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -283,10 +241,6 @@
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = XVVR4L7TTW;
 						LastSwiftMigration = 0830;
-					};
-					E27901F91B8D989C00E09E46 = {
-						CreatedOnToolsVersion = 6.4;
-						TestTargetID = E27901E41B8D989C00E09E46;
 					};
 				};
 			};
@@ -304,7 +258,6 @@
 			projectRoot = "";
 			targets = (
 				E27901E41B8D989C00E09E46 /* Quake 3 BSP Renderer */,
-				E27901F91B8D989C00E09E46 /* Quake 3 BSP RendererTests */,
 			);
 		};
 /* End PBXProject section */
@@ -336,13 +289,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E27901F81B8D989C00E09E46 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -361,21 +307,6 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1AC378F1794DDB68100F7919 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		2A60BADD68E2F339D0B90691 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -389,36 +320,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		99CCB3EF0EA123DDC2B0BA3D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		A02A8B1A4041F7F53E6C1E2B /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A52D6E61C0B4C6F9BBB08F03 /* [CP] Copy Pods Resources */ = {
@@ -463,22 +364,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E27901F61B8D989C00E09E46 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		E27901FC1B8D989C00E09E46 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E27901E41B8D989C00E09E46 /* Quake 3 BSP Renderer */;
-			targetProxy = E27901FB1B8D989C00E09E46 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		E27901EE1B8D989C00E09E46 /* Main.storyboard */ = {
@@ -619,44 +505,6 @@
 			};
 			name = Release;
 		};
-		E27902081B8D989C00E09E46 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 20629CE9A6C518FC5AF12C68 /* Pods-Quake 3 BSP RendererTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
-			};
-			name = Debug;
-		};
-		E27902091B8D989C00E09E46 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Quake 3 BSP RendererTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Quake 3 BSP Renderer.app/Quake 3 BSP Renderer";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -674,15 +522,6 @@
 			buildConfigurations = (
 				E27902051B8D989C00E09E46 /* Debug */,
 				E27902061B8D989C00E09E46 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E27902071B8D989C00E09E46 /* Build configuration list for PBXNativeTarget "Quake 3 BSP RendererTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E27902081B8D989C00E09E46 /* Debug */,
-				E27902091B8D989C00E09E46 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
