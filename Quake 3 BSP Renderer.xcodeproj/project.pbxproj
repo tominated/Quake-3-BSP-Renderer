@@ -11,6 +11,9 @@
 		3370CA681F40995200370378 /* BSPParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA671F40995200370378 /* BSPParser.swift */; };
 		3370CA6A1F40997F00370378 /* BSPTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA691F40997F00370378 /* BSPTypes.swift */; };
 		3370CA6C1F4099F700370378 /* BinaryParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA6B1F4099F700370378 /* BinaryParser.swift */; };
+		3370CA6E1F409C9600370378 /* BSPMeshBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA6D1F409C9600370378 /* BSPMeshBuilder.swift */; };
+		3370CA701F409CB700370378 /* BezierPatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA6F1F409CB700370378 /* BezierPatch.swift */; };
+		3370CA721F409DF100370378 /* VisibilityTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3370CA711F409DF100370378 /* VisibilityTester.swift */; };
 		9CBFBE9497A4D60933676794 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */; };
 		E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */; };
 		E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB91C462C5200BF5B91 /* Q3Map.swift */; };
@@ -57,6 +60,9 @@
 		3370CA671F40995200370378 /* BSPParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSPParser.swift; sourceTree = "<group>"; };
 		3370CA691F40997F00370378 /* BSPTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSPTypes.swift; sourceTree = "<group>"; };
 		3370CA6B1F4099F700370378 /* BinaryParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryParser.swift; sourceTree = "<group>"; };
+		3370CA6D1F409C9600370378 /* BSPMeshBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BSPMeshBuilder.swift; sourceTree = "<group>"; };
+		3370CA6F1F409CB700370378 /* BezierPatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BezierPatch.swift; sourceTree = "<group>"; };
+		3370CA711F409DF100370378 /* VisibilityTester.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisibilityTester.swift; sourceTree = "<group>"; };
 		6658A5057F2CE94B488896DA /* Pods-Quake 3 BSP Renderer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.release.xcconfig"; sourceTree = "<group>"; };
 		A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_Renderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ResourceLoader.swift; sourceTree = "<group>"; };
@@ -200,6 +206,9 @@
 				3370CA671F40995200370378 /* BSPParser.swift */,
 				3370CA691F40997F00370378 /* BSPTypes.swift */,
 				3370CA6B1F4099F700370378 /* BinaryParser.swift */,
+				3370CA6D1F409C9600370378 /* BSPMeshBuilder.swift */,
+				3370CA6F1F409CB700370378 /* BezierPatch.swift */,
+				3370CA711F409DF100370378 /* VisibilityTester.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -362,16 +371,19 @@
 				3370CA681F40995200370378 /* BSPParser.swift in Sources */,
 				E24920C81C0733D100352118 /* Mesh.swift in Sources */,
 				E2C573761C6B64A9002004A2 /* Q3Shader.swift in Sources */,
+				3370CA6E1F409C9600370378 /* BSPMeshBuilder.swift in Sources */,
 				E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */,
 				3370CA6C1F4099F700370378 /* BinaryParser.swift in Sources */,
 				E2C7293D1C7C86CF0087A64A /* Material.swift in Sources */,
 				E24F12B61C47C2D300DF1DCF /* Targa.swift in Sources */,
 				E21CCBBC1C46344D00BF5B91 /* Q3Types.swift in Sources */,
+				3370CA701F409CB700370378 /* BezierPatch.swift in Sources */,
 				3370CA6A1F40997F00370378 /* BSPTypes.swift in Sources */,
 				E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */,
 				E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */,
 				E26DC7181C15625C003E7A54 /* Camera.swift in Sources */,
 				E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */,
+				3370CA721F409DF100370378 /* VisibilityTester.swift in Sources */,
 				3344548A1F3F53F4000A880E /* QuakeRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

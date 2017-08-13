@@ -39,10 +39,8 @@ class Q3ResourceLoader {
     }
     
     // Loads the specified map from the data file if it exists
-    func loadMap(_ name: String) -> Q3Map? {
-        let path = "maps/\(name).bsp"
-        guard let map = loadResource(path) else { return nil }
-        return Q3Map(data: map)
+    func loadMap(_ name: String) -> Data? {
+        return loadResource("maps/\(name).bsp")
     }
     
     // Loads the specified texture as a CGImage from the data file if it exists

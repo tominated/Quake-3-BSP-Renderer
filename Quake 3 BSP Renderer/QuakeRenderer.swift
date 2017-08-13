@@ -68,6 +68,8 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
             let map = loader.loadMap(mapName)
         else { throw RendererError.invalidMap }
 
+        let parsedMap = Q3Map(data: map)
+
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
         let shaders = try! shaderParser.readShaders()
 
@@ -76,7 +78,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
 
         mapMesh = MapMesh(
             device: device,
-            map: map,
+            map: parsedMap,
             shaderBuilder: shaderBuilder,
             textureLoader: textureLoader,
             shaders: shaders
