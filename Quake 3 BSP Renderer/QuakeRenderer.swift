@@ -68,6 +68,21 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
             let map = loader.loadMap(mapName)
         else { throw RendererError.invalidMap }
 
+        // get spawn points and set camera position to one
+        let spawnPoints = map.entities.filter { entity in
+            entity["classname"] == "info_player_deathmatch"
+        }
+
+        if (spawnPoints.count > 0) {
+            let i = Int(arc4random_uniform(UInt32(spawnPoints.count)))
+            let entity = spawnPoints[i]
+            let angle = GLKMathDegreesToRadians(Float(entity["angle"]!)!)
+            let origin = entity["origin"]!.characters.split(separator: " ").map(String.init).map { Float($0)! }
+
+            camera.position = GLKVector3Make(origin[0], origin[1], origin[2])
+            camera.orientation = GLKQuaternionMakeWithAngleAndAxis(angle, 0, 1, 0)
+        }
+
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
         let shaders = try! shaderParser.readShaders()
 

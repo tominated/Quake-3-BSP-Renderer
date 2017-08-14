@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3344548A1F3F53F4000A880E /* QuakeRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334454891F3F53F4000A880E /* QuakeRenderer.swift */; };
+		339705AF1F41164500CC9B28 /* Q3EntityParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339705AE1F41164500CC9B28 /* Q3EntityParser.swift */; };
 		9CBFBE9497A4D60933676794 /* Pods_Quake_3_BSP_Renderer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */; };
 		E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */; };
 		E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB91C462C5200BF5B91 /* Q3Map.swift */; };
@@ -51,6 +52,7 @@
 		20629CE9A6C518FC5AF12C68 /* Pods-Quake 3 BSP RendererTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP RendererTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests.debug.xcconfig"; sourceTree = "<group>"; };
 		2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP RendererTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP RendererTests/Pods-Quake 3 BSP RendererTests.release.xcconfig"; sourceTree = "<group>"; };
 		334454891F3F53F4000A880E /* QuakeRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuakeRenderer.swift; sourceTree = "<group>"; };
+		339705AE1F41164500CC9B28 /* Q3EntityParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3EntityParser.swift; sourceTree = "<group>"; };
 		6658A5057F2CE94B488896DA /* Pods-Quake 3 BSP Renderer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.release.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.release.xcconfig"; sourceTree = "<group>"; };
 		A15D29874BB716A4DD4F066F /* Pods_Quake_3_BSP_Renderer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Quake_3_BSP_Renderer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ResourceLoader.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */,
 				E25B8E2C1D1D18A3009EDC8C /* templates */,
 				334454891F3F53F4000A880E /* QuakeRenderer.swift */,
+				339705AE1F41164500CC9B28 /* Q3EntityParser.swift */,
 			);
 			path = "Quake 3 BSP Renderer";
 			sourceTree = "<group>";
@@ -353,6 +356,7 @@
 				E24920C81C0733D100352118 /* Mesh.swift in Sources */,
 				E2C573761C6B64A9002004A2 /* Q3Shader.swift in Sources */,
 				E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */,
+				339705AF1F41164500CC9B28 /* Q3EntityParser.swift in Sources */,
 				E2C7293D1C7C86CF0087A64A /* Material.swift in Sources */,
 				E24F12B61C47C2D300DF1DCF /* Targa.swift in Sources */,
 				E21CCBBC1C46344D00BF5B91 /* Q3Types.swift in Sources */,

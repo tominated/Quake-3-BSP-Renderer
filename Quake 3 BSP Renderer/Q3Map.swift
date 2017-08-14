@@ -90,6 +90,7 @@ private struct Q3PatchFace {
 // Performs tessellation on bezier patch faces and integrates them with all of
 // the other face vertices and index arrays
 class Q3Map {
+    var entities: Array<Dictionary<String, String>> = []
     var vertices: Array<Q3Vertex> = []
     var faces: Array<Q3Face> = []
     var textureNames: Array<String> = []
@@ -104,6 +105,7 @@ class Q3Map {
         buffer = BinaryReader(data: data)
         
         readHeaders()
+        entities = readEntities()
         textureNames = readTextureNames()
         vertices = readVertices()
         meshverts = readMeshverts()
@@ -125,6 +127,17 @@ class Q3Map {
             let entry = Q3DirectoryEntry(offset: buffer.getInt32(), length: buffer.getInt32())
             directoryEntries.append(entry)
         }
+    }
+
+    fileprivate func readEntities() -> Array<Dictionary<String, String>> {
+        let entry = directoryEntries[0]
+
+        buffer.jump(Int(entry.offset))
+
+        let entities = buffer.getASCII(Int(entry.length))
+        let parser = Q3EntityParser(entitiesString: entities! as String)
+
+        return parser.parse()
     }
     
     fileprivate func readTextureNames() -> Array<String> {
