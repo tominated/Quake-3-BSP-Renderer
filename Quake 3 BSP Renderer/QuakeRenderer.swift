@@ -79,7 +79,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
             let angle = GLKMathDegreesToRadians(Float(entity["angle"]!)!)
             let origin = entity["origin"]!.characters.split(separator: " ").map(String.init).map { Float($0)! }
 
-            camera.position = GLKVector3Make(origin[0], origin[1], origin[2])
+            camera.position = GLKVector3Make(origin[0], origin[2] + 5, -origin[1])
             camera.orientation = GLKQuaternionMakeWithAngleAndAxis(angle, 0, 1, 0)
         }
 
