@@ -14,7 +14,6 @@ let FOV = GLKMathDegreesToRadians(65.0)
 
 struct Uniforms {
     var time: Float32
-    var modelMatrix : GLKMatrix4
     var viewMatrix : GLKMatrix4
     var projectionMatrix : GLKMatrix4
 }
@@ -76,11 +75,11 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         if (spawnPoints.count > 0) {
             let i = Int(arc4random_uniform(UInt32(spawnPoints.count)))
             let entity = spawnPoints[i]
-            let angle = GLKMathDegreesToRadians(Float(entity["angle"]!)!)
+            let angle = Float(entity["angle"]!)!
             let origin = entity["origin"]!.characters.split(separator: " ").map(String.init).map { Float($0)! }
 
             camera.position = GLKVector3Make(origin[0], origin[2] + 5, -origin[1])
-            camera.orientation = GLKQuaternionMakeWithAngleAndAxis(angle, 0, 1, 0)
+            camera.yaw = angle
         }
 
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
@@ -103,7 +102,6 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
 
         uniforms = Uniforms(
             time: 0,
-            modelMatrix: GLKMatrix4Identity,
             viewMatrix: camera.getViewMatrix(),
             projectionMatrix: GLKMatrix4MakePerspective(FOV, aspectRatio, 0.01, 10000.0)
         )

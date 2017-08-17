@@ -23,7 +23,6 @@ struct VertexOut
 struct Uniforms
 {
     float time;
-    float4x4 modelMatrix;
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
 };
@@ -38,7 +37,7 @@ vertex VertexOut renderVert(VertexIn in [[stage_in]],
 
     {{#vertexDeforms}}{{template}}{{/vertexDeforms}}
 
-    float4 worldPosition = uniforms.viewMatrix * uniforms.modelMatrix * float4(position, 1.0);
+    float4 worldPosition = uniforms.viewMatrix * float4(position, 1.0);
     float2 textureCoord = {{textureCoordinateGenerator}};
 
     {{#textureCoordinateMods}}{{template}}{{/textureCoordinateMods}}

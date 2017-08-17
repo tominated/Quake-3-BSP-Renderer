@@ -10,73 +10,53 @@ import Foundation
 import GLKit
 
 class Camera {
-    var position: GLKVector3
-    var orientation: GLKQuaternion
-    
-    init() {
-        position = GLKVector3Make(30, 30, 30)
-        orientation = GLKQuaternionMakeWithAngleAndAxis(0, 1, 0, 0)
+    var position: GLKVector3 = GLKVector3Make(0, 0, 0)
+    var pitch: Float = 0
+    var yaw: Float = 0
+
+    private var up: GLKVector3 = GLKVector3Make(0, 1, 0)
+
+    private var direction: GLKVector3 {
+        get {
+            return GLKVector3Normalize(GLKVector3Make(
+                cos(GLKMathDegreesToRadians(yaw)) * cos(GLKMathDegreesToRadians(pitch)),
+                sin(GLKMathDegreesToRadians(pitch)),
+                sin(GLKMathDegreesToRadians(yaw)) * cos(GLKMathDegreesToRadians(pitch))
+            ))
+        }
     }
-    
-    func rotate(_ rotation: GLKQuaternion) {
-        orientation = GLKQuaternionNormalize(GLKQuaternionMultiply(rotation, orientation))
-    }
-    
-    func rotate(_ radians: Float, x: Float, y: Float, z: Float) {
-        let q = GLKQuaternionMakeWithAngleAndAxis(radians, x, y, z)
-        rotate(q)
-    }
-    
-    func pitch(_ radians: Float) {
-        rotate(radians, x: 1, y: 0, z: 0)
-    }
-    
-    func yaw(_ radians: Float) {
-        rotate(radians, x: 0, y: 1, z: 0)
-    }
-    
-    func roll(_ radians: Float) {
-        rotate(radians, x: 0, y: 0, z: 1)
-    }
-    
-    func turn(_ radians: Float) {
-        let axis = GLKQuaternionRotateVector3(orientation, GLKVector3Make(0, 1, 0))
-        let q = GLKQuaternionMakeWithAngleAndAxis(radians, axis.x, axis.y, axis.z)
-        return rotate(q)
-    }
-    
-    func getForward() -> GLKVector3 {
-        return GLKQuaternionRotateVector3(
-            GLKQuaternionConjugate(orientation),
-            GLKVector3Make(0, 0, -1)
-        )
-    }
-    
-    func getLeft() -> GLKVector3 {
-        return GLKQuaternionRotateVector3(
-            GLKQuaternionConjugate(orientation),
-            GLKVector3Make(-1, 0, 0)
-        )
-    }
-    
-    func getUp() -> GLKVector3 {
-        return GLKQuaternionRotateVector3(
-            GLKQuaternionConjugate(orientation),
-            GLKVector3Make(0, 1, 0)
-        )
-    }
-    
-    func moveForward(_ movement: Float) {
+
+    func move(joystickX: Float, joystickY: Float) {
+        // Move forward and backward
         position = GLKVector3Add(
             position,
-            GLKVector3MultiplyScalar(getForward(), movement)
+            GLKVector3MultiplyScalar(direction, -joystickY)
+        )
+
+        // Strafe side to side
+        let right = GLKVector3CrossProduct(direction, up)
+        position = GLKVector3Add(
+            position,
+            GLKVector3MultiplyScalar(right, joystickX)
         )
     }
-    
+
+    func point(joystickX: Float, joystickY: Float) {
+        pitch = min(max(pitch - joystickY, -89), 89)
+        yaw = yaw + joystickX
+    }
+
     func getViewMatrix() -> GLKMatrix4 {
-        return GLKMatrix4TranslateWithVector3(
-            GLKMatrix4MakeWithQuaternion(orientation),
-            GLKVector3Negate(position)
+        return GLKMatrix4MakeLookAt(
+            position.x,
+            position.y,
+            position.z,
+            position.x + direction.x,
+            position.y + direction.y,
+            position.z + direction.z,
+            up.x,
+            up.y,
+            up.z
         )
     }
 }
