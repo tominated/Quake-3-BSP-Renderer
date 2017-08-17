@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import GLKit
+import simd
 
 private struct Q3DirectoryEntry {
     var offset: Int32
