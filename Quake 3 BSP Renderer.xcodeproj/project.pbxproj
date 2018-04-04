@@ -243,7 +243,7 @@
 					E27901E41B8D989C00E09E46 = {
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = XVVR4L7TTW;
-						LastSwiftMigration = 0830;
+						LastSwiftMigration = 0900;
 					};
 				};
 			};
@@ -489,7 +489,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -505,7 +506,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tombrunoli.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

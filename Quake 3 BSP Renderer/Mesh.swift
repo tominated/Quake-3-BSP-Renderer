@@ -108,7 +108,7 @@ class MapMesh {
                 material: material,
                 lightmap: lightmap,
                 indexCount: indices.count,
-                indexBuffer: buffer
+                indexBuffer: buffer!
             )
             
             if shaded {
@@ -122,7 +122,7 @@ class MapMesh {
     }
     
     func renderWithEncoder(_ encoder: MTLRenderCommandEncoder, time: Float) {
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, at: 0)
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         
         for faceMesh in faceMeshes {
             faceMesh.renderWithEncoder(encoder, time: time)

@@ -81,8 +81,8 @@ struct Material {
             stages.append(
                 MaterialStage(
                     pipelineState: pipelineState,
-                    depthStencilState: depthStencilState,
-                    samplerState: samplerState,
+                    depthStencilState: depthStencilState!,
+                    samplerState: samplerState!,
                     texture: texture
                 )
             )
@@ -99,19 +99,19 @@ struct Material {
             // Set pipeline and depth state
             encoder.setRenderPipelineState(stage.pipelineState)
             encoder.setDepthStencilState(stage.depthStencilState)
-            encoder.setFragmentSamplerState(stage.samplerState, at: 0)
+            encoder.setFragmentSamplerState(stage.samplerState, index: 0)
             
             // Set the texture
             switch stage.texture {
             case .static(let texture):
-                encoder.setFragmentTexture(texture, at: 0)
+                encoder.setFragmentTexture(texture, index: 0)
                 
             case .animated(let frequency, let textures):
                 let index = Int(time * frequency) % textures.count
-                encoder.setFragmentTexture(textures[index], at: 0)
+                encoder.setFragmentTexture(textures[index], index: 0)
             
             case .lightmap:
-                encoder.setFragmentTexture(lightmap, at: 0)
+                encoder.setFragmentTexture(lightmap, index: 0)
             }
             
             encoder.drawIndexedPrimitives(

@@ -28,7 +28,7 @@ class Q3TextureLoader {
     init(loader: Q3ResourceLoader, device: MTLDevice) {
         self.loader = loader
         self.device = device
-        commandQueue = device.makeCommandQueue()
+        commandQueue = device.makeCommandQueue()!
         textureLoader = MTKTextureLoader(device: device)
     }
     
@@ -44,8 +44,8 @@ class Q3TextureLoader {
         }
         
         let texture =  try! textureLoader.newTexture(
-            with: image.cgImage!,
-            options: [MTKTextureLoaderOptionAllocateMipmaps: 1 as NSObject]
+            cgImage: image.cgImage!,
+            options: [MTKTextureLoader.Option.allocateMipmaps: 1 as NSObject]
         )
         
         generateMipmaps(texture)
@@ -70,7 +70,7 @@ class Q3TextureLoader {
         )
         
         let whiteTexture = device.makeTexture(descriptor: descriptor)
-        whiteTexture.replace(
+        whiteTexture?.replace(
             region: MTLRegionMake2D(0, 0, 1, 1),
             mipmapLevel: 0,
             withBytes: [UInt8(255), UInt8(255), UInt8(255), UInt8(255)],
@@ -79,31 +79,31 @@ class Q3TextureLoader {
         
         self.whiteTexture = whiteTexture
         
-        return whiteTexture
+        return whiteTexture!
     }
     
     func loadLightmap(_ lightmap: Q3Lightmap) -> MTLTexture {
         let texture = device.makeTexture(descriptor: lightmapDescriptor)
         
-        texture.replace(
+        texture?.replace(
             region: MTLRegionMake2D(0, 0, 128, 128),
             mipmapLevel: 0,
             withBytes: lightmap,
             bytesPerRow: 128 * 4
         )
         
-        generateMipmaps(texture)
+        generateMipmaps(texture!)
         
-        return texture
+        return texture!
     }
     
     fileprivate func generateMipmaps(_ texture: MTLTexture) {
         let commandBuffer = commandQueue.makeCommandBuffer()
-        let commandEncoder = commandBuffer.makeBlitCommandEncoder()
+        let commandEncoder = commandBuffer?.makeBlitCommandEncoder()
         
-        commandEncoder.generateMipmaps(for: texture)
+        commandEncoder?.generateMipmaps(for: texture)
         
-        commandEncoder.endEncoding()
-        commandBuffer.commit()
+        commandEncoder?.endEncoding()
+        commandBuffer?.commit()
     }
 }

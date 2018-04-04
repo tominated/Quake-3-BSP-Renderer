@@ -156,13 +156,13 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
 
         // Perform the main draw calls
-        commandEncoder.setVertexBuffer(uniformBuffer, offset: 0, at: 1)
-        commandEncoder.setFragmentBuffer(uniformBuffer, offset: 0, at: 0)
+        commandEncoder?.setVertexBuffer(uniformBuffer, offset: 0, index: 1)
+        commandEncoder?.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
 
-        mapMesh.renderWithEncoder(commandEncoder, time: uniforms.time)
+        mapMesh.renderWithEncoder(commandEncoder!, time: uniforms.time)
 
         // End the gpu commands
-        commandEncoder.endEncoding()
+        commandEncoder?.endEncoding()
 
         // And finally display stuff
         commandBuffer.present(currentDrawable)

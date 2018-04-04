@@ -75,7 +75,7 @@ private func imageFromRGBAData(_ data: Data, width: Int, height: Int) -> UIImage
     let bytesPerPixel = 4
     let scanWidth = bytesPerPixel * width
     
-    let provider = CGDataProvider(dataInfo: nil, data: pixelData, size: height * scanWidth, releaseData: { _ in () })
+    let provider = CGDataProvider(dataInfo: nil, data: pixelData, size: height * scanWidth, releaseData: { _,_,_  in () })
     
     let colorSpaceRef = CGColorSpaceCreateDeviceRGB()
     let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.last.rawValue)

@@ -40,6 +40,9 @@ class ViewController: UIViewController, MTKViewDelegate {
     var rightTouchStart: CGPoint? = nil
     var rightTouchCurrent: CGPoint? = nil
 
+    var leftJoystickView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+    var rightJoystickView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+
     var leftJoystick: CGPoint {
         get {
             return getJoystick(start: leftTouchStart, current: leftTouchCurrent)
@@ -64,6 +67,19 @@ class ViewController: UIViewController, MTKViewDelegate {
         renderer.mtkView(view, drawableSizeWillChange: view.drawableSize)
 
         view.isMultipleTouchEnabled = true
+
+        leftJoystickView.isUserInteractionEnabled = false;
+        leftJoystickView.backgroundColor = UIColor.init(white: 1, alpha: 0.2)
+        leftJoystickView.layer.cornerRadius = leftJoystickView.frame.width / 2
+        leftJoystickView.isHidden = true
+
+        rightJoystickView.isUserInteractionEnabled = false;
+        rightJoystickView.backgroundColor = UIColor.init(white: 1, alpha: 0.2)
+        rightJoystickView.layer.cornerRadius = rightJoystickView.frame.width / 2
+        rightJoystickView.isHidden = true
+
+        view.addSubview(leftJoystickView)
+        view.addSubview(rightJoystickView)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -75,12 +91,20 @@ class ViewController: UIViewController, MTKViewDelegate {
                 if (leftTouchStart == nil) {
                     leftTouchStart = location
                     leftTouchCurrent = location
+
+                    leftJoystickView.frame.origin.x = location.x - (leftJoystickView.frame.width / 2)
+                    leftJoystickView.frame.origin.y = location.y - (leftJoystickView.frame.height / 2)
+                    leftJoystickView.isHidden = false
                 }
             } else {
                 // Right side of screen
                 if (rightTouchStart == nil) {
                     rightTouchStart = location
                     rightTouchCurrent = location
+
+                    rightJoystickView.frame.origin.x = location.x - (rightJoystickView.frame.width / 2)
+                    rightJoystickView.frame.origin.y = location.y - (rightJoystickView.frame.height / 2)
+                    rightJoystickView.isHidden = false
                 }
             }
         }
@@ -107,9 +131,11 @@ class ViewController: UIViewController, MTKViewDelegate {
             if (prevLocation == leftTouchCurrent || location == leftTouchCurrent) {
                 leftTouchStart = nil
                 leftTouchCurrent = nil
+                leftJoystickView.isHidden = true
             } else if (prevLocation == rightTouchCurrent || location == rightTouchCurrent) {
                 rightTouchStart = nil
                 rightTouchCurrent = nil
+                rightJoystickView.isHidden = true
             }
         }
     }

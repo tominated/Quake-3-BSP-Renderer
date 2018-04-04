@@ -21,7 +21,7 @@ class BufferProvider {
         
         for _ in 0..<inflightBuffersCount {
             buffers.append(
-                device.makeBuffer(length: bufferSize, options: MTLResourceOptions())
+                device.makeBuffer(length: bufferSize, options: MTLResourceOptions())!
             )
         }
     }
