@@ -204,6 +204,7 @@ struct Q3ShaderStage {
         samplerDescriptor.tAddressMode = .repeat
         samplerDescriptor.minFilter = .linear
         samplerDescriptor.magFilter = .linear
+        samplerDescriptor.maxAnisotropy = 16
 
         if mipmapsEnabled {
             samplerDescriptor.mipFilter = .linear
