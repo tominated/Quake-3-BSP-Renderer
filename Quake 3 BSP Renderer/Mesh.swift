@@ -44,7 +44,7 @@ class MapMesh {
     var faceMeshes: Array<FaceMesh> = []
     var shadedFaceMeshes: Array<FaceMesh> = []
     
-    init(device: MTLDevice, map: Q3Map, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
+    init(device: MTLDevice, map: Q3Map, textureLoader: Q3TextureLoader, shaders: Array<Q3Shader>) {
         self.device = device
         self.map = map
         self.textureLoader = textureLoader
@@ -91,7 +91,7 @@ class MapMesh {
             }
             
             let shader = self.shaders[key.texture] ?? Q3Shader(textureName: key.texture)
-            let material = try! Material(shader: shader, device: device, shaderBuilder: shaderBuilder, textureLoader: textureLoader)
+            let material = try! Material(shader: shader, device: device, textureLoader: textureLoader)
             
             let lightmap = key.lightmap >= 0
                 ? textureLoader.loadLightmap(map.lightmaps[key.lightmap])

@@ -85,13 +85,11 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
         let shaderParser = Q3ShaderParser(shaderFile: loader.loadAllShaders())
         let shaders = try! shaderParser.readShaders()
 
-        let shaderBuilder = ShaderBuilder(device: device)
         let textureLoader = Q3TextureLoader(loader: loader, device: device)
 
         mapMesh = MapMesh(
             device: device,
             map: map,
-            shaderBuilder: shaderBuilder,
             textureLoader: textureLoader,
             shaders: shaders
         )

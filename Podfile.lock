@@ -1,25 +1,12 @@
 PODS:
-  - GRMustache.swift (2.0.0)
   - zipzap (8.1.1)
 
 DEPENDENCIES:
-  - GRMustache.swift (from `https://github.com/groue/GRMustache.swift.git`, commit `e005633`)
   - zipzap
 
-EXTERNAL SOURCES:
-  GRMustache.swift:
-    :commit: e005633
-    :git: https://github.com/groue/GRMustache.swift.git
-
-CHECKOUT OPTIONS:
-  GRMustache.swift:
-    :commit: e005633
-    :git: https://github.com/groue/GRMustache.swift.git
-
 SPEC CHECKSUMS:
-  GRMustache.swift: 53405b02c374520f9193cf41bfa677f03a6d70aa
   zipzap: 940162d9c9c60472c2eab341385e4214da0fdf1c
 
-PODFILE CHECKSUM: 7760d8d944031b43aacad036f83b54ff58980e94
+PODFILE CHECKSUM: 0a1b74d2b9cfa5b7584e84484658f8d08b368554
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.4.0

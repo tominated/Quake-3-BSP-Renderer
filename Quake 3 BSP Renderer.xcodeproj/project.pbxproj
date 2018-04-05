@@ -13,14 +13,10 @@
 		E21CCBB81C46297D00BF5B91 /* Q3ResourceLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */; };
 		E21CCBBA1C462C5200BF5B91 /* Q3Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBB91C462C5200BF5B91 /* Q3Map.swift */; };
 		E21CCBBC1C46344D00BF5B91 /* Q3Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */; };
-		E2459AF71C918E9F00C29BFE /* ShaderBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */; };
+		E2459AF71C918E9F00C29BFE /* ShaderGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2459AF61C918E9F00C29BFE /* ShaderGenerator.swift */; };
 		E24920C81C0733D100352118 /* Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24920C71C0733D100352118 /* Mesh.swift */; };
 		E24F12B41C47BD5200DF1DCF /* pak0.pk3 in Resources */ = {isa = PBXBuildFile; fileRef = E24F12B31C47BD5200DF1DCF /* pak0.pk3 */; };
 		E24F12B61C47C2D300DF1DCF /* Targa.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24F12B51C47C2D300DF1DCF /* Targa.swift */; };
-		E25B8E2A1D1D186B009EDC8C /* main.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E25B8E291D1D186B009EDC8C /* main.mustache */; };
-		E25B8E2E1D1D1DDC009EDC8C /* textureCoordinateModRotate.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E25B8E2D1D1D1DDC009EDC8C /* textureCoordinateModRotate.mustache */; };
-		E25B8E301D1D1E4A009EDC8C /* textureCoordinateModScale.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E25B8E2F1D1D1E4A009EDC8C /* textureCoordinateModScale.mustache */; };
-		E25B8E321D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E25B8E311D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache */; };
 		E26DC7181C15625C003E7A54 /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26DC7171C15625C003E7A54 /* Camera.swift */; };
 		E27901EB1B8D989C00E09E46 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EA1B8D989C00E09E46 /* AppDelegate.swift */; };
 		E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E27901EC1B8D989C00E09E46 /* ViewController.swift */; };
@@ -29,21 +25,10 @@
 		E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = E27901F31B8D989C00E09E46 /* LaunchScreen.xib */; };
 		E279020B1B8D98CB00E09E46 /* BinaryReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E279020A1B8D98CB00E09E46 /* BinaryReader.swift */; };
 		E288A0991C81C3BD00A36DA8 /* Q3TextureLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */; };
-		E2921B151D212FC60060FCE4 /* waveformSin.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B141D212FC60060FCE4 /* waveformSin.mustache */; };
-		E2921B171D2130F00060FCE4 /* waveformTriangle.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B161D2130F00060FCE4 /* waveformTriangle.mustache */; };
-		E2921B191D21318B0060FCE4 /* waveformSquare.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B181D21318B0060FCE4 /* waveformSquare.mustache */; };
-		E2921B1B1D2132590060FCE4 /* waveformSawtooth.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B1A1D2132590060FCE4 /* waveformSawtooth.mustache */; };
-		E2921B1E1D2132A00060FCE4 /* waveformInverseSawtooth.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B1D1D2132A00060FCE4 /* waveformInverseSawtooth.mustache */; };
-		E2921B201D21CE8F0060FCE4 /* waveformNoise.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B1F1D21CE8F0060FCE4 /* waveformNoise.mustache */; };
-		E2921B221D21D17A0060FCE4 /* textureCoordinateModStretch.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2921B211D21D17A0060FCE4 /* textureCoordinateModStretch.mustache */; };
 		E2C573761C6B64A9002004A2 /* Q3Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C573751C6B64A9002004A2 /* Q3Shader.swift */; };
 		E2C7293D1C7C86CF0087A64A /* Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C7293C1C7C86CF0087A64A /* Material.swift */; };
 		E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */; };
 		E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E0B6181C2B9FB800365076 /* Bezier.swift */; };
-		E2EE7EA41D22012800640A0A /* rgbGeneratorWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */; };
-		E2EE7EA61D2207BC00640A0A /* rgbGeneratorVertex.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */; };
-		E2EE7EA81D22080700640A0A /* rgbGeneratorDefault.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */; };
-		E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */ = {isa = PBXBuildFile; fileRef = E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */; };
 		E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,14 +43,10 @@
 		E21CCBB71C46297D00BF5B91 /* Q3ResourceLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ResourceLoader.swift; sourceTree = "<group>"; };
 		E21CCBB91C462C5200BF5B91 /* Q3Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Map.swift; sourceTree = "<group>"; };
 		E21CCBBB1C46344D00BF5B91 /* Q3Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Types.swift; sourceTree = "<group>"; };
-		E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderBuilder.swift; sourceTree = "<group>"; };
+		E2459AF61C918E9F00C29BFE /* ShaderGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShaderGenerator.swift; sourceTree = "<group>"; };
 		E24920C71C0733D100352118 /* Mesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mesh.swift; sourceTree = "<group>"; };
 		E24F12B31C47BD5200DF1DCF /* pak0.pk3 */ = {isa = PBXFileReference; lastKnownFileType = file; path = pak0.pk3; sourceTree = "<group>"; };
 		E24F12B51C47C2D300DF1DCF /* Targa.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Targa.swift; sourceTree = "<group>"; };
-		E25B8E291D1D186B009EDC8C /* main.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = main.mustache; path = templates/main.mustache; sourceTree = "<group>"; };
-		E25B8E2D1D1D1DDC009EDC8C /* textureCoordinateModRotate.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = textureCoordinateModRotate.mustache; path = templates/textureCoordinateModRotate.mustache; sourceTree = "<group>"; };
-		E25B8E2F1D1D1E4A009EDC8C /* textureCoordinateModScale.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = textureCoordinateModScale.mustache; path = templates/textureCoordinateModScale.mustache; sourceTree = "<group>"; };
-		E25B8E311D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = textureCoordinateModScroll.mustache; path = templates/textureCoordinateModScroll.mustache; sourceTree = "<group>"; };
 		E26DC7171C15625C003E7A54 /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		E27901E51B8D989C00E09E46 /* Quake 3 BSP Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Quake 3 BSP Renderer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E27901E91B8D989C00E09E46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -76,21 +57,10 @@
 		E27901F41B8D989C00E09E46 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		E279020A1B8D98CB00E09E46 /* BinaryReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryReader.swift; sourceTree = "<group>"; };
 		E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3TextureLoader.swift; sourceTree = "<group>"; };
-		E2921B141D212FC60060FCE4 /* waveformSin.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformSin.mustache; path = templates/waveformSin.mustache; sourceTree = "<group>"; };
-		E2921B161D2130F00060FCE4 /* waveformTriangle.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformTriangle.mustache; path = templates/waveformTriangle.mustache; sourceTree = "<group>"; };
-		E2921B181D21318B0060FCE4 /* waveformSquare.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformSquare.mustache; path = templates/waveformSquare.mustache; sourceTree = "<group>"; };
-		E2921B1A1D2132590060FCE4 /* waveformSawtooth.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformSawtooth.mustache; path = templates/waveformSawtooth.mustache; sourceTree = "<group>"; };
-		E2921B1D1D2132A00060FCE4 /* waveformInverseSawtooth.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformInverseSawtooth.mustache; path = templates/waveformInverseSawtooth.mustache; sourceTree = "<group>"; };
-		E2921B1F1D21CE8F0060FCE4 /* waveformNoise.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = waveformNoise.mustache; path = templates/waveformNoise.mustache; sourceTree = "<group>"; };
-		E2921B211D21D17A0060FCE4 /* textureCoordinateModStretch.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = textureCoordinateModStretch.mustache; path = templates/textureCoordinateModStretch.mustache; sourceTree = "<group>"; };
 		E2C573751C6B64A9002004A2 /* Q3Shader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3Shader.swift; sourceTree = "<group>"; };
 		E2C7293C1C7C86CF0087A64A /* Material.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Material.swift; sourceTree = "<group>"; };
 		E2C8CC841C40A93F003E0D4C /* BufferProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferProvider.swift; sourceTree = "<group>"; };
 		E2E0B6181C2B9FB800365076 /* Bezier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bezier.swift; sourceTree = "<group>"; };
-		E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorWave.mustache; path = templates/rgbGeneratorWave.mustache; sourceTree = "<group>"; };
-		E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorVertex.mustache; path = templates/rgbGeneratorVertex.mustache; sourceTree = "<group>"; };
-		E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rgbGeneratorDefault.mustache; path = templates/rgbGeneratorDefault.mustache; sourceTree = "<group>"; };
-		E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vertexDeformWave.mustache; path = templates/vertexDeformWave.mustache; sourceTree = "<group>"; };
 		E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Q3ShaderParser.swift; sourceTree = "<group>"; };
 		F941E96EC399B060791B7115 /* Pods-Quake 3 BSP Renderer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Quake 3 BSP Renderer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -125,28 +95,6 @@
 				2375698C3B0A3C1BCD8B8430 /* Pods-Quake 3 BSP RendererTests.release.xcconfig */,
 			);
 			name = Pods;
-			sourceTree = "<group>";
-		};
-		E25B8E2C1D1D18A3009EDC8C /* templates */ = {
-			isa = PBXGroup;
-			children = (
-				E25B8E291D1D186B009EDC8C /* main.mustache */,
-				E25B8E2D1D1D1DDC009EDC8C /* textureCoordinateModRotate.mustache */,
-				E25B8E2F1D1D1E4A009EDC8C /* textureCoordinateModScale.mustache */,
-				E25B8E311D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache */,
-				E2921B211D21D17A0060FCE4 /* textureCoordinateModStretch.mustache */,
-				E2921B1D1D2132A00060FCE4 /* waveformInverseSawtooth.mustache */,
-				E2921B1F1D21CE8F0060FCE4 /* waveformNoise.mustache */,
-				E2921B1A1D2132590060FCE4 /* waveformSawtooth.mustache */,
-				E2921B141D212FC60060FCE4 /* waveformSin.mustache */,
-				E2921B181D21318B0060FCE4 /* waveformSquare.mustache */,
-				E2921B161D2130F00060FCE4 /* waveformTriangle.mustache */,
-				E2EE7EA31D22012800640A0A /* rgbGeneratorWave.mustache */,
-				E2EE7EA51D2207BC00640A0A /* rgbGeneratorVertex.mustache */,
-				E2EE7EA71D22080700640A0A /* rgbGeneratorDefault.mustache */,
-				E2EE7EA91D22185600640A0A /* vertexDeformWave.mustache */,
-			);
-			name = templates;
 			sourceTree = "<group>";
 		};
 		E27901DC1B8D989C00E09E46 = {
@@ -190,8 +138,7 @@
 				E2FB31041C6ED81500912E77 /* Q3ShaderParser.swift */,
 				E2C7293C1C7C86CF0087A64A /* Material.swift */,
 				E288A0981C81C3BD00A36DA8 /* Q3TextureLoader.swift */,
-				E2459AF61C918E9F00C29BFE /* ShaderBuilder.swift */,
-				E25B8E2C1D1D18A3009EDC8C /* templates */,
+				E2459AF61C918E9F00C29BFE /* ShaderGenerator.swift */,
 				334454891F3F53F4000A880E /* QuakeRenderer.swift */,
 				339705AE1F41164500CC9B28 /* Q3EntityParser.swift */,
 			);
@@ -270,25 +217,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E2921B151D212FC60060FCE4 /* waveformSin.mustache in Resources */,
-				E2921B1B1D2132590060FCE4 /* waveformSawtooth.mustache in Resources */,
-				E25B8E2E1D1D1DDC009EDC8C /* textureCoordinateModRotate.mustache in Resources */,
-				E2921B201D21CE8F0060FCE4 /* waveformNoise.mustache in Resources */,
 				E27901F01B8D989C00E09E46 /* Main.storyboard in Resources */,
-				E25B8E301D1D1E4A009EDC8C /* textureCoordinateModScale.mustache in Resources */,
-				E2EE7EA61D2207BC00640A0A /* rgbGeneratorVertex.mustache in Resources */,
-				E2EE7EA41D22012800640A0A /* rgbGeneratorWave.mustache in Resources */,
-				E25B8E321D1D1F2A009EDC8C /* textureCoordinateModScroll.mustache in Resources */,
-				E2921B191D21318B0060FCE4 /* waveformSquare.mustache in Resources */,
 				E27901F51B8D989C00E09E46 /* LaunchScreen.xib in Resources */,
 				E27901F21B8D989C00E09E46 /* Images.xcassets in Resources */,
-				E2921B1E1D2132A00060FCE4 /* waveformInverseSawtooth.mustache in Resources */,
-				E2EE7EA81D22080700640A0A /* rgbGeneratorDefault.mustache in Resources */,
-				E25B8E2A1D1D186B009EDC8C /* main.mustache in Resources */,
-				E2921B171D2130F00060FCE4 /* waveformTriangle.mustache in Resources */,
 				E24F12B41C47BD5200DF1DCF /* pak0.pk3 in Resources */,
-				E2921B221D21D17A0060FCE4 /* textureCoordinateModStretch.mustache in Resources */,
-				E2EE7EAA1D22185600640A0A /* vertexDeformWave.mustache in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,9 +233,12 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-Quake 3 BSP Renderer/Pods-Quake 3 BSP Renderer-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/zipzap/zipzap.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/zipzap.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -316,13 +251,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Quake 3 BSP Renderer-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A52D6E61C0B4C6F9BBB08F03 /* [CP] Copy Pods Resources */ = {
@@ -349,7 +287,7 @@
 			files = (
 				E2E0B6191C2B9FB800365076 /* Bezier.swift in Sources */,
 				E27901ED1B8D989C00E09E46 /* ViewController.swift in Sources */,
-				E2459AF71C918E9F00C29BFE /* ShaderBuilder.swift in Sources */,
+				E2459AF71C918E9F00C29BFE /* ShaderGenerator.swift in Sources */,
 				E288A0991C81C3BD00A36DA8 /* Q3TextureLoader.swift in Sources */,
 				E2C8CC851C40A93F003E0D4C /* BufferProvider.swift in Sources */,
 				E2FB31051C6ED81500912E77 /* Q3ShaderParser.swift in Sources */,

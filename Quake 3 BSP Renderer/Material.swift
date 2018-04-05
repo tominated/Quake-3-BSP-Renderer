@@ -35,7 +35,7 @@ struct Material {
     fileprivate var cull: MTLCullMode
     private let name: String
     
-    init(shader: Q3Shader, device: MTLDevice, shaderBuilder: ShaderBuilder, textureLoader: Q3TextureLoader) throws {
+    init(shader: Q3Shader, device: MTLDevice, textureLoader: Q3TextureLoader) throws {
         self.textureLoader = textureLoader
         cull = shader.cull
         name = shader.name
@@ -43,7 +43,13 @@ struct Material {
         let whiteTexture = textureLoader.loadWhiteTexture()
         
         for stage in shader.stages {
-            let library = shaderBuilder.buildShaderLibrary(shader, stage)
+            let shaderGen = ShaderGenerator(shader: shader, stage: stage)
+            let shaderSource = shaderGen.buildShader()
+            guard let library = try? device.makeLibrary(source: shaderSource, options: nil) else {
+                print("Error compiling shader: \(shader.name)\n")
+                exit(1)
+            }
+
             let vertexFunction = library.makeFunction(name: "renderVert")
             let fragmentFunction = library.makeFunction(name: "renderFrag")
             
