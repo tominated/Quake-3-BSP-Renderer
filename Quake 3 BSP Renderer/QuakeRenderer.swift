@@ -76,7 +76,7 @@ class QuakeRenderer: NSObject, MTKViewDelegate {
             let i = Int(arc4random_uniform(UInt32(spawnPoints.count)))
             let entity = spawnPoints[i]
             let angle = Float(entity["angle"]!)!
-            let origin = entity["origin"]!.characters.split(separator: " ").map(String.init).map { Float($0)! }
+            let origin = entity["origin"]!.split(separator: " ").map { Float($0)! }
 
             camera.position = GLKVector3Make(origin[0], origin[2] + 5, -origin[1])
             camera.yaw = angle

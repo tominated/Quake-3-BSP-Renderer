@@ -48,7 +48,7 @@ class Q3ResourceLoader {
     // Loads the specified texture as a CGImage from the data file if it exists
     func loadTexture(_ path: String) -> UIImage? {
         // This is to remove any extention from the path
-        let splitPath = path.characters.split{ $0 == "."}.map(String.init)
+        let splitPath = path.split{ $0 == "." }
         
         for fileType in ["jpg", "tga"] {
             if let data = loadResource("\(splitPath[0]).\(fileType)") {
